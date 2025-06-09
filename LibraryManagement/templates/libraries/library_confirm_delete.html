@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kütüphaneyi Sil - Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block content %}
+<!--begin::Content wrapper-->
+<div class="d-flex flex-column flex-column-fluid">
+    <!--begin::Toolbar-->
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <!--begin::Toolbar container-->
+        <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
+            <!--begin::Page title-->
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <!--begin::Title-->
+                <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
+                    Kütüphaneyi Sil
+                </h1>
+                <!--end::Title-->
+                <!--begin::Breadcrumb-->
+                <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                    <li class="breadcrumb-item text-muted">
+                        <a href="{% url 'library_list' %}" class="text-muted text-hover-primary">Kütüphaneler</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                    </li>
+                    <li class="breadcrumb-item text-muted">
+                        <a href="{% url 'library_detail' library.pk %}" class="text-muted text-hover-primary">{{ library.name }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                    </li>
+                    <li class="breadcrumb-item text-muted">Sil</li>
+                </ul>
+                <!--end::Breadcrumb-->
+            </div>
+            <!--end::Page title-->
+        </div>
+        <!--end::Toolbar container-->
+    </div>
+    <!--end::Toolbar-->
+    <!--begin::Content-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <!--begin::Content container-->
+        <div id="kt_app_content_container" class="app-container container-xxl">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!--begin::Card-->
+            <div class="card">
+                <!--begin::Card body-->
+                <div class="card-body p-lg-20">
+                    <!--begin::Layout-->
+                    <div class="d-flex flex-column flex-xl-row">
+                        <!--begin::Content-->
+                        <div class="flex-lg-row-fluid me-xl-18 mb-10 mb-xl-0">
+                            <!--begin::Card-->
+                            <div class="card card-flush h-md-100">
+                                <!--begin::Card body-->
+                                <div class="card-body d-flex flex-column justify-content-between mt-9 bgi-no-repeat bgi-size-cover bgi-position-x-center pb-0" style="background-position: 100% 50%; background-image:url('assets/media/stock/900x600/42.png')">
+                                    <!--begin::Wrapper-->
+                                    <div class="mb-10">
+                                        <!--begin::Title-->
+                                        <div class="fs-2hx fw-bold text-gray-800 text-center mb-13">
+                                            <span class="me-2">
+                                                Kütüphaneyi silmek istediğinizden 
+                                                <br/>
+                                                <span class="text-danger">emin misiniz?</span>
+                                            </span>
+                                        </div>
+                                        <!--end::Title-->
+                                        <!--begin::Text-->
+                                        <div class="text-gray-600 fw-semibold fs-6 text-center px-8">
+                                            <strong>"{{ library.name }}"</strong> adlı kütüphane kalıcı olarak silinecektir.
+                                            <br/>
+                                            Bu işlem geri alınamaz ve kütüphanedeki tüm kitaplar da silinecektir.
+                                        </div>
+                                        <!--end::Text-->
+                                    </div>
+                                    <!--end::Wrapper-->
+                                    <!--begin::Illustration-->
+                                    <img class="mx-auto h-150px h-lg-200px theme-light-show" src="assets/media/illustrations/misc/upgrade.svg" alt="" />
+                                    <img class="mx-auto h-150px h-lg-200px theme-dark-show" src="assets/media/illustrations/misc/upgrade-dark.svg" alt="" />
+                                    <!--end::Illustration-->
+                                </div>
+                                <!--end::Card body-->
+                            </div>
+                            <!--end::Card-->
+                        </div>
+                        <!--end::Content-->
+                        <!--begin::Sidebar-->
+                        <div class="flex-column flex-lg-row-auto w-100 w-xl-300px mb-10">
+                            <!--begin::Card-->
+                            <div class="card card-flush">
+                                <!--begin::Card header-->
+                                <div class="card-header pt-7">
+                                    <!--begin::Card title-->
+                                    <div class="card-title">
+                                        <h2 class="fw-bold text-gray-800">Kütüphane Bilgileri</h2>
+                                    </div>
+                                    <!--end::Card title-->
+                                </div>
+                                <!--end::Card header-->
+                                <!--begin::Card body-->
+                                <div class="card-body pt-0">
+                                    <!--begin::Item-->
+                                    <div class="mb-7">
+                                        <!--begin::Label-->
+                                        <div class="fw-semibold text-gray-600 fs-7">Kütüphane Adı:</div>
+                                        <!--end::Label-->
+                                        <!--begin::Text-->
+                                        <div class="fw-bold text-gray-800 fs-6">{{ library.name }}</div>
+                                        <!--end::Text-->
+                                    </div>
+                                    <!--end::Item-->
+                                    <!--begin::Item-->
+                                    <div class="mb-7">
+                                        <!--begin::Label-->
+                                        <div class="fw-semibold text-gray-600 fs-7">Açıklama:</div>
+                                        <!--end::Label-->
+                                        <!--begin::Text-->
+                                        <div class="fw-bold text-gray-800 fs-6">
+                                            {% if library.description %}
+                                                {{ library.description|truncatewords:30 }}
+                                            {% else %}
+                                                Açıklama bulunmuyor.
+                                            {% endif %}
+                                        </div>
+                                        <!--end::Text-->
+                                    </div>
+                                    <!--end::Item-->
+                                    <!--begin::Item-->
+                                    <div class="mb-7">
+                                        <!--begin::Label-->
+                                        <div class="fw-semibold text-gray-600 fs-7">Sahip:</div>
+                                        <!--end::Label-->
+                                        <!--begin::Text-->
+                                        <div class="fw-bold text-gray-800 fs-6">{{ library.owner.first_name }} {{ library.owner.last_name }}</div>
+                                        <!--end::Text-->
+                                    </div>
+                                    <!--end::Item-->
+                                    <!--begin::Item-->
+                                    <div class="mb-7">
+                                        <!--begin::Label-->
+                                        <div class="fw-semibold text-gray-600 fs-7">Kitap Sayısı:</div>
+                                        <!--end::Label-->
+                                        <!--begin::Text-->
+                                        <div class="fw-bold text-gray-800 fs-6">
+                                            <span class="badge badge-light-{{ library.books.count|yesno:'success,warning' }}">
+                                                {{ library.books.count }} Kitap
+                                            </span>
+                                        </div>
+                                        <!--end::Text-->
+                                    </div>
+                                    <!--end::Item-->
+                                    <!--begin::Item-->
+                                    <div class="mb-7">
+                                        <!--begin::Label-->
+                                        <div class="fw-semibold text-gray-600 fs-7">Oluşturulma Tarihi:</div>
+                                        <!--end::Label-->
+                                        <!--begin::Text-->
+                                        <div class="fw-bold text-gray-800 fs-6">{{ library.created_at|date:"d M Y" }}</div>
+                                        <!--end::Text-->
+                                    </div>
+                                    <!--end::Item-->
+                                </div>
+                                <!--end::Card body-->
+                            </div>
+                            <!--end::Card-->
+                        </div>
+                        <!--end::Sidebar-->
+                    </div>
+                    <!--end::Layout-->
+                    <!--begin::Actions-->
+                    <div class="d-flex flex-center flex-wrap px-5">
+                        <!--begin::Actions-->
+                        <a href="{% url 'library_detail' library.pk %}" class="btn btn-active-light-primary me-10 py-4 px-6">
+                            <i class="ki-duotone ki-left fs-3 me-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                            Geri Dön
+                        </a>
+                        <!--end::Actions-->
+                        <!--begin::Actions-->
+                        <form method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger py-4 px-6" onclick="return confirmDelete()">
+                                <i class="ki-duotone ki-trash fs-3 me-1">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                    <span class="path5"></span>
+                                </i>
+                                Evet, Kütüphaneyi Sil
+                            </button>
+                        </form>
+                        <!--end::Actions-->
+                    </div>
+                    <!--end::Actions-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Content container-->
+    </div>
+    <!--end::Content-->
+</div>
+<!--end::Content wrapper-->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmDelete() {
+        return confirm('Bu kütüphane ve içindeki tüm kitaplar kalıcı olarak silinecektir. Bu işlemi onaylıyor musunuz?');
+    }
+    
+    // Add some interactive effects
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effects to buttons
+        const deleteBtn = document.querySelector('button[type="submit"]');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('mouseenter', function() {
+                this.classList.add('btn-hover-rise');
+            });
+            deleteBtn.addEventListener('mouseleave', function() {
+                this.classList.remove('btn-hover-rise');
+            });
+        }
+    });
+</script>
+{% endblock %}

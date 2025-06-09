@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block content %}
+<!--begin::Content wrapper-->
+<div class="d-flex flex-column flex-column-fluid">
+    <!--begin::Toolbar-->
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <!--begin::Toolbar container-->
+        <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
+            <!--begin::Page title-->
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <!--begin::Title-->
+                <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
+                    {{ title }}
+                </h1>
+                <!--end::Title-->
+                <!--begin::Breadcrumb-->
+                <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                    <li class="breadcrumb-item text-muted">
+                        <a href="{% url 'library_list' %}" class="text-muted text-hover-primary">Kütüphaneler</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                    </li>
+                    <li class="breadcrumb-item text-muted">{{ title }}</li>
+                </ul>
+                <!--end::Breadcrumb-->
+            </div>
+            <!--end::Page title-->
+        </div>
+        <!--end::Toolbar container-->
+    </div>
+    <!--end::Toolbar-->
+    <!--begin::Content-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <!--begin::Content container-->
+        <div id="kt_app_content_container" class="app-container container-xxl">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!--begin::Form-->
+            <form method="post" id="kt_library_form" class="form d-flex flex-column flex-lg-row">
+                {% csrf_token %}
+                <!--begin::Aside column-->
+                <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
+                    <!--begin::Thumbnail settings-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Kütüphane Bilgileri</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body text-center pt-0">
+                            <!--begin::Image input-->
+                            <div class="image-input image-input-empty image-input-outline image-input-placeholder mb-3" data-kt-image-input="true">
+                                <!--begin::Preview existing avatar-->
+                                <div class="image-input-wrapper w-150px h-150px"></div>
+                                <!--end::Preview existing avatar-->
+                                <!--begin::Label-->
+                                <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Kütüphane görseli">
+                                    <i class="ki-duotone ki-pencil fs-7">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <!--begin::Inputs-->
+                                    <input type="file" name="avatar" accept=".png, .jpg, .jpeg" />
+                                    <input type="hidden" name="avatar_remove" />
+                                    <!--end::Inputs-->
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Cancel-->
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Görseli kaldır">
+                                    <i class="ki-duotone ki-cross fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </span>
+                                <!--end::Cancel-->
+                                <!--begin::Remove-->
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Görseli kaldır">
+                                    <i class="ki-duotone ki-cross fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </span>
+                                <!--end::Remove-->
+                            </div>
+                            <!--end::Image input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Kütüphane için bir görsel ekleyin. Sadece *.png, *.jpg ve *.jpeg dosyaları kabul edilir</div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Thumbnail settings-->
+                    <!--begin::Status-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>İpuçları</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Tips-->
+                            <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed p-6">
+                                <!--begin::Icon-->
+                                <i class="ki-duotone ki-information fs-2tx text-primary me-4">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>
+                                <!--end::Icon-->
+                                <!--begin::Wrapper-->
+                                <div class="d-flex flex-stack flex-grow-1">
+                                    <!--begin::Content-->
+                                    <div class="fw-semibold">
+                                        <h4 class="text-gray-900 fw-bold">Kütüphane Oluşturma İpuçları</h4>
+                                        <div class="fs-6 text-gray-700">
+                                            <ul class="list-unstyled mb-0">
+                                                <li class="mb-2">• Açıklayıcı ve benzersiz bir isim seçin</li>
+                                                <li class="mb-2">• Detaylı bir açıklama yazın</li>
+                                                <li class="mb-2">• Kütüphanenin amacını belirtin</li>
+                                                <li>• İstediğiniz zaman düzenleyebilirsiniz</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!--end::Content-->
+                                </div>
+                                <!--end::Wrapper-->
+                            </div>
+                            <!--end::Tips-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Status-->
+                </div>
+                <!--end::Aside column-->
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+                    <!--begin::General options-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>Genel Bilgiler</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Input group-->
+                            <div class="mb-10 fv-row">
+                                <!--begin::Label-->
+                                <label class="required form-label">Kütüphane Adı</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                {{ form.name }}
+                                <!--end::Input-->
+                                <!--begin::Description-->
+                                <div class="text-muted fs-7">Kütüphaneniz için açıklayıcı ve benzersiz bir isim girin.</div>
+                                <!--end::Description-->
+                                <!--begin::Error-->
+                                {% if form.name.errors %}
+                                    <div class="fv-plugins-message-container">
+                                        <div class="fv-help-block">
+                                            {% for error in form.name.errors %}
+                                                <span role="alert">{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <!--end::Error-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="mb-10 fv-row">
+                                <!--begin::Label-->
+                                <label class="form-label">Açıklama</label>
+                                <!--end::Label-->
+                                <!--begin::Editor-->
+                                {{ form.description }}
+                                <!--end::Editor-->
+                                <!--begin::Description-->
+                                <div class="text-muted fs-7">Kütüphanenizin amacını ve içeriğini açıklayan detaylı bir metin girin.</div>
+                                <!--end::Description-->
+                                <!--begin::Error-->
+                                {% if form.description.errors %}
+                                    <div class="fv-plugins-message-container">
+                                        <div class="fv-help-block">
+                                            {% for error in form.description.errors %}
+                                                <span role="alert">{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <!--end::Error-->
+                            </div>
+                            <!--end::Input group-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::General options-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{% url 'library_list' %}" id="kt_library_cancel" class="btn btn-light me-5">İptal</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_library_submit" class="btn btn-primary">
+                            <span class="indicator-label">Kaydet</span>
+                            <span class="indicator-progress">Kaydediliyor...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Content container-->
+    </div>
+    <!--end::Content-->
+</div>
+<!--end::Content wrapper-->
+{% endblock %}
+
+{% block extra_js %}
+<!--begin::Vendors Javascript(used for this page only)-->
+<script src="assets/plugins/custom/formrepeater/formrepeater.bundle.js"></script>
+<!--end::Vendors Javascript-->
+<!--begin::Custom Javascript(used for this page only)-->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form styling
+        const nameInput = document.querySelector('#id_name');
+        const descriptionInput = document.querySelector('#id_description');
+        
+        if (nameInput) {
+            nameInput.classList.add('form-control', 'form-control-solid');
+            nameInput.setAttribute('placeholder', 'Kütüphane adını girin...');
+        }
+        
+        if (descriptionInput) {
+            descriptionInput.classList.add('form-control', 'form-control-solid');
+            descriptionInput.setAttribute('placeholder', 'Kütüphane açıklamasını girin...');
+            descriptionInput.style.minHeight = '120px';
+        }
+        
+        // Form validation
+        const form = document.getElementById('kt_library_form');
+        const submitButton = document.getElementById('kt_library_submit');
+        
+        if (form && submitButton) {
+            form.addEventListener('submit', function(e) {
+                // Show loading state
+                submitButton.setAttribute('data-kt-indicator', 'on');
+                submitButton.disabled = true;
+                
+                // Basic validation
+                const name = nameInput.value.trim();
+                if (!name) {
+                    e.preventDefault();
+                    submitButton.removeAttribute('data-kt-indicator');
+                    submitButton.disabled = false;
+                    
+                    // Show error
+                    if (nameInput.parentNode.querySelector('.validation-error')) {
+                        nameInput.parentNode.querySelector('.validation-error').remove();
+                    }
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'validation-error text-danger fs-7 mt-1';
+                    errorDiv.textContent = 'Kütüphane adı zorunludur.';
+                    nameInput.parentNode.appendChild(errorDiv);
+                    
+                    nameInput.focus();
+                    return false;
+                }
+            });
+        }
+        
+        // Image input handling
+        KTImageInput.createInstances();
+        
+        // Remove validation errors on input
+        if (nameInput) {
+            nameInput.addEventListener('input', function() {
+                const errorDiv = this.parentNode.querySelector('.validation-error');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+            });
+        }
+    });
+</script>
+<!--end::Custom Javascript-->
+{% endblock %}
