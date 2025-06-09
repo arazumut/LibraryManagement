@@ -364,7 +364,14 @@
                         <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i> Profilim</a></li>
                         <li><a class="dropdown-item" href="{% url 'edit_profile' %}"><i class="fas fa-cog me-2"></i> Ayarlar</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Çıkış Yap</a></li>
+                        <li>
+                            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item border-0 bg-transparent">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Çıkış Yap
+                                </button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             {% else %}
