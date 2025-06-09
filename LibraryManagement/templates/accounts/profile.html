@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Profil - Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block header_title %}Profilim{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">Kullanıcı Profili</h3>
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Profili Düzenle
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="mb-4">
+                            <div class="avatar-placeholder bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px; font-size: 3rem;">
+                                {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|default:""|upper }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Kullanıcı Adı:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ user.username }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>E-posta:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ user.email|default:"Belirtilmemiş" }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Ad:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ user.first_name|default:"Belirtilmemiş" }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Soyad:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ user.last_name|default:"Belirtilmemiş" }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Kullanıcı Tipi:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                <span class="badge 
+                                    {% if user.is_super_admin %}
+                                        bg-danger
+                                    {% elif user.is_library_admin %}
+                                        bg-warning
+                                    {% else %}
+                                        bg-info
+                                    {% endif %}
+                                ">
+                                    {{ user.get_user_type_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Üyelik Tarihi:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ user.date_joined|date:"d F Y H:i" }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Son Giriş:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {% if user.last_login %}
+                                    {{ user.last_login|date:"d F Y H:i" }}
+                                {% else %}
+                                    Henüz giriş yapılmamış
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Kullanıcı İstatistikleri -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3 class="card-title">Hesap İstatistikleri</h3>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    {% if user.is_library_admin or user.is_super_admin %}
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-building text-primary mb-2" style="font-size: 2rem;"></i>
+                            <h4 class="mb-1">{{ libraries_count }}</h4>
+                            <small class="text-muted">Kütüphaneler</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-book text-success mb-2" style="font-size: 2rem;"></i>
+                            <h4 class="mb-1">{{ borrowed_count }}</h4>
+                            <small class="text-muted">Ödünç Alınan</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-hand-holding text-warning mb-2" style="font-size: 2rem;"></i>
+                            <h4 class="mb-1">{{ lent_count }}</h4>
+                            <small class="text-muted">Ödünç Verilen</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-clock text-info mb-2" style="font-size: 2rem;"></i>
+                            <h4 class="mb-1">{{ book_requests_count }}</h4>
+                            <small class="text-muted">Kitap İstekleri</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

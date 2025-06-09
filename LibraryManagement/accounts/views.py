@@ -59,7 +59,24 @@ def dashboard(request):
 
 @login_required
 def profile(request):
-    return render(request, 'accounts/profile.html')
+    # Kullanıcının istatistiklerini hesapla
+    borrowed_count = Loan.objects.filter(borrower=request.user).count()
+    lent_count = Loan.objects.filter(lender=request.user).count()
+    book_requests_count = BookRequest.objects.filter(requester=request.user).count()
+    
+    if request.user.is_library_admin() or request.user.is_super_admin():
+        libraries_count = Library.objects.filter(owner=request.user).count()
+    else:
+        libraries_count = 0
+    
+    context = {
+        'borrowed_count': borrowed_count,
+        'lent_count': lent_count,
+        'book_requests_count': book_requests_count,
+        'libraries_count': libraries_count,
+    }
+    
+    return render(request, 'accounts/profile.html', context)
 
 @login_required
 def edit_profile(request):
