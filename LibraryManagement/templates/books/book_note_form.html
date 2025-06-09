@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if note %}Not Düzenle{% else %}Not Ekle{% endif %} - {{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'book_list' %}">Kitaplar</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% if note %}Not Düzenle{% else %}Not Ekle{% endif %}</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">{% if note %}Not Düzenle{% else %}Not Ekle{% endif %}</h2>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <div class="d-flex align-items-center">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-thumbnail me-3" style="max-height: 100px;">
+                    {% else %}
+                    <div class="bg-light text-center p-3 me-3 rounded">
+                        <i class="fas fa-book fa-3x text-secondary"></i>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <h4>{{ book.title }}</h4>
+                        <p class="mb-0">{{ book.author }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Lütfen aşağıdaki hataları düzeltin:</strong>
+                    {{ form.errors }}
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <label for="{{ form.content.id_for_label }}" class="form-label">{{ form.content.label|default:"Not İçeriği" }}</label>
+                    {{ form.content|add_class:"form-control" }}
+                </div>
+                
+                <div class="mb-3 form-check">
+                    {{ form.is_private|add_class:"form-check-input" }}
+                    <label for="{{ form.is_private.id_for_label }}" class="form-check-label">{{ form.is_private.label }}</label>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'book_detail' book.pk %}" class="btn btn-secondary">İptal</a>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Talep Yanıtla - {{ book_request.book.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'book_list' %}">Kitaplar</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'book_request_list' %}">Talepler</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Talep Yanıtla</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Kitap Talebini Yanıtla</h2>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Kitap Bilgileri</h4>
+                        <div class="d-flex align-items-center mb-3">
+                            {% if book_request.book.cover_image %}
+                            <img src="{{ book_request.book.cover_image.url }}" alt="{{ book_request.book.title }}" class="img-thumbnail me-3" style="max-height: 100px;">
+                            {% else %}
+                            <div class="bg-light text-center p-3 me-3 rounded">
+                                <i class="fas fa-book fa-3x text-secondary"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h5>{{ book_request.book.title }}</h5>
+                                <p class="mb-0">{{ book_request.book.author }}</p>
+                                <small class="text-muted">{{ book_request.book.library.name }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Talep Bilgileri</h4>
+                        <p><strong>Talep Eden:</strong> {{ book_request.requester.get_full_name|default:book_request.requester.username }}</p>
+                        <p><strong>Talep Tarihi:</strong> {{ book_request.requested_at|date:"d.m.Y H:i" }}</p>
+                        {% if book_request.message %}
+                        <div class="mb-3">
+                            <strong>Talep Mesajı:</strong>
+                            <p class="border rounded p-2 bg-light">{{ book_request.message|linebreaks }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="status" class="form-label">Yanıt</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="approved">Onayla</option>
+                        <option value="rejected">Reddet</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="message" class="form-label">Mesaj (İsteğe bağlı)</label>
+                    <textarea name="message" id="message" class="form-control" rows="3" placeholder="Talep eden kişiye iletmek istediğiniz bir mesaj varsa yazabilirsiniz."></textarea>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'book_request_list' %}" class="btn btn-secondary">İptal</a>
+                    <button type="submit" class="btn btn-primary">Yanıtı Gönder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

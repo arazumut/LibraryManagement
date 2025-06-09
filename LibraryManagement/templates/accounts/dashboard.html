@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block header_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Kütüphanelerim -->
+    <div class="col-xl-6 col-lg-12 mb-5">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Kütüphanelerim</h3>
+                <a href="{% url 'create_library' %}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus"></i> Yeni Kütüphane
+                </a>
+            </div>
+            <div class="card-body">
+                {% if user_libraries %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kütüphane Adı</th>
+                                    <th>Kitap Sayısı</th>
+                                    <th>Oluşturulma Tarihi</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for library in user_libraries %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="symbol me-3 bg-light-primary text-primary">
+                                                    <i class="fas fa-book-reader"></i>
+                                                </div>
+                                                <span class="fw-bold">{{ library.name }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ library.books.count }}</td>
+                                        <td>{{ library.created_at|date:"d.m.Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'library_detail' library.id %}" class="btn btn-sm btn-light-primary me-1">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'edit_library' library.id %}" class="btn btn-sm btn-light-warning me-1">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-book-reader fa-3x text-muted mb-3"></i>
+                        <h5>Henüz bir kütüphane oluşturmadınız</h5>
+                        <p class="text-muted">İlk kütüphanenizi oluşturmak için "Yeni Kütüphane" butonuna tıklayın.</p>
+                        <a href="{% url 'create_library' %}" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus"></i> Kütüphane Oluştur
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Ödünç Aldığım Kitaplar -->
+    <div class="col-xl-6 col-lg-12 mb-5">
+        <div class="card h-100">
+            <div class="card-header">
+                <h3 class="card-title">Ödünç Aldığım Kitaplar</h3>
+            </div>
+            <div class="card-body">
+                {% if borrowed_books %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kitap</th>
+                                    <th>Ödünç Veren</th>
+                                    <th>Son Tarih</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for loan in borrowed_books %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if loan.book.cover_image %}
+                                                    <img src="{{ loan.book.cover_image.url }}" class="avatar me-3" alt="{{ loan.book.title }}">
+                                                {% else %}
+                                                    <div class="symbol me-3 bg-light-primary text-primary">
+                                                        <div class="symbol-label">{{ loan.book.title|first }}</div>
+                                                    </div>
+                                                {% endif %}
+                                                <span class="fw-bold">{{ loan.book.title }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ loan.lender.username }}</td>
+                                        <td>{{ loan.due_date|date:"d.m.Y" }}</td>
+                                        <td>
+                                            {% if loan.is_overdue %}
+                                                <span class="badge badge-light-danger">Gecikmiş</span>
+                                            {% else %}
+                                                <span class="badge badge-light-success">Zamanında</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                        <h5>Ödünç aldığınız kitap bulunmuyor</h5>
+                        <p class="text-muted">Arkadaşlarınızdan kitap talep etmek için kitap isteklerini kullanabilirsiniz.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Ödünç Verdiğim Kitaplar -->
+    <div class="col-xl-6 col-lg-12 mb-5">
+        <div class="card h-100">
+            <div class="card-header">
+                <h3 class="card-title">Ödünç Verdiğim Kitaplar</h3>
+            </div>
+            <div class="card-body">
+                {% if lent_books %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kitap</th>
+                                    <th>Ödünç Alan</th>
+                                    <th>Son Tarih</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for loan in lent_books %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if loan.book.cover_image %}
+                                                    <img src="{{ loan.book.cover_image.url }}" class="avatar me-3" alt="{{ loan.book.title }}">
+                                                {% else %}
+                                                    <div class="symbol me-3 bg-light-primary text-primary">
+                                                        <div class="symbol-label">{{ loan.book.title|first }}</div>
+                                                    </div>
+                                                {% endif %}
+                                                <span class="fw-bold">{{ loan.book.title }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ loan.borrower.username }}</td>
+                                        <td>{{ loan.due_date|date:"d.m.Y" }}</td>
+                                        <td>
+                                            {% if loan.is_overdue %}
+                                                <span class="badge badge-light-danger">Gecikmiş</span>
+                                            {% else %}
+                                                <span class="badge badge-light-success">Zamanında</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-handshake fa-3x text-muted mb-3"></i>
+                        <h5>Ödünç verdiğiniz kitap bulunmuyor</h5>
+                        <p class="text-muted">Kitaplarınızı ödünç vermek için kitap detay sayfasını ziyaret edin.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Kitap İstekleri -->
+    <div class="col-xl-6 col-lg-12 mb-5">
+        <div class="card h-100">
+            <div class="card-header">
+                <h3 class="card-title">Kitap İstekleri</h3>
+            </div>
+            <div class="card-body">
+                {% if book_requests %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kitap</th>
+                                    <th>Kütüphane</th>
+                                    <th>Durum</th>
+                                    <th>İstek Tarihi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in book_requests %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if request.book.cover_image %}
+                                                    <img src="{{ request.book.cover_image.url }}" class="avatar me-3" alt="{{ request.book.title }}">
+                                                {% else %}
+                                                    <div class="symbol me-3 bg-light-primary text-primary">
+                                                        <div class="symbol-label">{{ request.book.title|first }}</div>
+                                                    </div>
+                                                {% endif %}
+                                                <span class="fw-bold">{{ request.book.title }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ request.book.library.name }}</td>
+                                        <td>
+                                            {% if request.status == 'pending' %}
+                                                <span class="badge badge-light-warning">Beklemede</span>
+                                            {% elif request.status == 'approved' %}
+                                                <span class="badge badge-light-success">Onaylandı</span>
+                                            {% elif request.status == 'rejected' %}
+                                                <span class="badge badge-light-danger">Reddedildi</span>
+                                            {% elif request.status == 'cancelled' %}
+                                                <span class="badge badge-light-info">İptal Edildi</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ request.requested_at|date:"d.m.Y" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-envelope fa-3x text-muted mb-3"></i>
+                        <h5>Henüz bir kitap isteğinde bulunmadınız</h5>
+                        <p class="text-muted">Arkadaşlarınızın kütüphanelerindeki kitapları inceleyerek istekte bulunabilirsiniz.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if incoming_requests %}
+    <!-- Gelen İstekler -->
+    <div class="col-xl-6 col-lg-12 mb-5">
+        <div class="card h-100">
+            <div class="card-header">
+                <h3 class="card-title">Gelen Kitap İstekleri</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kitap</th>
+                                <th>İsteyen</th>
+                                <th>İstek Tarihi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in incoming_requests %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if request.book.cover_image %}
+                                                <img src="{{ request.book.cover_image.url }}" class="avatar me-3" alt="{{ request.book.title }}">
+                                            {% else %}
+                                                <div class="symbol me-3 bg-light-primary text-primary">
+                                                    <div class="symbol-label">{{ request.book.title|first }}</div>
+                                                </div>
+                                            {% endif %}
+                                            <span class="fw-bold">{{ request.book.title }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ request.requester.username }}</td>
+                                    <td>{{ request.requested_at|date:"d.m.Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'respond_to_request' request.id %}" class="btn btn-sm btn-light-primary">
+                                            <i class="fas fa-reply"></i> Yanıtla
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if overdue_books %}
+    <!-- Geciken Kitaplar -->
+    <div class="col-xl-6 col-lg-12 mb-5">
+        <div class="card h-100 border-danger">
+            <div class="card-header bg-light-danger">
+                <h3 class="card-title text-danger">Gecikmiş Kitaplar</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kitap</th>
+                                <th>Ödünç Veren</th>
+                                <th>Son Tarih</th>
+                                <th>Gecikme</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in overdue_books %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if loan.book.cover_image %}
+                                                <img src="{{ loan.book.cover_image.url }}" class="avatar me-3" alt="{{ loan.book.title }}">
+                                            {% else %}
+                                                <div class="symbol me-3 bg-light-danger text-danger">
+                                                    <div class="symbol-label">{{ loan.book.title|first }}</div>
+                                                </div>
+                                            {% endif %}
+                                            <span class="fw-bold">{{ loan.book.title }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ loan.lender.username }}</td>
+                                    <td>{{ loan.due_date|date:"d.m.Y" }}</td>
+                                    <td>
+                                        <span class="badge badge-light-danger">
+                                            {{ loan.due_date|timeuntil }} gecikmiş
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

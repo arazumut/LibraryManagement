@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'book_list' %}">Kitaplar</a></li>
+            {% if book %}
+            <li class="breadcrumb-item"><a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Düzenle</li>
+            {% else %}
+            <li class="breadcrumb-item active" aria-current="page">Yeni Kitap Ekle</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">{{ title }}</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Lütfen aşağıdaki hataları düzeltin:</strong>
+                    {{ form.errors }}
+                </div>
+                {% endif %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                            {{ form.title|add_class:"form-control" }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.author.id_for_label }}" class="form-label">{{ form.author.label }}</label>
+                            {{ form.author|add_class:"form-control" }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.isbn.id_for_label }}" class="form-label">{{ form.isbn.label }}</label>
+                            {{ form.isbn|add_class:"form-control" }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.library.id_for_label }}" class="form-label">{{ form.library.label }}</label>
+                            {{ form.library|add_class:"form-select" }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.cover_image.id_for_label }}" class="form-label">{{ form.cover_image.label }}</label>
+                            {% if book and book.cover_image %}
+                            <div class="mb-2">
+                                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-thumbnail" style="max-height: 150px;">
+                            </div>
+                            {% endif %}
+                            {{ form.cover_image|add_class:"form-control" }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                            {{ form.description|add_class:"form-control" }}
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            {{ form.is_available|add_class:"form-check-input" }}
+                            <label for="{{ form.is_available.id_for_label }}" class="form-check-label">{{ form.is_available.label }}</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% if book %}{% url 'book_detail' book.pk %}{% else %}{% url 'book_list' %}{% endif %}" class="btn btn-secondary">İptal</a>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form doğrulama için JavaScript eklenebilir
+</script>
+{% endblock %} 
