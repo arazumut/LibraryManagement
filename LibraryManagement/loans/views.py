@@ -13,7 +13,9 @@ from django.db.models import Q
 @login_required
 def loan_list(request):
     """Tüm ödünç işlemlerini listele (personel için)"""
-    if not request.user.is_staff:
+    # Kütüphane yöneticileri ve personel erişebilir
+    if not (request.user.is_staff or 
+            (hasattr(request.user, 'user_type') and request.user.user_type == 'LIBRARY_ADMIN')):
         return redirect('borrowed_books')
     
     loans = Loan.objects.all()
@@ -32,7 +34,9 @@ def loan_list(request):
 @login_required
 def create_loan(request):
     """Yeni bir ödünç işlemi oluştur (sadece personel)"""
-    if not request.user.is_staff:
+    # Kütüphane yöneticileri ve personel erişebilir
+    if not (request.user.is_staff or 
+            (hasattr(request.user, 'user_type') and request.user.user_type == 'LIBRARY_ADMIN')):
         return HttpResponseForbidden("Bu işlem için yetkiniz bulunmamaktadır.")
     
     if request.method == 'POST':
@@ -59,8 +63,10 @@ def loan_detail(request, pk):
     """Ödünç detaylarını görüntüle"""
     loan = get_object_or_404(Loan, pk=pk)
     
-    # Sadece personel veya ödünç alan kişi görebilir
-    if not request.user.is_staff and request.user != loan.borrower:
+    # Sadece personel, kütüphane yöneticileri veya ödünç alan kişi görebilir
+    if not (request.user.is_staff or 
+            (hasattr(request.user, 'user_type') and request.user.user_type == 'LIBRARY_ADMIN') or
+            request.user == loan.borrower):
         return HttpResponseForbidden("Bu işlem için yetkiniz bulunmamaktadır.")
     
     return render(request, 'loans/loan_detail.html', {'loan': loan})
@@ -109,7 +115,9 @@ def borrowed_books(request):
 @login_required
 def lent_books(request):
     """Kullanıcının ödünç verdiği kitapları listele (personel için)"""
-    if not request.user.is_staff:
+    # Kütüphane yöneticileri ve personel erişebilir
+    if not (request.user.is_staff or 
+            (hasattr(request.user, 'user_type') and request.user.user_type == 'LIBRARY_ADMIN')):
         return HttpResponseForbidden("Bu işlem için yetkiniz bulunmamaktadır.")
     
     loans = Loan.objects.filter(lender=request.user)

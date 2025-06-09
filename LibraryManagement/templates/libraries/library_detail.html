@@ -5,27 +5,746 @@
 
 {% block content %}
 <!--begin::Content wrapper-->
-<div class="d-flex flex-column flex-column-fluid">
+<style>
+/* Library Detail Page Styling */
+.library-detail-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.library-detail-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.toolbar-modern {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.page-title-modern {
+    animation: slideInFromLeft 0.8s ease-out;
+}
+
+.page-title-modern h1 {
+    background: linear-gradient(45deg, #fff, #f8f9fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 2.5rem !important;
+    font-weight: 800;
+    position: relative;
+}
+
+.page-title-modern h1::after {
+    content: '📚';
+    position: absolute;
+    right: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    animation: bounce 2s infinite;
+}
+
+.breadcrumb-modern {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 8px 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.breadcrumb-modern a {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.breadcrumb-modern a:hover {
+    color: #fff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.btn-modern {
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-modern:hover::before {
+    left: 100%;
+}
+
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn-edit {
+    background: rgba(52, 152, 219, 0.2);
+    color: #fff !important;
+}
+
+.btn-delete {
+    background: rgba(231, 76, 60, 0.2);
+    color: #fff !important;
+}
+
+.btn-add {
+    background: rgba(46, 204, 113, 0.3);
+    color: #fff !important;
+    font-weight: 600;
+}
+
+.library-info-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    overflow: hidden;
+    position: relative;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.library-info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+}
+
+.library-symbol {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: pulse 2s infinite;
+}
+
+.library-symbol::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: sweep 3s linear infinite;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid transparent;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.stat-box:hover::before {
+    opacity: 0.1;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+.nav-tabs-modern {
+    border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px 15px 0 0;
+    padding: 10px;
+}
+
+.nav-tabs-modern .nav-link {
+    border: none;
+    border-radius: 10px;
+    color: #6c757d;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-tabs-modern .nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-tabs-modern .nav-link.active::before {
+    width: 100%;
+}
+
+.nav-tabs-modern .nav-link.active {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.nav-tabs-modern .nav-link:hover {
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateY(-2px);
+}
+
+.books-table-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.search-input-modern {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 25px;
+    padding: 15px 25px 15px 55px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.search-input-modern:focus {
+    border-color: #667eea;
+    box-shadow: 
+        0 0 0 0.3rem rgba(102, 126, 234, 0.25),
+        0 8px 25px rgba(102, 126, 234, 0.15);
+    background: #fff;
+    transform: translateY(-2px);
+}
+
+.search-icon-modern {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #667eea;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.search-container-modern:hover .search-icon-modern {
+    transform: translateY(-50%) scale(1.1);
+    color: #764ba2;
+}
+
+.action-menu-modern {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 10px 20px;
+    color: #fff !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.action-menu-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.action-menu-modern:hover::before {
+    left: 100%;
+}
+
+.action-menu-modern:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    color: #fff !important;
+}
+
+.dropdown-menu-modern {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    margin-top: 10px;
+}
+
+.dropdown-item-modern {
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.dropdown-item-modern::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    transition: width 0.3s ease;
+}
+
+.dropdown-item-modern:hover::before {
+    width: 100%;
+}
+
+.dropdown-item-modern:hover {
+    background: transparent;
+    color: #667eea;
+    transform: translateX(5px);
+}
+
+.checkbox-modern {
+    transform: scale(1.2);
+    accent-color: #667eea;
+    transition: all 0.3s ease;
+}
+
+.checkbox-modern:hover {
+    transform: scale(1.3);
+}
+
+.table-responsive-modern {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+}
+
+.table-modern {
+    background: transparent;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.table-modern thead {
+    position: relative;
+    z-index: 2;
+}
+
+.table-modern thead th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    font-weight: 700;
+    color: #fff;
+    padding: 20px 15px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.table-modern thead th::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.8s;
+}
+
+.table-modern thead th:hover::before {
+    left: 100%;
+}
+
+.table-modern thead th:first-child {
+    border-radius: 15px 0 0 0;
+}
+
+.table-modern thead th:last-child {
+    border-radius: 0 15px 0 0;
+}
+
+.table-modern tbody {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.table-modern tbody tr {
+    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    animation: fadeInRow 0.6s ease-out backwards;
+}
+
+.table-modern tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.table-modern tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.table-modern tbody tr:nth-child(3) { animation-delay: 0.3s; }
+.table-modern tbody tr:nth-child(4) { animation-delay: 0.4s; }
+.table-modern tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+.table-modern tbody tr::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    transition: width 0.3s ease;
+    z-index: 1;
+}
+
+.table-modern tbody tr:hover::before {
+    width: 100%;
+}
+
+.table-modern tbody tr:hover {
+    background: rgba(102, 126, 234, 0.03);
+    transform: translateY(-2px) scale(1.005);
+    box-shadow: 
+        0 8px 25px rgba(102, 126, 234, 0.15),
+        0 0 20px rgba(102, 126, 234, 0.1);
+}
+
+.table-modern tbody tr:last-child td:first-child {
+    border-radius: 0 0 0 15px;
+}
+
+.table-modern tbody tr:last-child td:last-child {
+    border-radius: 0 0 15px 0;
+}
+
+.table-modern tbody td {
+    padding: 18px 15px;
+    vertical-align: middle;
+    position: relative;
+    z-index: 2;
+    border: none;
+}
+
+.book-avatar {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border-radius: 15px;
+    font-weight: 700;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+}
+
+.book-avatar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: sweep 3s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.book-avatar:hover::before {
+    opacity: 1;
+}
+
+.book-avatar:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.3);
+}
+
+.book-title-modern {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+}
+
+.book-title-modern:hover {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: translateX(5px);
+}
+
+.book-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-top: 5px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.book-description:hover {
+    opacity: 1;
+}
+
+.status-badge {
+    border-radius: 25px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.status-badge:hover::before {
+    left: 100%;
+}
+
+.status-badge:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.status-available {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: #fff;
+    border: 2px solid rgba(46, 204, 113, 0.3);
+}
+
+.status-available::after {
+    content: '✅';
+    margin-left: 8px;
+}
+
+.status-borrowed {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: #fff;
+    border: 2px solid rgba(243, 156, 18, 0.3);
+}
+
+.status-borrowed::after {
+    content: '📤';
+    margin-left: 8px;
+}
+
+.empty-state-modern {
+    text-align: center;
+    padding: 80px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    margin: 20px;
+}
+
+.empty-state-modern i {
+    animation: float 3s ease-in-out infinite;
+    margin-bottom: 30px;
+}
+
+.empty-state-modern .btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 15px;
+    padding: 15px 30px;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.empty-state-modern .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(-50%);
+    }
+    40% {
+        transform: translateY(-60%);
+    }
+    60% {
+        transform: translateY(-45%);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 20px rgba(102, 126, 234, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes sweep {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-title-modern h1 {
+        font-size: 1.8rem !important;
+    }
+    
+    .page-title-modern h1::after {
+        display: none;
+    }
+    
+    .stat-box {
+        margin-bottom: 15px;
+    }
+    
+    .search-input-modern {
+        width: 100% !important;
+        margin-bottom: 15px;
+    }
+}
+</style>
+
+<div class="d-flex flex-column flex-column-fluid library-detail-container">
     <!--begin::Toolbar-->
-    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6 toolbar-modern">
         <!--begin::Toolbar container-->
         <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
             <!--begin::Page title-->
-            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 page-title-modern">
                 <!--begin::Title-->
                 <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
                     {{ library.name }}
                 </h1>
                 <!--end::Title-->
                 <!--begin::Breadcrumb-->
-                <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-                    <li class="breadcrumb-item text-muted">
-                        <a href="{% url 'library_list' %}" class="text-muted text-hover-primary">Kütüphaneler</a>
+                <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1 breadcrumb-modern">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'library_list' %}" class="text-hover-primary">🏠 Kütüphaneler</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                        <span class="bullet bg-white w-5px h-2px opacity-50"></span>
                     </li>
-                    <li class="breadcrumb-item text-muted">{{ library.name }}</li>
+                    <li class="breadcrumb-item text-white opacity-75">📖 {{ library.name }}</li>
                 </ul>
                 <!--end::Breadcrumb-->
             </div>
@@ -33,18 +752,18 @@
             <!--begin::Actions-->
             <div class="d-flex align-items-center gap-2 gap-lg-3">
                 {% if request.user.is_super_admin or library.owner == request.user %}
-                    <a href="{% url 'edit_library' library.pk %}" class="btn btn-sm fw-bold btn-light">
+                    <a href="{% url 'edit_library' library.pk %}" class="btn btn-sm fw-bold btn-modern btn-edit">
                         <i class="ki-duotone ki-pencil fs-4"></i>
-                        Düzenle
+                        ✏️ Düzenle
                     </a>
-                    <a href="{% url 'delete_library' library.pk %}" class="btn btn-sm fw-bold btn-light-danger">
+                    <a href="{% url 'delete_library' library.pk %}" class="btn btn-sm fw-bold btn-modern btn-delete">
                         <i class="ki-duotone ki-trash fs-4"></i>
-                        Sil
+                        🗑️ Sil
                     </a>
                 {% endif %}
-                <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_book">
+                <a href="#" class="btn btn-sm fw-bold btn-modern btn-add" data-bs-toggle="modal" data-bs-target="#kt_modal_add_book">
                     <i class="ki-duotone ki-plus fs-2"></i>
-                    Kitap Ekle
+                    ➕ Kitap Ekle
                 </a>
             </div>
             <!--end::Actions-->
