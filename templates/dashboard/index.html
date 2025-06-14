@@ -1,0 +1,609 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | Library Management System{% endblock %}
+
+{% block content %}
+<!--begin::Row-->
+<div class="row g-5 g-xl-10 mb-5 mb-xl-10">
+    <!--begin::Col-->
+    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
+        <!--begin::Card widget 17-->
+        <div class="card card-flush h-md-50 mb-5 mb-xl-10">
+            <!--begin::Header-->
+            <div class="card-header pt-5">
+                <!--begin::Title-->
+                <div class="card-title d-flex flex-column">
+                    <!--begin::Info-->
+                    <div class="d-flex align-items-center">
+                        <!--begin::Currency-->
+                        <span class="fs-4 fw-semibold text-gray-500 me-1 align-self-start">$</span>
+                        <!--end::Currency-->
+                        <!--begin::Amount-->
+                        <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ total_books }}</span>
+                        <!--end::Amount-->
+                    </div>
+                    <!--end::Info-->
+                    <!--begin::Subtitle-->
+                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Total Books</span>
+                    <!--end::Subtitle-->
+                </div>
+                <!--end::Title-->
+            </div>
+            <!--end::Header-->
+            <!--begin::Card body-->
+            <div class="card-body pt-2 pb-4 d-flex flex-wrap align-items-center">
+                <!--begin::Chart-->
+                <div class="d-flex flex-center me-5 pt-2">
+                    <div id="kt_card_widget_17_chart" style="min-width: 70px; min-height: 70px" data-kt-size="70"
+                        data-kt-line="11"></div>
+                </div>
+                <!--end::Chart-->
+                <!--begin::Labels-->
+                <div class="d-flex flex-column content-justify-center flex-row-fluid">
+                    <!--begin::Label-->
+                    <div class="d-flex fw-semibold align-items-center">
+                        <!--begin::Bullet-->
+                        <div class="bullet w-8px h-3px rounded-2 bg-success me-3"></div>
+                        <!--end::Bullet-->
+                        <!--begin::Label-->
+                        <div class="text-gray-500 flex-grow-1 me-4">Available</div>
+                        <!--end::Label-->
+                        <!--begin::Stats-->
+                        <div class="fw-bolder text-gray-700 text-xxl-end">{{ available_books }}</div>
+                        <!--end::Stats-->
+                    </div>
+                    <!--end::Label-->
+                    <!--begin::Label-->
+                    <div class="d-flex fw-semibold align-items-center my-3">
+                        <!--begin::Bullet-->
+                        <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
+                        <!--end::Bullet-->
+                        <!--begin::Label-->
+                        <div class="text-gray-500 flex-grow-1 me-4">Borrowed</div>
+                        <!--end::Label-->
+                        <!--begin::Stats-->
+                        <div class="fw-bolder text-gray-700 text-xxl-end">{{ borrowed_books }}</div>
+                        <!--end::Stats-->
+                    </div>
+                    <!--end::Label-->
+                    <!--begin::Label-->
+                    <div class="d-flex fw-semibold align-items-center">
+                        <!--begin::Bullet-->
+                        <div class="bullet w-8px h-3px rounded-2 bg-danger me-3"></div>
+                        <!--end::Bullet-->
+                        <!--begin::Label-->
+                        <div class="text-gray-500 flex-grow-1 me-4">Reserved</div>
+                        <!--end::Label-->
+                        <!--begin::Stats-->
+                        <div class="fw-bolder text-gray-700 text-xxl-end">{{ reserved_books }}</div>
+                        <!--end::Stats-->
+                    </div>
+                    <!--end::Label-->
+                </div>
+                <!--end::Labels-->
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card widget 17-->
+        <!--begin::Card widget 7-->
+        <div class="card card-flush h-md-50 mb-xl-10">
+            <!--begin::Header-->
+            <div class="card-header pt-5">
+                <!--begin::Title-->
+                <div class="card-title d-flex flex-column">
+                    <!--begin::Amount-->
+                    <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ total_loans }}</span>
+                    <!--end::Amount-->
+                    <!--begin::Subtitle-->
+                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Active Loans</span>
+                    <!--end::Subtitle-->
+                </div>
+                <!--end::Title-->
+            </div>
+            <!--end::Header-->
+            <!--begin::Card body-->
+            <div class="card-body d-flex flex-column justify-content-end pe-0">
+                <!--begin::Title-->
+                <span class="fs-6 fw-bolder text-gray-800 d-block mb-2">Loan Status</span>
+                <!--end::Title-->
+                <!--begin::Chart-->
+                <div id="kt_card_widget_7_chart" class="min-h-auto ps-4 pe-6" style="height: 125px"></div>
+                <!--end::Chart-->
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card widget 7-->
+    </div>
+    <!--end::Col-->
+    <!--begin::Col-->
+    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
+        <!--begin::Card widget 4-->
+        <div class="card card-flush h-md-50 mb-5 mb-xl-10">
+            <!--begin::Header-->
+            <div class="card-header pt-5">
+                <!--begin::Title-->
+                <div class="card-title d-flex flex-column">
+                    <!--begin::Info-->
+                    <div class="d-flex align-items-center">
+                        <!--begin::Amount-->
+                        <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ total_libraries }}</span>
+                        <!--end::Amount-->
+                    </div>
+                    <!--end::Info-->
+                    <!--begin::Subtitle-->
+                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Total Libraries</span>
+                    <!--end::Subtitle-->
+                </div>
+                <!--end::Title-->
+            </div>
+            <!--end::Header-->
+            <!--begin::Card body-->
+            <div class="card-body pt-2 pb-4 d-flex align-items-center">
+                <!--begin::Chart-->
+                <div class="d-flex flex-center me-5 pt-2">
+                    <div id="kt_card_widget_4_chart" style="min-width: 70px; min-height: 70px" data-kt-size="70"
+                        data-kt-line="11"></div>
+                </div>
+                <!--end::Chart-->
+                <!--begin::Labels-->
+                <div class="d-flex flex-column content-justify-center flex-row-fluid">
+                    <!--begin::Label-->
+                    <div class="d-flex fw-semibold align-items-center my-3">
+                        <!--begin::Bullet-->
+                        <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
+                        <!--end::Bullet-->
+                        <!--begin::Label-->
+                        <div class="text-gray-500 flex-grow-1 me-4">Your Libraries</div>
+                        <!--end::Label-->
+                        <!--begin::Stats-->
+                        <div class="fw-bolder text-gray-700 text-xxl-end">{{ user_libraries }}</div>
+                        <!--end::Stats-->
+                    </div>
+                    <!--end::Label-->
+                    <!--begin::Label-->
+                    <div class="d-flex fw-semibold align-items-center">
+                        <!--begin::Bullet-->
+                        <div class="bullet w-8px h-3px rounded-2 bg-success me-3"></div>
+                        <!--end::Bullet-->
+                        <!--begin::Label-->
+                        <div class="text-gray-500 flex-grow-1 me-4">Books in Your Libraries</div>
+                        <!--end::Label-->
+                        <!--begin::Stats-->
+                        <div class="fw-bolder text-gray-700 text-xxl-end">{{ user_library_books }}</div>
+                        <!--end::Stats-->
+                    </div>
+                    <!--end::Label-->
+                </div>
+                <!--end::Labels-->
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card widget 4-->
+        <!--begin::Card widget 5-->
+        <div class="card card-flush h-md-50 mb-xl-10">
+            <!--begin::Header-->
+            <div class="card-header pt-5">
+                <!--begin::Title-->
+                <div class="card-title d-flex flex-column">
+                    <!--begin::Info-->
+                    <div class="d-flex align-items-center">
+                        <!--begin::Amount-->
+                        <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ pending_requests }}</span>
+                        <!--end::Amount-->
+                    </div>
+                    <!--end::Info-->
+                    <!--begin::Subtitle-->
+                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Pending Book Requests</span>
+                    <!--end::Subtitle-->
+                </div>
+                <!--end::Title-->
+            </div>
+            <!--end::Header-->
+            <!--begin::Card body-->
+            <div class="card-body d-flex align-items-end pt-0">
+                <!--begin::Progress-->
+                <div class="d-flex align-items-center flex-column mt-3 w-100">
+                    <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                        <span class="fw-bolder fs-6 text-dark">Book Request Success Rate</span>
+                        <span class="fw-bold fs-6 text-gray-500">{{ request_success_rate }}%</span>
+                    </div>
+                    <div class="h-8px mx-3 w-100 bg-light-success rounded">
+                        <div class="bg-success rounded h-8px" role="progressbar" style="width: {{ request_success_rate }}%;" aria-valuenow="{{ request_success_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <!--end::Progress-->
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card widget 5-->
+    </div>
+    <!--end::Col-->
+    <!--begin::Col-->
+    <div class="col-xxl-6">
+        <!--begin::List widget 10-->
+        <div class="card card-flush h-md-100">
+            <!--begin::Header-->
+            <div class="card-header pt-7">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold text-gray-800">Recent Book Activity</span>
+                    <span class="text-gray-500 mt-1 fw-semibold fs-6">Books, Loans, and Returns</span>
+                </h3>
+                <!--end::Title-->
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                    <a href="{% url 'books:list' %}" class="btn btn-sm btn-light">View All Books</a>
+                </div>
+                <!--end::Toolbar-->
+            </div>
+            <!--end::Header-->
+            <!--begin::Body-->
+            <div class="card-body pt-4">
+                {% for activity in recent_activities %}
+                <!--begin::Item-->
+                <div class="d-flex flex-stack">
+                    <!--begin::Symbol-->
+                    <div class="symbol symbol-40px me-4">
+                        <div class="symbol-label fs-2 fw-semibold bg-{{ activity.color }} text-inverse-{{ activity.color }}">{{ activity.title|first }}</div>
+                    </div>
+                    <!--end::Symbol-->
+                    <!--begin::Section-->
+                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                        <!--begin:Author-->
+                        <div class="flex-grow-1 me-2">
+                            <a href="{% url 'books:detail' activity.id %}" class="text-gray-800 text-hover-primary fs-6 fw-bold">{{ activity.title }}</a>
+                            <span class="text-muted fw-semibold d-block fs-7">{{ activity.author }}</span>
+                        </div>
+                        <!--end:Author-->
+                        <!--begin:Info-->
+                        <div class="d-flex align-items-center">
+                            <span class="badge badge-light-{{ activity.color }} fs-8 fw-bold">{{ activity.status }}</span>
+                        </div>
+                        <!--end:Info-->
+                    </div>
+                    <!--end::Section-->
+                </div>
+                <!--end::Item-->
+                <!--begin::Separator-->
+                <div class="separator separator-dashed my-3"></div>
+                <!--end::Separator-->
+                {% endfor %}
+            </div>
+            <!--end::Body-->
+        </div>
+        <!--end::List widget 10-->
+    </div>
+    <!--end::Col-->
+</div>
+<!--end::Row-->
+
+<!--begin::Row-->
+<div class="row g-5 g-xl-10 mb-5 mb-xl-10">
+    <!--begin::Col-->
+    <div class="col-xl-8">
+        <!--begin::Table Widget 5-->
+        <div class="card card-flush h-xl-100">
+            <!--begin::Card header-->
+            <div class="card-header pt-7">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold text-dark">Most Popular Books</span>
+                    <span class="text-gray-500 mt-1 fw-semibold fs-6">Books with most loans</span>
+                </h3>
+                <!--end::Title-->
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                    <a href="{% url 'books:list' %}" class="btn btn-sm btn-light">View All Books</a>
+                </div>
+                <!--end::Toolbar-->
+            </div>
+            <!--end::Card header-->
+            <!--begin::Card body-->
+            <div class="card-body">
+                <!--begin::Table-->
+                <table class="table align-middle table-row-dashed fs-6 gy-3" id="kt_table_widget_5_table">
+                    <!--begin::Table head-->
+                    <thead>
+                        <!--begin::Table row-->
+                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                            <th class="min-w-150px">Book</th>
+                            <th class="text-end pe-3 min-w-100px">Library</th>
+                            <th class="text-end pe-3 min-w-100px">Status</th>
+                            <th class="text-end pe-3 min-w-100px">Total Loans</th>
+                            <th class="text-end pe-0 min-w-75px">Actions</th>
+                        </tr>
+                        <!--end::Table row-->
+                    </thead>
+                    <!--end::Table head-->
+                    <!--begin::Table body-->
+                    <tbody class="fw-bold text-gray-600">
+                        {% for book in popular_books %}
+                        <tr>
+                            <td class="d-flex align-items-center">
+                                <div class="symbol symbol-50px me-3">
+                                    {% if book.cover_image %}
+                                    <img src="{{ book.cover_image.url }}" class="" alt="Book Cover" />
+                                    {% else %}
+                                    <div class="symbol-label fs-2 fw-semibold bg-primary text-inverse-primary">{{ book.title|first }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex justify-content-start flex-column">
+                                    <a href="{% url 'books:detail' book.id %}" class="text-dark fw-bold text-hover-primary mb-1 fs-6">{{ book.title }}</a>
+                                    <span class="text-muted fw-semibold text-muted d-block fs-7">{{ book.author }}</span>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'libraries:detail' book.library.id %}" class="text-dark fw-bold text-hover-primary d-block mb-1 fs-6">{{ book.library.name }}</a>
+                            </td>
+                            <td class="text-end">
+                                <span class="badge badge-light-{{ book.status_color }} fs-7 fw-bold">{{ book.get_status_display }}</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="text-dark fw-bold d-block mb-1 fs-6">{{ book.loan_count }}</span>
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'books:detail' book.id %}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                                    <i class="ki-outline ki-eye fs-2"></i>
+                                </a>
+                                {% if book.status == 'available' %}
+                                <a href="{% url 'loans:borrow' book.id %}" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1">
+                                    <i class="ki-outline ki-arrow-right fs-2"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <!--end::Table body-->
+                </table>
+                <!--end::Table-->
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Table Widget 5-->
+    </div>
+    <!--end::Col-->
+    <!--begin::Col-->
+    <div class="col-xl-4">
+        <!--begin::List widget 11-->
+        <div class="card card-flush h-xl-100">
+            <!--begin::Header-->
+            <div class="card-header pt-7 mb-5">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold text-gray-800">Your Book Loans</span>
+                    <span class="text-gray-500 mt-1 fw-semibold fs-6">{{ active_loans }} active loans</span>
+                </h3>
+                <!--end::Title-->
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                    <a href="{% url 'loans:my_loans' %}" class="btn btn-sm btn-light">View All</a>
+                </div>
+                <!--end::Toolbar-->
+            </div>
+            <!--end::Header-->
+            <!--begin::Body-->
+            <div class="card-body pt-4">
+                {% for loan in user_loans %}
+                <!--begin::Item-->
+                <div class="d-flex flex-stack">
+                    <!--begin::Content-->
+                    <div class="d-flex align-items-center me-5">
+                        <!--begin::Symbol-->
+                        <div class="symbol symbol-40px me-4">
+                            {% if loan.book.cover_image %}
+                            <img src="{{ loan.book.cover_image.url }}" class="" alt="Book Cover" />
+                            {% else %}
+                            <div class="symbol-label fs-2 fw-semibold bg-{{ loan.status_color }} text-inverse-{{ loan.status_color }}">{{ loan.book.title|first }}</div>
+                            {% endif %}
+                        </div>
+                        <!--end::Symbol-->
+                        <!--begin::Section-->
+                        <div class="me-2">
+                            <a href="{% url 'books:detail' loan.book.id %}" class="text-gray-800 text-hover-primary fs-6 fw-bold">{{ loan.book.title }}</a>
+                            <span class="text-gray-500 fw-semibold d-block fs-7">{{ loan.book.author }}</span>
+                        </div>
+                        <!--end::Section-->
+                    </div>
+                    <!--end::Content-->
+                    <!--begin::Wrapper-->
+                    <div class="d-flex align-items-center">
+                        <!--begin::Number-->
+                        <span class="text-gray-800 fw-bold fs-6 me-3">Due: {{ loan.due_date|date:"d M" }}</span>
+                        <!--end::Number-->
+                        <!--begin::Info-->
+                        <div class="m-0">
+                            <span class="badge badge-light-{{ loan.status_color }} fs-8 fw-bold">{{ loan.get_status_display }}</span>
+                        </div>
+                        <!--end::Info-->
+                    </div>
+                    <!--end::Wrapper-->
+                </div>
+                <!--end::Item-->
+                <!--begin::Separator-->
+                <div class="separator separator-dashed my-3"></div>
+                <!--end::Separator-->
+                {% endfor %}
+            </div>
+            <!--end::Body-->
+        </div>
+        <!--end::List widget 11-->
+    </div>
+    <!--end::Col-->
+</div>
+<!--end::Row-->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize charts and other dashboard elements
+    $(document).ready(function () {
+        // Book Status Chart
+        var el = document.getElementById('kt_card_widget_17_chart');
+        if (el) {
+            var options = {
+                size: parseInt(el.getAttribute('data-kt-size')),
+                lineWidth: parseInt(el.getAttribute('data-kt-line')),
+                rotate: parseInt(el.getAttribute('data-kt-rotate')),
+                color: el.getAttribute('data-kt-color') || '#3E97FF'
+            };
+            
+            var canvas = document.createElement('canvas');
+            var span = document.createElement('span');
+                
+            if (typeof(G_vmlCanvasManager) !== 'undefined') {
+                G_vmlCanvasManager.initElement(canvas);
+            }
+                
+            var ctx = canvas.getContext('2d');
+            canvas.width = canvas.height = options.size;
+                
+            el.appendChild(span);
+            el.appendChild(canvas);
+                
+            ctx.translate(options.size / 2, options.size / 2); // change center
+            ctx.rotate((-1 / 2 + options.rotate / 180) * Math.PI); // rotate -90 deg
+                
+            var radius = (options.size - options.lineWidth) / 2;
+                
+            // Draw available books arc
+            var availablePercentage = {{ available_percentage|default:0 }} / 100;
+            var drawArc = function(color, lineWidth, percentage) {
+                percentage = Math.min(Math.max(0, percentage || 1), 1);
+                ctx.beginPath();
+                ctx.arc(0, 0, radius, 0, Math.PI * 2 * percentage, false);
+                ctx.strokeStyle = color;
+                ctx.lineCap = 'round'; // butt, round or square
+                ctx.lineWidth = lineWidth;
+                ctx.stroke();
+            };
+                
+            // Draw background arc
+            drawArc('#E4E6EF', options.lineWidth, 100 / 100);
+            // Draw success arc
+            drawArc('#50CD89', options.lineWidth, availablePercentage);
+        }
+        
+        // Loan Status Chart
+        var el2 = document.getElementById('kt_card_widget_7_chart');
+        if (el2) {
+            var options2 = {
+                series: [{
+                    name: 'Active Loans',
+                    data: {{ loan_data|safe }}
+                }],
+                chart: {
+                    type: 'area',
+                    height: 150,
+                    toolbar: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: false
+                    },
+                    sparkline: {
+                        enabled: true
+                    }
+                },
+                plotOptions: {},
+                legend: {
+                    show: false
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                fill: {
+                    type: 'solid',
+                    opacity: 1
+                },
+                stroke: {
+                    curve: 'smooth',
+                    show: true,
+                    width: 3,
+                    colors: ['#20D489']
+                },
+                xaxis: {
+                    categories: {{ loan_dates|safe }},
+                    axisBorder: {
+                        show: false,
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                    labels: {
+                        show: false,
+                        style: {
+                            colors: '#A1A5B7',
+                            fontSize: '12px'
+                        }
+                    },
+                    crosshairs: {
+                        show: false,
+                        position: 'front',
+                        stroke: {
+                            color: '#E4E6EF',
+                            width: 1,
+                            dashArray: 3
+                        }
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                },
+                yaxis: {
+                    min: 0,
+                    max: {{ max_loan_value|default:10 }},
+                    labels: {
+                        show: false,
+                        style: {
+                            colors: '#A1A5B7',
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                states: {
+                    normal: {
+                        filter: {
+                            type: 'none',
+                            value: 0
+                        }
+                    },
+                    hover: {
+                        filter: {
+                            type: 'none',
+                            value: 0
+                        }
+                    },
+                    active: {
+                        allowMultipleDataPointsSelection: false,
+                        filter: {
+                            type: 'none',
+                            value: 0
+                        }
+                    }
+                },
+                tooltip: {
+                    style: {
+                        fontSize: '12px'
+                    },
+                    y: {
+                        formatter: function (val) {
+                            return val + " loans"
+                        }
+                    }
+                },
+                colors: ['#20D489'],
+                markers: {
+                    colors: ['#20D489'],
+                    strokeColor: ['#20D489'],
+                    strokeWidth: 3
+                }
+            };
+    
+            var chart = new ApexCharts(el2, options2);
+            chart.render();
+        }
+    });
+</script>
+{% endblock %}

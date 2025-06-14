@@ -1,0 +1,122 @@
+{% load static %}
+<!--begin::Sidebar-->
+<div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar"
+    data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="250px"
+    data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
+    <!--begin::Sidebar primary-->
+    <div class="app-sidebar-primary">
+        <!--begin::Logo-->
+        <div class="app-sidebar-logo d-none d-md-flex flex-center pt-10 mb-5" id="kt_app_sidebar_logo">
+            <!--begin::Logo image-->
+            <a href="{% url 'dashboard' %}">
+                <img alt="Logo" src="{% static 'media/logos/logo.svg' %}" class="h-30px theme-light-show" />
+                <img alt="Logo" src="{% static 'media/logos/logo-dark.svg' %}" class="h-30px theme-dark-show" />
+            </a>
+            <!--end::Logo image-->
+        </div>
+        <!--end::Logo-->
+        <!--begin::Primary menu-->
+        <div class="app-sidebar-menu flex-grow-1 hover-scroll-y scroll-ms my-5" id="kt_aside_menu_wrapper"
+            data-kt-scroll="true" data-kt-scroll-height="auto"
+            data-kt-scroll-dependencies="#kt_app_sidebar_logo, #kt_app_sidebar_footer"
+            data-kt-scroll-wrappers="#kt_app_sidebar_menu" data-kt-scroll-offset="5px">
+            <!--begin::Menu-->
+            <div id="kt_aside_menu"
+                class="menu menu-column menu-title-gray-600 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-semibold fs-6"
+                data-kt-menu="true">
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-category fs-2"></i>
+                        </span>
+                        <span class="menu-title">Dashboard</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'libraries' %}active{% endif %}" href="{% url 'libraries:list' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-home-2 fs-2"></i>
+                        </span>
+                        <span class="menu-title">Libraries</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'books' %}active{% endif %}" href="{% url 'books:list' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-book fs-2"></i>
+                        </span>
+                        <span class="menu-title">Books</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'loans' %}active{% endif %}" href="{% url 'loans:list' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-abstract-35 fs-2"></i>
+                        </span>
+                        <span class="menu-title">Loans</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'requests' %}active{% endif %}" href="{% url 'books:requests' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-notification-status fs-2"></i>
+                        </span>
+                        <span class="menu-title">Book Requests</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                {% if user.is_library_admin or user.is_super_admin %}
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'manage_loans' %}active{% endif %}" href="{% url 'loans:manage' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-setting-2 fs-2"></i>
+                        </span>
+                        <span class="menu-title">Manage Loans</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                {% endif %}
+                {% if user.is_super_admin %}
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'users' %}active{% endif %}" href="{% url 'accounts:users' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-profile-user fs-2"></i>
+                        </span>
+                        <span class="menu-title">Users</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                {% endif %}
+            </div>
+            <!--end::Menu-->
+        </div>
+        <!--end::Primary menu-->
+    </div>
+    <!--end::Sidebar primary-->
+</div>
+<!--end::Sidebar-->
