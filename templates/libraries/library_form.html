@@ -27,29 +27,76 @@
             </div>
             {% endif %}
             
-            <!--begin::Input group-->
-            <div class="fv-row mb-7">
-                <label class="required fw-semibold fs-6 mb-2">Kütüphane Adı</label>
-                {{ form.name }}
-                {% if form.name.errors %}
-                <div class="fv-plugins-message-container invalid-feedback">
-                    {{ form.name.errors }}
+            <div class="row">
+                <div class="col-md-6">
+                    <!--begin::Input group-->
+                    <div class="fv-row mb-7">
+                        <label class="required fw-semibold fs-6 mb-2">Kütüphane Adı</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                        <div class="fv-plugins-message-container invalid-feedback">
+                            {{ form.name.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="text-muted fs-7">Kütüphanenin tam adını girin.</div>
+                    </div>
+                    <!--end::Input group-->
+                    
+                    <!--begin::Input group-->
+                    <div class="fv-row mb-7">
+                        <label class="fw-semibold fs-6 mb-2">Telefon</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                        <div class="fv-plugins-message-container invalid-feedback">
+                            {{ form.phone.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="text-muted fs-7">İletişim için telefon numarası (isteğe bağlı).</div>
+                    </div>
+                    <!--end::Input group-->
+                    
+                    <!--begin::Input group-->
+                    <div class="fv-row mb-7">
+                        <label class="fw-semibold fs-6 mb-2">E-posta</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <div class="fv-plugins-message-container invalid-feedback">
+                            {{ form.email.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="text-muted fs-7">İletişim için e-posta adresi (isteğe bağlı).</div>
+                    </div>
+                    <!--end::Input group-->
                 </div>
-                {% endif %}
-            </div>
-            <!--end::Input group-->
-            
-            <!--begin::Input group-->
-            <div class="fv-row mb-7">
-                <label class="required fw-semibold fs-6 mb-2">Konum</label>
-                {{ form.location }}
-                {% if form.location.errors %}
-                <div class="fv-plugins-message-container invalid-feedback">
-                    {{ form.location.errors }}
+                
+                <div class="col-md-6">
+                    <!--begin::Input group-->
+                    <div class="fv-row mb-7">
+                        <label class="fw-semibold fs-6 mb-2">Adres</label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                        <div class="fv-plugins-message-container invalid-feedback">
+                            {{ form.address.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="text-muted fs-7">Kütüphanenin tam adresini girin.</div>
+                    </div>
+                    <!--end::Input group-->
+                    
+                    <!--begin::Input group-->
+                    <div class="fv-row mb-7">
+                        <label class="fw-semibold fs-6 mb-2">Yöneticiler</label>
+                        {{ form.admins }}
+                        {% if form.admins.errors %}
+                        <div class="fv-plugins-message-container invalid-feedback">
+                            {{ form.admins.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="text-muted fs-7">Kütüphaneyi yönetecek kullanıcıları seçin (isteğe bağlı).</div>
+                    </div>
+                    <!--end::Input group-->
                 </div>
-                {% endif %}
             </div>
-            <!--end::Input group-->
             
             <!--begin::Input group-->
             <div class="fv-row mb-7">
@@ -60,14 +107,19 @@
                     {{ form.description.errors }}
                 </div>
                 {% endif %}
+                <div class="text-muted fs-7">Kütüphane hakkında detaylı bilgi verin.</div>
             </div>
             <!--end::Input group-->
             
             <!--begin::Actions-->
             <div class="text-center pt-15">
-                <a href="{% url 'libraries:list' %}" class="btn btn-light me-3">İptal</a>
+                <a href="{% url 'libraries:list' %}" class="btn btn-light me-3">
+                    <i class="fas fa-arrow-left"></i> İptal
+                </a>
                 <button type="submit" class="btn btn-primary">
-                    <span class="indicator-label">Kaydet</span>
+                    <span class="indicator-label">
+                        <i class="fas fa-save"></i> Kaydet
+                    </span>
                 </button>
             </div>
             <!--end::Actions-->
@@ -77,4 +129,16 @@
     <!--end::Card body-->
 </div>
 <!--end::Card-->
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+    // Select2 initialization for admins selection
+    $(document).ready(function() {
+        $('select[name="admins"]').select2({
+            placeholder: 'Yöneticileri seçin',
+            allowClear: true
+        });
+    });
+</script>
 {% endblock %}

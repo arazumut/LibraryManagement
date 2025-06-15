@@ -29,7 +29,13 @@
                                 <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">{{ library.name }}</a>
                                 <!--end::Name-->
                                 <!--begin::Position-->
-                                <div class="fs-5 fw-semibold text-muted mb-6">{{ library.location }}</div>
+                                <div class="fs-5 fw-semibold text-muted mb-6">
+                                    {% if library.address %}
+                                        <i class="ki-outline ki-geolocation fs-5 me-1"></i>{{ library.address|truncatechars:50 }}
+                                    {% else %}
+                                        Kütüphane
+                                    {% endif %}
+                                </div>
                                 <!--end::Position-->
                                 <!--begin::Info-->
                                 <div class="d-flex flex-wrap flex-center">
@@ -60,7 +66,7 @@
                                         <i class="ki-outline ki-down fs-3"></i>
                                     </span>
                                 </div>
-                                {% if user.is_staff or library.created_by == user %}
+                                {% if user.is_staff or library.owner == user %}
                                 <a href="{% url 'libraries:edit' library.id %}" class="btn btn-sm btn-light-primary">Düzenle</a>
                                 {% endif %}
                             </div>
@@ -73,14 +79,48 @@
                                     <div class="fw-bold mt-5">Kütüphane Açıklaması</div>
                                     <div class="text-gray-600">{{ library.description|default:"Açıklama bulunmuyor" }}</div>
                                     <!--end::Details item-->
+                                    
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Adres</div>
+                                    <div class="text-gray-600">{{ library.address|default:"Adres belirtilmemiş" }}</div>
+                                    <!--end::Details item-->
+                                    
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">İletişim Bilgileri</div>
+                                    <div class="text-gray-600">
+                                        {% if library.phone or library.email %}
+                                            {% if library.phone %}
+                                            <div><i class="ki-outline ki-phone fs-4 me-2"></i> {{ library.phone }}</div>
+                                            {% endif %}
+                                            {% if library.email %}
+                                            <div><i class="ki-outline ki-sms fs-4 me-2"></i> {{ library.email }}</div>
+                                            {% endif %}
+                                        {% else %}
+                                            İletişim bilgisi belirtilmemiş
+                                        {% endif %}
+                                    </div>
+                                    <!--end::Details item-->
+                                    
                                     <!--begin::Details item-->
                                     <div class="fw-bold mt-5">Oluşturulma Tarihi</div>
                                     <div class="text-gray-600">{{ library.created_at|date:"d M Y" }}</div>
                                     <!--end::Details item-->
+                                    
                                     <!--begin::Details item-->
-                                    <div class="fw-bold mt-5">Oluşturan</div>
-                                    <div class="text-gray-600">{{ library.created_by.get_full_name }}</div>
+                                    <div class="fw-bold mt-5">Kütüphane Sahibi</div>
+                                    <div class="text-gray-600">{{ library.owner.get_full_name }}</div>
                                     <!--end::Details item-->
+                                    
+                                    {% if library.admins.all %}
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Yöneticiler</div>
+                                    <div class="text-gray-600">
+                                        {% for admin in library.admins.all %}
+                                            <span class="badge badge-light-primary me-2 mb-1">{{ admin.get_full_name }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <!--end::Details item-->
+                                    {% endif %}
                                 </div>
                             </div>
                             <!--end::Details content-->
@@ -103,7 +143,7 @@
                             <!--end::Card title-->
                             <!--begin::Card toolbar-->
                             <div class="card-toolbar">
-                                {% if user.is_staff or library.created_by == user %}
+                                {% if user.is_staff or library.owner == user %}
                                 <a href="{% url 'books:create' %}?library={{ library.id }}" class="btn btn-sm btn-primary">
                                     <i class="ki-outline ki-plus fs-3"></i>Kitap Ekle
                                 </a>
@@ -155,7 +195,7 @@
                                                 <i class="ki-outline ki-arrow-right fs-2"></i>
                                             </a>
                                             {% endif %}
-                                            {% if user.is_staff or library.created_by == user %}
+                                            {% if user.is_staff or library.owner == user %}
                                             <a href="{% url 'books:edit' book.id %}" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm me-1">
                                                 <i class="ki-outline ki-pencil fs-2"></i>
                                             </a>
@@ -194,11 +234,43 @@
 <script>
     // DataTable initialization
     $(document).ready(function() {
-        $("#kt_library_books_table").DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-            }
-        });
+        // DataTables uyarılarını konsola yazdırma ayarı
+        $.fn.dataTable.ext.errMode = function(settings, helpPage, message) {
+            console.log("DataTables Uyarı:", message);
+            alert("DataTables Uyarısı: " + message);
+        };
+        
+        try {
+            $("#kt_library_books_table").DataTable({
+                "language": {
+                    "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
+                    "zeroRecords": "Kayıt bulunamadı",
+                    "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                    "infoEmpty": "Kayıt bulunamadı",
+                    "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
+                    "search": "Ara:",
+                    "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    }
+                },
+                "order": [],
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "deferRender": true,
+                "initComplete": function(settings, json) {
+                    console.log("DataTable başarıyla yüklendi:", settings);
+                }
+            });
+        } catch (e) {
+            // Hataları konsola yazdır ve alert olarak göster
+            console.log("DataTables Uyarı/Hata:", e);
+            alert("DataTables Hata: " + e.message);
+        }
     });
 </script>
 {% endblock %}

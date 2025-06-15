@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Library
+from .forms import LibraryForm
 
 @login_required
 def library_list(request):
@@ -26,10 +28,16 @@ def library_detail(request, library_id):
 @login_required
 def library_create(request):
     if request.method == 'POST':
-        # Add form processing logic here
-        pass
+        form = LibraryForm(request.POST)
+        if form.is_valid():
+            library = form.save(commit=False)
+            library.owner = request.user
+            library.save()
+            form.save_m2m()  # Save many-to-many relationships (admins)
+            messages.success(request, f"Kütüphane '{library.name}' başarıyla oluşturuldu.")
+            return redirect('libraries:detail', library_id=library.id)
     else:
-        form = None  # Replace with actual form
+        form = LibraryForm()
     
     context = {
         'active_menu': 'libraries',
@@ -42,10 +50,13 @@ def library_edit(request, library_id):
     library = get_object_or_404(Library, id=library_id)
     
     if request.method == 'POST':
-        # Add form processing logic here
-        pass
+        form = LibraryForm(request.POST, instance=library)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Kütüphane '{library.name}' başarıyla güncellendi.")
+            return redirect('libraries:detail', library_id=library.id)
     else:
-        form = None  # Replace with actual form
+        form = LibraryForm(instance=library)
     
     context = {
         'active_menu': 'libraries',
