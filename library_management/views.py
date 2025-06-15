@@ -1,115 +1,114 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
 import json
-import random
 from datetime import datetime, timedelta
+from django.utils import timezone
 
+from books.models import Book, BookRequest
+from libraries.models import Library
+from loans.models import Loan
+
+@login_required
 def dashboard(request):
-    # Create dummy data for dashboard
-    # Create dummy data for dashboard
-    
     # Book statistics
-    total_books = 8
-    available_books = 5
-    borrowed_books = 2
-    reserved_books = 1
+    total_books = Book.objects.count()
+    available_books = Book.objects.filter(status='available').count()
+    borrowed_books = Book.objects.filter(status='borrowed').count()
+    reserved_books = Book.objects.filter(status='reserved').count()
     
     # Calculate percentages
-    available_percentage = int(available_books / total_books * 100)
+    available_percentage = int(available_books / total_books * 100) if total_books > 0 else 0
     
     # Libraries
-    total_libraries = 3
-    user_libraries = 1
-    user_library_books = 3
+    total_libraries = Library.objects.count()
+    user_libraries = Library.objects.filter(Q(owner=request.user) | Q(admins=request.user)).distinct().count()
+    
+    # Count books in user's libraries
+    user_library_ids = Library.objects.filter(Q(owner=request.user) | Q(admins=request.user)).values_list('id', flat=True)
+    user_library_books = Book.objects.filter(library_id__in=user_library_ids).count()
     
     # Loans
-    total_loans = 2
-    active_loans = 1
+    total_loans = Loan.objects.filter(status__in=['active', 'overdue']).count()
+    active_loans = Loan.objects.filter(borrower=request.user, status__in=['active', 'overdue']).count()
     
     # Loan trend data - last 7 days
-    today = datetime.now().date()
+    today = timezone.now().date()
     loan_dates = [(today - timedelta(days=i)).strftime('%d %b') for i in range(6, -1, -1)]
-    loan_data = [random.randint(0, 3) for _ in range(7)]
-    max_loan_value = max(loan_data) + 2
     
-    # Requests
-    pending_requests = 2
-    request_success_rate = 75
+    # Get loan data for the past 7 days
+    loan_data = []
+    for i in range(6, -1, -1):
+        date = today - timedelta(days=i)
+        loan_count = Loan.objects.filter(loan_date__date=date).count()
+        loan_data.append(loan_count)
     
-    # Recent book activity
-    recent_activities = [
-        {
-            'id': 1,
-            'title': 'The Great Gatsby',
-            'author': 'F. Scott Fitzgerald',
-            'status': 'Available',
-            'color': 'success'
-        },
-        {
-            'id': 2,
-            'title': 'To Kill a Mockingbird',
-            'author': 'Harper Lee',
-            'status': 'Borrowed',
-            'color': 'primary'
-        },
-        {
-            'id': 3,
-            'title': '1984',
-            'author': 'George Orwell',
-            'status': 'Available',
-            'color': 'success'
-        },
-        {
-            'id': 4,
-            'title': 'Pride and Prejudice',
-            'author': 'Jane Austen',
-            'status': 'Available',
-            'color': 'success'
-        },
-        {
-            'id': 5,
-            'title': 'The Hobbit',
-            'author': 'J.R.R. Tolkien',
-            'status': 'Reserved',
-            'color': 'warning'
+    max_loan_value = max(loan_data) + 2 if loan_data and max(loan_data) > 0 else 5
+    
+    # Book requests
+    pending_requests = BookRequest.objects.filter(status='pending').count()
+    
+    # Calculate success rate (approved requests / total non-pending requests)
+    total_completed_requests = BookRequest.objects.exclude(status='pending').count()
+    approved_requests = BookRequest.objects.filter(status='approved').count()
+    request_success_rate = int((approved_requests / total_completed_requests) * 100) if total_completed_requests > 0 else 0
+    
+    # Recent book activity - most recently updated books
+    recent_books = Book.objects.order_by('-updated_at')[:5]
+    recent_activities = []
+    
+    for book in recent_books:
+        # Get status color based on book status
+        color_map = {
+            'available': 'success',
+            'borrowed': 'primary',
+            'reserved': 'warning',
+            'maintenance': 'danger'
         }
-    ]
+        color = color_map.get(book.status, 'primary')
+        
+        recent_activities.append({
+            'id': book.id,
+            'title': book.title,
+            'author': book.author,
+            'status': dict(Book.STATUS_CHOICES).get(book.status),
+            'color': color
+        })
     
-    # Popular books
-    class DummyBook:
-        def __init__(self, id, title, author, library_name, library_id, status, status_color, loan_count):
-            self.id = id
-            self.title = title
-            self.author = author
-            self.library = type('obj', (object,), {'name': library_name, 'id': library_id})
-            self.status = status
-            self.status_color = status_color
-            self.loan_count = loan_count
-            self.get_status_display = lambda: status.title()
+    # Popular books - books with the most loans
+    # Manually create a list of book data with loan count
+    popular_books_query = Book.objects.all().order_by('-id')[:5]  # Temporary get some books
     
-    popular_books = [
-        DummyBook(1, 'The Great Gatsby', 'F. Scott Fitzgerald', 'Main Library', 1, 'available', 'success', 15),
-        DummyBook(7, 'Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', 'Science Library', 3, 'borrowed', 'primary', 12),
-        DummyBook(2, 'To Kill a Mockingbird', 'Harper Lee', 'Main Library', 1, 'borrowed', 'primary', 10),
-        DummyBook(6, 'A Brief History of Time', 'Stephen Hawking', 'Science Library', 3, 'available', 'success', 8),
-        DummyBook(3, '1984', 'George Orwell', 'Main Library', 1, 'available', 'success', 7)
-    ]
+    # Get loan counts for these books
+    book_loan_counts = {}
+    for book in popular_books_query:
+        book_loan_counts[book.id] = book.loans.count()
     
-    # User loans
-    class DummyLoan:
-        def __init__(self, book_id, book_title, book_author, due_date, status, status_color):
-            self.book = type('obj', (object,), {'id': book_id, 'title': book_title, 'author': book_author, 'cover_image': None})
-            self.due_date = due_date
-            self.status = status
-            self.status_color = status_color
-            self.get_status_display = lambda: status.title()
+    # Sort books by loan count
+    sorted_book_ids = sorted(book_loan_counts.keys(), key=lambda x: book_loan_counts[x], reverse=True)
     
-    user_loans = [
-        DummyLoan(2, 'To Kill a Mockingbird', 'Harper Lee', datetime.now() + timedelta(days=7), 'active', 'primary'),
-        DummyLoan(7, 'Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', datetime.now() + timedelta(days=3), 'active', 'primary'),
-        DummyLoan(4, 'Pride and Prejudice', 'Jane Austen', datetime.now() - timedelta(days=3), 'returned', 'success'),
-        DummyLoan(3, '1984', 'George Orwell', datetime.now() - timedelta(days=5), 'returned', 'success'),
-        DummyLoan(6, 'A Brief History of Time', 'Stephen Hawking', datetime.now() - timedelta(days=7), 'returned', 'success')
-    ]
+    # Create a list of books with loan count for template
+    popular_books = []
+    for book_id in sorted_book_ids:
+        book = next((b for b in popular_books_query if b.id == book_id), None)
+        if book:
+            popular_books.append({
+                'id': book.id,
+                'title': book.title,
+                'author': book.author,
+                'library': book.library,
+                'status': book.status,
+                'status_color': book.status_color,
+                'get_status_display': book.get_status_display(),
+                'loan_count': book_loan_counts[book.id],
+                'cover_image': book.cover_image
+            })
+    
+    # User's active loans
+    user_loans = Loan.objects.filter(
+        borrower=request.user,
+        status__in=['active', 'overdue']
+    ).order_by('due_date')[:5]
     
     context = {
         'active_menu': 'dashboard',
