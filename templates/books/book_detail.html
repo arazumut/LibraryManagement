@@ -199,11 +199,40 @@
 <script>
     // DataTable initialization
     $(document).ready(function() {
-        $("#kt_book_loans_table").DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-            }
-        });
+        // DataTables uyarılarını konsola yazdırma ayarı
+        $.fn.dataTable.ext.errMode = function(settings, helpPage, message) {
+            console.log("DataTables Uyarı:", message);
+        };
+        
+        try {
+            $("#kt_book_loans_table").DataTable({
+                "language": {
+                    "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
+                    "zeroRecords": "Kayıt bulunamadı",
+                    "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                    "infoEmpty": "Kayıt bulunamadı",
+                    "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
+                    "search": "Ara:",
+                    "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    }
+                },
+                "order": [],
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "initComplete": function(settings, json) {
+                    console.log("DataTable başarıyla yüklendi:", settings);
+                }
+            });
+        } catch (e) {
+            // Hataları konsola yazdır
+            console.log("DataTables Uyarı/Hata (Kitap Ödünç):", e);
+        }
     });
 </script>
 {% endblock %}
