@@ -1,0 +1,209 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }} | Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block content %}
+<!--begin::Content-->
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-xxl">
+            <!--begin::Layout-->
+            <div class="d-flex flex-column flex-xl-row">
+                <!--begin::Sidebar-->
+                <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
+                    <!--begin::Card-->
+                    <div class="card mb-5 mb-xl-8">
+                        <!--begin::Card body-->
+                        <div class="card-body pt-15">
+                            <!--begin::Summary-->
+                            <div class="d-flex flex-center flex-column mb-5">
+                                <!--begin::Avatar-->
+                                <div class="symbol symbol-150px symbol-circle mb-7">
+                                    {% if book.cover_image %}
+                                    <img src="{{ book.cover_image.url }}" alt="Book Cover" />
+                                    {% else %}
+                                    <div class="symbol-label fs-2 fw-semibold bg-primary text-inverse-primary">{{ book.title|first }}</div>
+                                    {% endif %}
+                                </div>
+                                <!--end::Avatar-->
+                                <!--begin::Name-->
+                                <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">{{ book.title }}</a>
+                                <!--end::Name-->
+                                <!--begin::Position-->
+                                <div class="fs-5 fw-semibold text-muted mb-6">{{ book.author }}</div>
+                                <!--end::Position-->
+                                <!--begin::Status-->
+                                <div class="mb-6">
+                                    <span class="badge badge-light-{{ book.status_color }} fs-7 fw-bold">{{ book.get_status_display }}</span>
+                                </div>
+                                <!--end::Status-->
+                                <!--begin::Actions-->
+                                <div class="d-flex flex-center flex-wrap">
+                                    {% if book.status == 'available' %}
+                                    <a href="{% url 'loans:borrow' book.id %}" class="btn btn-sm btn-primary me-2">
+                                        <i class="ki-outline ki-arrow-right fs-3"></i>Ödünç Al
+                                    </a>
+                                    {% endif %}
+                                    {% if user.is_staff or book.library.created_by == user %}
+                                    <a href="{% url 'books:edit' book.id %}" class="btn btn-sm btn-light-warning me-2">
+                                        <i class="ki-outline ki-pencil fs-3"></i>Düzenle
+                                    </a>
+                                    <a href="{% url 'books:delete' book.id %}" class="btn btn-sm btn-light-danger" onclick="return confirm('Bu kitabı silmek istediğinize emin misiniz?');">
+                                        <i class="ki-outline ki-trash fs-3"></i>Sil
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                <!--end::Actions-->
+                            </div>
+                            <!--end::Summary-->
+                            <!--begin::Details toggle-->
+                            <div class="d-flex flex-stack fs-4 py-3">
+                                <div class="fw-bold rotate collapsible" data-bs-toggle="collapse" href="#kt_book_details" role="button" aria-expanded="false" aria-controls="kt_book_details">Detaylar
+                                    <span class="ms-2 rotate-180">
+                                        <i class="ki-outline ki-down fs-3"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <!--end::Details toggle-->
+                            <div class="separator"></div>
+                            <!--begin::Details content-->
+                            <div id="kt_book_details" class="collapse show">
+                                <div class="pb-5 fs-6">
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Yayın Yılı</div>
+                                    <div class="text-gray-600">{{ book.publication_year|default:"Belirtilmemiş" }}</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">ISBN</div>
+                                    <div class="text-gray-600">{{ book.isbn|default:"Belirtilmemiş" }}</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Sayfa Sayısı</div>
+                                    <div class="text-gray-600">{{ book.page_count|default:"Belirtilmemiş" }}</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Kategori</div>
+                                    <div class="text-gray-600">{{ book.category|default:"Belirtilmemiş" }}</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Kütüphane</div>
+                                    <div class="text-gray-600"><a href="{% url 'libraries:detail' book.library.id %}" class="text-gray-600 text-hover-primary">{{ book.library.name }}</a></div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Toplam Ödünç</div>
+                                    <div class="text-gray-600">{{ book.loan_count }} kez</div>
+                                    <!--end::Details item-->
+                                    <!--begin::Details item-->
+                                    <div class="fw-bold mt-5">Eklenme Tarihi</div>
+                                    <div class="text-gray-600">{{ book.created_at|date:"d M Y" }}</div>
+                                    <!--end::Details item-->
+                                </div>
+                            </div>
+                            <!--end::Details content-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+                </div>
+                <!--end::Sidebar-->
+                <!--begin::Content-->
+                <div class="flex-lg-row-fluid ms-lg-15">
+                    <!--begin::Card-->
+                    <div class="card pt-4 mb-6 mb-xl-9">
+                        <!--begin::Card header-->
+                        <div class="card-header border-0">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Kitap Açıklaması</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0 pb-5">
+                            <div class="fw-semibold text-gray-600 mb-5">
+                                {{ book.description|default:"Bu kitap için açıklama bulunmuyor."|linebreaks }}
+                            </div>
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+
+                    <!--begin::Card-->
+                    <div class="card pt-4 mb-6 mb-xl-9">
+                        <!--begin::Card header-->
+                        <div class="card-header border-0">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Ödünç Geçmişi</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0 pb-5">
+                            <!--begin::Table-->
+                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_book_loans_table">
+                                <!--begin::Table head-->
+                                <thead>
+                                    <!--begin::Table row-->
+                                    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                        <th class="min-w-125px">Kullanıcı</th>
+                                        <th class="min-w-125px">Ödünç Tarihi</th>
+                                        <th class="min-w-125px">Son Tarih</th>
+                                        <th class="min-w-125px">İade Tarihi</th>
+                                        <th class="min-w-125px">Durum</th>
+                                    </tr>
+                                    <!--end::Table row-->
+                                </thead>
+                                <!--end::Table head-->
+                                <!--begin::Table body-->
+                                <tbody class="text-gray-600 fw-semibold">
+                                    {% for loan in book.loans.all %}
+                                    <tr>
+                                        <td>{{ loan.user.get_full_name }}</td>
+                                        <td>{{ loan.loan_date|date:"d M Y" }}</td>
+                                        <td>{{ loan.due_date|date:"d M Y" }}</td>
+                                        <td>{{ loan.return_date|date:"d M Y"|default:"-" }}</td>
+                                        <td><span class="badge badge-light-{{ loan.status_color }} fs-7 fw-bold">{{ loan.get_status_display }}</span></td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">Bu kitap henüz ödünç alınmamış.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <!--end::Table body-->
+                            </table>
+                            <!--end::Table-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+                </div>
+                <!--end::Content-->
+            </div>
+            <!--end::Layout-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Post-->
+</div>
+<!--end::Content-->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // DataTable initialization
+    $(document).ready(function() {
+        $("#kt_book_loans_table").DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+            }
+        });
+    });
+</script>
+{% endblock %}

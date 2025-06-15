@@ -1,0 +1,130 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Kitaplar | Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block content %}
+<!--begin::Card-->
+<div class="card">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-6">
+        <!--begin::Card title-->
+        <div class="card-title">
+            <!--begin::Search-->
+            <div class="d-flex align-items-center position-relative my-1">
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                <input type="text" data-kt-book-table-filter="search" class="form-control form-control-solid w-250px ps-13" placeholder="Kitap Ara" />
+            </div>
+            <!--end::Search-->
+        </div>
+        <!--begin::Card title-->
+        <!--begin::Card toolbar-->
+        <div class="card-toolbar">
+            <!--begin::Toolbar-->
+            <div class="d-flex justify-content-end" data-kt-book-table-toolbar="base">
+                <!--begin::Add book-->
+                <a href="{% url 'books:create' %}" class="btn btn-primary">
+                    <i class="ki-outline ki-plus fs-2"></i>Yeni Kitap Ekle
+                </a>
+                <!--end::Add book-->
+            </div>
+            <!--end::Toolbar-->
+        </div>
+        <!--end::Card toolbar-->
+    </div>
+    <!--end::Card header-->
+    <!--begin::Card body-->
+    <div class="card-body py-4">
+        <!--begin::Table-->
+        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_books_table">
+            <!--begin::Table head-->
+            <thead>
+                <!--begin::Table row-->
+                <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                    <th class="min-w-125px">Kitap</th>
+                    <th class="min-w-125px">Yazar</th>
+                    <th class="min-w-125px">Kütüphane</th>
+                    <th class="min-w-125px">Durum</th>
+                    <th class="min-w-125px">Ödünç Sayısı</th>
+                    <th class="text-end min-w-100px">İşlemler</th>
+                </tr>
+                <!--end::Table row-->
+            </thead>
+            <!--end::Table head-->
+            <!--begin::Table body-->
+            <tbody class="fw-semibold text-gray-600">
+                {% for book in books %}
+                <tr>
+                    <td class="d-flex align-items-center">
+                        <div class="symbol symbol-50px me-3">
+                            {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" class="" alt="Book Cover" />
+                            {% else %}
+                            <div class="symbol-label fs-2 fw-semibold bg-primary text-inverse-primary">{{ book.title|first }}</div>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'books:detail' book.id %}" class="text-gray-800 text-hover-primary mb-1">{{ book.title }}</a>
+                    </td>
+                    <td>{{ book.author }}</td>
+                    <td><a href="{% url 'libraries:detail' book.library.id %}">{{ book.library.name }}</a></td>
+                    <td><span class="badge badge-light-{{ book.status_color }} fs-7 fw-bold">{{ book.get_status_display }}</span></td>
+                    <td>{{ book.loan_count }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'books:detail' book.id %}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                            <i class="ki-outline ki-eye fs-2"></i>
+                        </a>
+                        <a href="{% url 'books:edit' book.id %}" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm me-1">
+                            <i class="ki-outline ki-pencil fs-2"></i>
+                        </a>
+                        <a href="{% url 'books:delete' book.id %}" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="return confirm('Bu kitabı silmek istediğinize emin misiniz?');">
+                            <i class="ki-outline ki-trash fs-2"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Henüz hiç kitap eklenmemiş.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!--end::Table body-->
+        </table>
+        <!--end::Table-->
+    </div>
+    <!--end::Card body-->
+</div>
+<!--end::Card-->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // DataTable initialization
+    $(document).ready(function() {
+        $("#kt_books_table").DataTable({
+            "language": {
+                "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
+                "zeroRecords": "Kayıt bulunamadı",
+                "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                "infoEmpty": "Kayıt bulunamadı",
+                "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
+                "search": "Ara:",
+                "paginate": {
+                    "first": "İlk",
+                    "last": "Son",
+                    "next": "Sonraki",
+                    "previous": "Önceki"
+                }
+            },
+            "columnDefs": [
+                { "targets": [0], "orderable": true },
+                { "targets": [1], "orderable": true },
+                { "targets": [2], "orderable": true },
+                { "targets": [3], "orderable": true },
+                { "targets": [4], "orderable": true },
+                { "targets": [5], "orderable": false }
+            ],
+            "order": []
+        });
+    });
+</script>
+{% endblock %}

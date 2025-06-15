@@ -1,13 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <!--begin::Head-->
 <head>
     <base href="/" />
-    <title>Register | Library Management System</title>
+    <title>Kayıt Ol | Kütüphane Yönetim Sistemi</title>
     <meta charset="utf-8" />
-    <meta name="description" content="A comprehensive web-based library management system built with Django." />
-    <meta name="keywords" content="library, management, system, books, loans, django" />
+    <meta name="description" content="Django ile oluşturulmuş kapsamlı bir web tabanlı kütüphane yönetim sistemi." />
+    <meta name="keywords" content="kütüphane, yönetim, sistem, kitaplar, ödünç verme, django" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" href="{% static 'media/logos/favicon.ico' %}" />
     <!--begin::Fonts-->
@@ -37,10 +37,10 @@
                         </a>
                         <!--end::Logo-->
                         <!--begin::Title-->
-                        <h1 class="fw-bolder fs-2qx pb-5 pb-md-10 text-white">Library Management System</h1>
+                        <h1 class="fw-bolder fs-2qx pb-5 pb-md-10 text-white">Kütüphane Yönetim Sistemi</h1>
                         <!--end::Title-->
                         <!--begin::Description-->
-                        <p class="fw-bold fs-2 text-white">Join our community of readers<br>and library administrators</p>
+                        <p class="fw-bold fs-2 text-white">Okuyucular ve kütüphane yöneticileri<br>topluluğumuza katılın</p>
                         <!--end::Description-->
                     </div>
                     <!--end::Content-->
@@ -63,11 +63,11 @@
                             <!--begin::Heading-->
                             <div class="mb-10 text-center">
                                 <!--begin::Title-->
-                                <h1 class="text-dark mb-3">Create an Account</h1>
+                                <h1 class="text-dark mb-3">Hesap Oluştur</h1>
                                 <!--end::Title-->
                                 <!--begin::Link-->
-                                <div class="text-gray-500 fw-semibold fs-6">Already have an account?
-                                <a href="{% url 'accounts:login' %}" class="link-primary fw-bold">Sign in here</a></div>
+                                <div class="text-gray-500 fw-semibold fs-6">Zaten hesabınız var mı?
+                                <a href="{% url 'accounts:login' %}" class="link-primary fw-bold">Giriş yapın</a></div>
                                 <!--end::Link-->
                             </div>
                             <!--end::Heading-->
@@ -100,13 +100,13 @@
                             <div class="row fv-row mb-7">
                                 <!--begin::Col-->
                                 <div class="col-xl-6">
-                                    <label class="form-label fw-bold text-dark fs-6">First Name</label>
+                                    <label class="form-label fw-bold text-dark fs-6">Ad</label>
                                     <input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="first_name" autocomplete="off" />
                                 </div>
                                 <!--end::Col-->
                                 <!--begin::Col-->
                                 <div class="col-xl-6">
-                                    <label class="form-label fw-bold text-dark fs-6">Last Name</label>
+                                    <label class="form-label fw-bold text-dark fs-6">Soyad</label>
                                     <input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="last_name" autocomplete="off" />
                                 </div>
                                 <!--end::Col-->
@@ -114,13 +114,13 @@
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
-                                <label class="form-label fw-bold text-dark fs-6">Username</label>
+                                <label class="form-label fw-bold text-dark fs-6">Kullanıcı Adı</label>
                                 <input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="username" autocomplete="off" />
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
-                                <label class="form-label fw-bold text-dark fs-6">Email</label>
+                                <label class="form-label fw-bold text-dark fs-6">E-posta</label>
                                 <input class="form-control form-control-lg form-control-solid" type="email" placeholder="" name="email" autocomplete="off" />
                             </div>
                             <!--end::Input group-->
@@ -129,7 +129,7 @@
                                 <!--begin::Wrapper-->
                                 <div class="mb-1">
                                     <!--begin::Label-->
-                                    <label class="form-label fw-bold text-dark fs-6">Password</label>
+                                    <label class="form-label fw-bold text-dark fs-6">Şifre</label>
                                     <!--end::Label-->
                                     <!--begin::Input wrapper-->
                                     <div class="position-relative mb-3">
@@ -151,13 +151,13 @@
                                 </div>
                                 <!--end::Wrapper-->
                                 <!--begin::Hint-->
-                                <div class="text-muted">Use 8 or more characters with a mix of letters, numbers & symbols.</div>
+                                <div class="text-muted">8 veya daha fazla karakter kullanın; harfler, rakamlar ve semboller karıştırın.</div>
                                 <!--end::Hint-->
                             </div>
                             <!--end::Input group=-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-5">
-                                <label class="form-label fw-bold text-dark fs-6">Confirm Password</label>
+                                <label class="form-label fw-bold text-dark fs-6">Şifreyi Onaylayın</label>
                                 <input class="form-control form-control-lg form-control-solid" type="password" placeholder="" name="password_confirmation" autocomplete="off" />
                             </div>
                             <!--end::Input group-->
@@ -165,16 +165,16 @@
                             <div class="fv-row mb-10">
                                 <label class="form-check form-check-custom form-check-solid form-check-inline">
                                     <input class="form-check-input" type="checkbox" name="terms" value="1" />
-                                    <span class="form-check-label fw-semibold text-gray-700 fs-6">I Agree to
-                                    <a href="#" class="ms-1 link-primary">Terms and Conditions</a>.</span>
+                                    <span class="form-check-label fw-semibold text-gray-700 fs-6">
+                                    <a href="#" class="ms-1 link-primary">Şartlar ve Koşullar</a>'ı Kabul Ediyorum.</span>
                                 </label>
                             </div>
                             <!--end::Input group-->
                             <!--begin::Actions-->
                             <div class="text-center">
                                 <button type="submit" id="kt_sign_up_submit" class="btn btn-lg btn-primary">
-                                    <span class="indicator-label">Submit</span>
-                                    <span class="indicator-progress">Please wait...
+                                    <span class="indicator-label">Gönder</span>
+                                    <span class="indicator-progress">Lütfen bekleyin...
                                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                                 </button>
                             </div>
@@ -189,9 +189,9 @@
                 <div class="d-flex flex-center flex-wrap fs-6 p-5 pb-0">
                     <!--begin::Links-->
                     <div class="d-flex flex-center fw-semibold fs-6">
-                        <a href="#" class="text-muted text-hover-primary px-2">About</a>
-                        <a href="#" class="text-muted text-hover-primary px-2">Support</a>
-                        <a href="#" class="text-muted text-hover-primary px-2">Privacy Policy</a>
+                        <a href="#" class="text-muted text-hover-primary px-2">Hakkında</a>
+                        <a href="#" class="text-muted text-hover-primary px-2">Destek</a>
+                        <a href="#" class="text-muted text-hover-primary px-2">Gizlilik Politikası</a>
                     </div>
                     <!--end::Links-->
                 </div>

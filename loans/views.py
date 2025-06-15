@@ -6,8 +6,7 @@ from books.models import Book
 
 @login_required
 def loan_list(request):
-    # Loan list logic here
-    loans = []
+    loans = Loan.objects.all()
     context = {
         'active_menu': 'loans',
         'loans': loans
@@ -16,10 +15,9 @@ def loan_list(request):
 
 @login_required
 def my_loans(request):
-    # My loans logic here
-    my_loans = []
+    my_loans = Loan.objects.filter(user=request.user)
     context = {
-        'active_menu': 'loans',
+        'active_menu': 'my_loans',
         'loans': my_loans
     }
     return render(request, 'loans/my_loans.html', context)

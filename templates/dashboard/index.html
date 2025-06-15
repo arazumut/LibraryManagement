@@ -1,13 +1,22 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 
-{% block title %}Dashboard | Library Management System{% endblock %}
+{% block title %}Gösterge Paneli | Kütüphane Yönetim Sistemi{% endblock %}
 
 {% block content %}
 <!--begin::Row-->
 <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
-    <!--begin::Col-->
-    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
+    <!--begin::            <div class="card-header pt-7">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold text-gray-800">Son Kitap Aktiviteleri</span>
+                    <span class="text-gray-500 mt-1 fw-semibold fs-6">Kitaplar, Ödünçler ve İadeler</span>
+                </h3>
+                <!--end::Title-->
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                    <a href="{% url 'books:list' %}" class="btn btn-sm btn-light">Tüm Kitapları Görüntüle</a>
+                </div><div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
         <!--begin::Card widget 17-->
         <div class="card card-flush h-md-50 mb-5 mb-xl-10">
             <!--begin::Header-->
@@ -25,7 +34,7 @@
                     </div>
                     <!--end::Info-->
                     <!--begin::Subtitle-->
-                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Total Books</span>
+                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Toplam Kitap</span>
                     <!--end::Subtitle-->
                 </div>
                 <!--end::Title-->
@@ -47,7 +56,7 @@
                         <div class="bullet w-8px h-3px rounded-2 bg-success me-3"></div>
                         <!--end::Bullet-->
                         <!--begin::Label-->
-                        <div class="text-gray-500 flex-grow-1 me-4">Available</div>
+                        <div class="text-gray-500 flex-grow-1 me-4">Mevcut</div>
                         <!--end::Label-->
                         <!--begin::Stats-->
                         <div class="fw-bolder text-gray-700 text-xxl-end">{{ available_books }}</div>
@@ -60,7 +69,7 @@
                         <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
                         <!--end::Bullet-->
                         <!--begin::Label-->
-                        <div class="text-gray-500 flex-grow-1 me-4">Borrowed</div>
+                        <div class="text-gray-500 flex-grow-1 me-4">Ödünç Verilmiş</div>
                         <!--end::Label-->
                         <!--begin::Stats-->
                         <div class="fw-bolder text-gray-700 text-xxl-end">{{ borrowed_books }}</div>
@@ -73,7 +82,7 @@
                         <div class="bullet w-8px h-3px rounded-2 bg-danger me-3"></div>
                         <!--end::Bullet-->
                         <!--begin::Label-->
-                        <div class="text-gray-500 flex-grow-1 me-4">Reserved</div>
+                        <div class="text-gray-500 flex-grow-1 me-4">Rezerve Edilmiş</div>
                         <!--end::Label-->
                         <!--begin::Stats-->
                         <div class="fw-bolder text-gray-700 text-xxl-end">{{ reserved_books }}</div>
@@ -96,7 +105,7 @@
                     <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ total_loans }}</span>
                     <!--end::Amount-->
                     <!--begin::Subtitle-->
-                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Active Loans</span>
+                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Aktif Ödünçler</span>
                     <!--end::Subtitle-->
                 </div>
                 <!--end::Title-->
@@ -105,7 +114,7 @@
             <!--begin::Card body-->
             <div class="card-body d-flex flex-column justify-content-end pe-0">
                 <!--begin::Title-->
-                <span class="fs-6 fw-bolder text-gray-800 d-block mb-2">Loan Status</span>
+                <span class="fs-6 fw-bolder text-gray-800 d-block mb-2">Ödünç Durumu</span>
                 <!--end::Title-->
                 <!--begin::Chart-->
                 <div id="kt_card_widget_7_chart" class="min-h-auto ps-4 pe-6" style="height: 125px"></div>
@@ -132,7 +141,7 @@
                     </div>
                     <!--end::Info-->
                     <!--begin::Subtitle-->
-                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Total Libraries</span>
+                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Toplam Kütüphaneler</span>
                     <!--end::Subtitle-->
                 </div>
                 <!--end::Title-->
@@ -154,7 +163,7 @@
                         <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
                         <!--end::Bullet-->
                         <!--begin::Label-->
-                        <div class="text-gray-500 flex-grow-1 me-4">Your Libraries</div>
+                        <div class="text-gray-500 flex-grow-1 me-4">Kütüphaneleriniz</div>
                         <!--end::Label-->
                         <!--begin::Stats-->
                         <div class="fw-bolder text-gray-700 text-xxl-end">{{ user_libraries }}</div>
@@ -167,7 +176,7 @@
                         <div class="bullet w-8px h-3px rounded-2 bg-success me-3"></div>
                         <!--end::Bullet-->
                         <!--begin::Label-->
-                        <div class="text-gray-500 flex-grow-1 me-4">Books in Your Libraries</div>
+                        <div class="text-gray-500 flex-grow-1 me-4">Kütüphanelerinizdeki Kitaplar</div>
                         <!--end::Label-->
                         <!--begin::Stats-->
                         <div class="fw-bolder text-gray-700 text-xxl-end">{{ user_library_books }}</div>
@@ -194,7 +203,7 @@
                     </div>
                     <!--end::Info-->
                     <!--begin::Subtitle-->
-                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Pending Book Requests</span>
+                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Bekleyen Kitap İstekleri</span>
                     <!--end::Subtitle-->
                 </div>
                 <!--end::Title-->
@@ -205,7 +214,7 @@
                 <!--begin::Progress-->
                 <div class="d-flex align-items-center flex-column mt-3 w-100">
                     <div class="d-flex justify-content-between w-100 mt-auto mb-2">
-                        <span class="fw-bolder fs-6 text-dark">Book Request Success Rate</span>
+                        <span class="fw-bolder fs-6 text-dark">Kitap İstek Başarı Oranı</span>
                         <span class="fw-bold fs-6 text-gray-500">{{ request_success_rate }}%</span>
                     </div>
                     <div class="h-8px mx-3 w-100 bg-light-success rounded">
@@ -227,13 +236,13 @@
             <div class="card-header pt-7">
                 <!--begin::Title-->
                 <h3 class="card-title align-items-start flex-column">
-                    <span class="card-label fw-bold text-gray-800">Recent Book Activity</span>
-                    <span class="text-gray-500 mt-1 fw-semibold fs-6">Books, Loans, and Returns</span>
+                    <span class="card-label fw-bold text-gray-800">Son Kitap Aktiviteleri</span>
+                    <span class="text-gray-500 mt-1 fw-semibold fs-6">Kitaplar, Ödünçler ve İadeler</span>
                 </h3>
                 <!--end::Title-->
                 <!--begin::Toolbar-->
                 <div class="card-toolbar">
-                    <a href="{% url 'books:list' %}" class="btn btn-sm btn-light">View All Books</a>
+                    <a href="{% url 'books:list' %}" class="btn btn-sm btn-light">Tüm Kitapları Görüntüle</a>
                 </div>
                 <!--end::Toolbar-->
             </div>
@@ -288,13 +297,13 @@
             <div class="card-header pt-7">
                 <!--begin::Title-->
                 <h3 class="card-title align-items-start flex-column">
-                    <span class="card-label fw-bold text-dark">Most Popular Books</span>
-                    <span class="text-gray-500 mt-1 fw-semibold fs-6">Books with most loans</span>
+                    <span class="card-label fw-bold text-dark">En Popüler Kitaplar</span>
+                    <span class="text-gray-500 mt-1 fw-semibold fs-6">En çok ödünç alınan kitaplar</span>
                 </h3>
                 <!--end::Title-->
                 <!--begin::Toolbar-->
                 <div class="card-toolbar">
-                    <a href="{% url 'books:list' %}" class="btn btn-sm btn-light">View All Books</a>
+                    <a href="{% url 'books:list' %}" class="btn btn-sm btn-light">Tüm Kitapları Görüntüle</a>
                 </div>
                 <!--end::Toolbar-->
             </div>
@@ -307,11 +316,11 @@
                     <thead>
                         <!--begin::Table row-->
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                            <th class="min-w-150px">Book</th>
-                            <th class="text-end pe-3 min-w-100px">Library</th>
-                            <th class="text-end pe-3 min-w-100px">Status</th>
-                            <th class="text-end pe-3 min-w-100px">Total Loans</th>
-                            <th class="text-end pe-0 min-w-75px">Actions</th>
+                            <th class="min-w-150px">Kitap</th>
+                            <th class="text-end pe-3 min-w-100px">Kütüphane</th>
+                            <th class="text-end pe-3 min-w-100px">Durum</th>
+                            <th class="text-end pe-3 min-w-100px">Toplam Ödünç</th>
+                            <th class="text-end pe-0 min-w-75px">İşlemler</th>
                         </tr>
                         <!--end::Table row-->
                     </thead>
@@ -372,13 +381,13 @@
             <div class="card-header pt-7 mb-5">
                 <!--begin::Title-->
                 <h3 class="card-title align-items-start flex-column">
-                    <span class="card-label fw-bold text-gray-800">Your Book Loans</span>
-                    <span class="text-gray-500 mt-1 fw-semibold fs-6">{{ active_loans }} active loans</span>
+                    <span class="card-label fw-bold text-gray-800">Kitap Ödünçleriniz</span>
+                    <span class="text-gray-500 mt-1 fw-semibold fs-6">{{ active_loans }} aktif ödünç</span>
                 </h3>
                 <!--end::Title-->
                 <!--begin::Toolbar-->
                 <div class="card-toolbar">
-                    <a href="{% url 'loans:my_loans' %}" class="btn btn-sm btn-light">View All</a>
+                    <a href="{% url 'loans:my_loans' %}" class="btn btn-sm btn-light">Tümünü Görüntüle</a>
                 </div>
                 <!--end::Toolbar-->
             </div>
@@ -410,7 +419,7 @@
                     <!--begin::Wrapper-->
                     <div class="d-flex align-items-center">
                         <!--begin::Number-->
-                        <span class="text-gray-800 fw-bold fs-6 me-3">Due: {{ loan.due_date|date:"d M" }}</span>
+                        <span class="text-gray-800 fw-bold fs-6 me-3">Son Tarih: {{ loan.due_date|date:"d M" }}</span>
                         <!--end::Number-->
                         <!--begin::Info-->
                         <div class="m-0">
@@ -437,9 +446,9 @@
 
 {% block extra_js %}
 <script>
-    // Initialize charts and other dashboard elements
+    // Grafikleri ve diğer gösterge paneli öğelerini başlat
     $(document).ready(function () {
-        // Book Status Chart
+        // Kitap Durumu Grafiği
         var el = document.getElementById('kt_card_widget_17_chart');
         if (el) {
             var options = {
@@ -479,18 +488,18 @@
                 ctx.stroke();
             };
                 
-            // Draw background arc
+            // Arka plan yayını çiz
             drawArc('#E4E6EF', options.lineWidth, 100 / 100);
-            // Draw success arc
+            // Başarı yayını çiz
             drawArc('#50CD89', options.lineWidth, availablePercentage);
         }
         
-        // Loan Status Chart
+        // Ödünç Durumu Grafiği
         var el2 = document.getElementById('kt_card_widget_7_chart');
         if (el2) {
             var options2 = {
                 series: [{
-                    name: 'Active Loans',
+                    name: 'Aktif Ödünçler',
                     data: {{ loan_data|safe }}
                 }],
                 chart: {
@@ -589,7 +598,7 @@
                     },
                     y: {
                         formatter: function (val) {
-                            return val + " loans"
+                            return val + " ödünç"
                         }
                     }
                 },

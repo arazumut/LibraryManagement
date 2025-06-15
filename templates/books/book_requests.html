@@ -1,0 +1,169 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Kitap İstekleri | Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block content %}
+<!--begin::Card-->
+<div class="card">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-6">
+        <!--begin::Card title-->
+        <div class="card-title">
+            <!--begin::Search-->
+            <div class="d-flex align-items-center position-relative my-1">
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                <input type="text" data-kt-request-table-filter="search" class="form-control form-control-solid w-250px ps-13" placeholder="İstek Ara" />
+            </div>
+            <!--end::Search-->
+        </div>
+        <!--begin::Card title-->
+        <!--begin::Card toolbar-->
+        <div class="card-toolbar">
+            <!--begin::Toolbar-->
+            <div class="d-flex justify-content-end" data-kt-request-table-toolbar="base">
+                <!--begin::Add request-->
+                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_request">
+                    <i class="ki-outline ki-plus fs-2"></i>Yeni Kitap İsteği
+                </a>
+                <!--end::Add request-->
+            </div>
+            <!--end::Toolbar-->
+        </div>
+        <!--end::Card toolbar-->
+    </div>
+    <!--end::Card header-->
+    <!--begin::Card body-->
+    <div class="card-body py-4">
+        <!--begin::Table-->
+        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_requests_table">
+            <!--begin::Table head-->
+            <thead>
+                <!--begin::Table row-->
+                <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                    <th class="min-w-125px">Kitap Adı</th>
+                    <th class="min-w-125px">Yazar</th>
+                    <th class="min-w-125px">İstek Tarihi</th>
+                    <th class="min-w-125px">Kütüphane</th>
+                    <th class="min-w-125px">Durum</th>
+                    <th class="text-end min-w-100px">İşlemler</th>
+                </tr>
+                <!--end::Table row-->
+            </thead>
+            <!--end::Table head-->
+            <!--begin::Table body-->
+            <tbody class="fw-semibold text-gray-600">
+                {% for request in book_requests %}
+                <tr>
+                    <td>{{ request.title }}</td>
+                    <td>{{ request.author }}</td>
+                    <td>{{ request.request_date|date:"d M Y" }}</td>
+                    <td>{{ request.library.name }}</td>
+                    <td><span class="badge badge-light-{{ request.status_color }} fs-7 fw-bold">{{ request.get_status_display }}</span></td>
+                    <td class="text-end">
+                        {% if request.status == 'pending' and request.user == request.user %}
+                        <a href="#" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="return confirm('Bu isteği iptal etmek istediğinize emin misiniz?');">
+                            <i class="ki-outline ki-cross-circle fs-2"></i>
+                        </a>
+                        {% endif %}
+                        {% if user.is_staff and request.status == 'pending' %}
+                        <a href="#" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1">
+                            <i class="ki-outline ki-check-circle fs-2"></i>
+                        </a>
+                        <a href="#" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm">
+                            <i class="ki-outline ki-cross-circle fs-2"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Henüz hiç kitap isteği bulunmuyor.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!--end::Table body-->
+        </table>
+        <!--end::Table-->
+    </div>
+    <!--end::Card body-->
+</div>
+<!--end::Card-->
+
+<!--begin::Modal - Add Request-->
+<div class="modal fade" id="kt_modal_add_request" tabindex="-1" aria-hidden="true">
+    <!--begin::Modal dialog-->
+    <div class="modal-dialog modal-dialog-centered mw-650px">
+        <!--begin::Modal content-->
+        <div class="modal-content">
+            <!--begin::Modal header-->
+            <div class="modal-header">
+                <!--begin::Modal title-->
+                <h2>Yeni Kitap İsteği Oluştur</h2>
+                <!--end::Modal title-->
+                <!--begin::Close-->
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </div>
+                <!--end::Close-->
+            </div>
+            <!--end::Modal header-->
+            <!--begin::Modal body-->
+            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                <!--begin::Form-->
+                <form id="kt_modal_add_request_form" class="form" action="#">
+                    <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_request_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_request_header" data-kt-scroll-wrappers="#kt_modal_add_request_scroll" data-kt-scroll-offset="300px">
+                        <div class="fv-row mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Kitap Adı</label>
+                            <input type="text" name="title" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Kitap adını girin" required />
+                        </div>
+                        <div class="fv-row mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Yazar</label>
+                            <input type="text" name="author" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Kitap yazarını girin" required />
+                        </div>
+                        <div class="fv-row mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Kütüphane</label>
+                            <select name="library" class="form-select form-select-solid" required>
+                                <option value="">Kütüphane Seçin</option>
+                                {% for library in libraries %}
+                                <option value="{{ library.id }}">{{ library.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="fv-row mb-7">
+                            <label class="fw-semibold fs-6 mb-2">Açıklama</label>
+                            <textarea name="description" class="form-control form-control-solid" rows="4" placeholder="İsteğinizle ilgili ek açıklamalar"></textarea>
+                        </div>
+                    </div>
+                    <div class="text-center pt-15">
+                        <button type="reset" class="btn btn-light me-3" data-kt-request-modal-action="cancel">İptal</button>
+                        <button type="submit" class="btn btn-primary" data-kt-request-modal-action="submit">
+                            <span class="indicator-label">Gönder</span>
+                            <span class="indicator-progress">Lütfen bekleyin... 
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                    </div>
+                </form>
+                <!--end::Form-->
+            </div>
+            <!--end::Modal body-->
+        </div>
+        <!--end::Modal content-->
+    </div>
+    <!--end::Modal dialog-->
+</div>
+<!--end::Modal - Add Request-->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // DataTable initialization
+    $(document).ready(function() {
+        $("#kt_requests_table").DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+            }
+        });
+    });
+</script>
+{% endblock %}

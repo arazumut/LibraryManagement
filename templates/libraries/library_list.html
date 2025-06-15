@@ -1,0 +1,120 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Kütüphaneler | Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block content %}
+<!--begin::Card-->
+<div class="card">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-6">
+        <!--begin::Card title-->
+        <div class="card-title">
+            <!--begin::Search-->
+            <div class="d-flex align-items-center position-relative my-1">
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                <input type="text" data-kt-library-table-filter="search" class="form-control form-control-solid w-250px ps-13" placeholder="Kütüphane Ara" />
+            </div>
+            <!--end::Search-->
+        </div>
+        <!--begin::Card title-->
+        <!--begin::Card toolbar-->
+        <div class="card-toolbar">
+            <!--begin::Toolbar-->
+            <div class="d-flex justify-content-end" data-kt-library-table-toolbar="base">
+                <!--begin::Add library-->
+                <a href="{% url 'libraries:create' %}" class="btn btn-primary">
+                    <i class="ki-outline ki-plus fs-2"></i>Yeni Kütüphane Ekle
+                </a>
+                <!--end::Add library-->
+            </div>
+            <!--end::Toolbar-->
+        </div>
+        <!--end::Card toolbar-->
+    </div>
+    <!--end::Card header-->
+    <!--begin::Card body-->
+    <div class="card-body py-4">
+        <!--begin::Table-->
+        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_libraries_table">
+            <!--begin::Table head-->
+            <thead>
+                <!--begin::Table row-->
+                <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                    <th class="min-w-125px">Kütüphane Adı</th>
+                    <th class="min-w-125px">Konum</th>
+                    <th class="min-w-125px">Kitap Sayısı</th>
+                    <th class="min-w-125px">Oluşturma Tarihi</th>
+                    <th class="text-end min-w-100px">İşlemler</th>
+                </tr>
+                <!--end::Table row-->
+            </thead>
+            <!--end::Table head-->
+            <!--begin::Table body-->
+            <tbody class="fw-semibold text-gray-600">
+                {% for library in libraries %}
+                <tr>
+                    <td>
+                        <a href="{% url 'libraries:detail' library.id %}" class="text-gray-800 text-hover-primary mb-1">{{ library.name }}</a>
+                    </td>
+                    <td>{{ library.location }}</td>
+                    <td>{{ library.book_count }}</td>
+                    <td>{{ library.created_at|date:"d M Y" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'libraries:detail' library.id %}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                            <i class="ki-outline ki-eye fs-2"></i>
+                        </a>
+                        <a href="{% url 'libraries:edit' library.id %}" class="btn btn-icon btn-bg-light btn-active-color-warning btn-sm me-1">
+                            <i class="ki-outline ki-pencil fs-2"></i>
+                        </a>
+                        <a href="{% url 'libraries:delete' library.id %}" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="return confirm('Bu kütüphaneyi silmek istediğinize emin misiniz?');">
+                            <i class="ki-outline ki-trash fs-2"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Henüz hiç kütüphane eklenmemiş.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!--end::Table body-->
+        </table>
+        <!--end::Table-->
+    </div>
+    <!--end::Card body-->
+</div>
+<!--end::Card-->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // DataTable initialization
+    $(document).ready(function() {
+        $("#kt_libraries_table").DataTable({
+            "language": {
+                "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
+                "zeroRecords": "Kayıt bulunamadı",
+                "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                "infoEmpty": "Kayıt bulunamadı",
+                "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
+                "search": "Ara:",
+                "paginate": {
+                    "first": "İlk",
+                    "last": "Son",
+                    "next": "Sonraki",
+                    "previous": "Önceki"
+                }
+            },
+            "columnDefs": [
+                { "targets": [0], "data": function(row) { return row.querySelector('.text-gray-800').textContent; } },
+                { "targets": [1], "data": function(row, type, val, meta) { return row.cells[1].textContent; } },
+                { "targets": [2], "data": function(row, type, val, meta) { return row.cells[2].textContent; } },
+                { "targets": [3], "data": function(row, type, val, meta) { return row.cells[3].textContent; } },
+                { "targets": [4], "orderable": false }
+            ],
+            "order": []
+        });
+    });
+</script>
+{% endblock %}
