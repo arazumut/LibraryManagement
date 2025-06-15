@@ -68,12 +68,12 @@
                         </div>
                         <a href="{% url 'books:detail' loan.book.id %}" class="text-gray-800 text-hover-primary mb-1">{{ loan.book.title }}</a>
                     </td>
-                    <td>{{ loan.user.get_full_name }}</td>
+                    <td>{{ loan.borrower.get_full_name }}</td>
                     <td>{{ loan.loan_date|date:"d M Y" }}</td>
                     <td>{{ loan.due_date|date:"d M Y" }}</td>
                     <td><span class="badge badge-light-{{ loan.status_color }} fs-7 fw-bold">{{ loan.get_status_display }}</span></td>
                     <td class="text-end">
-                        {% if loan.status == 'active' and loan.user == request.user %}
+                        {% if loan.status == 'active' and loan.borrower == request.user %}
                         <a href="{% url 'loans:return' loan.id %}" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm">
                             <i class="ki-outline ki-arrow-left fs-2"></i>
                         </a>
@@ -99,31 +99,43 @@
 <script>
     // DataTable initialization
     $(document).ready(function() {
-        $("#kt_loans_table").DataTable({
-            "language": {
-                "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
-                "zeroRecords": "Kayıt bulunamadı",
-                "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
-                "infoEmpty": "Kayıt bulunamadı",
-                "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
-                "search": "Ara:",
-                "paginate": {
-                    "first": "İlk",
-                    "last": "Son",
-                    "next": "Sonraki",
-                    "previous": "Önceki"
-                }
-            },
-            "columnDefs": [
-                { "targets": [0], "orderable": true },
-                { "targets": [1], "orderable": true },
-                { "targets": [2], "orderable": true },
-                { "targets": [3], "orderable": true },
-                { "targets": [4], "orderable": true },
-                { "targets": [5], "orderable": false }
-            ],
-            "order": []
-        });
+        // DataTables uyarılarını konsola yazdırma ayarı
+        $.fn.dataTable.ext.errMode = 'throw';
+        
+        try {
+            $("#kt_loans_table").DataTable({
+                "language": {
+                    "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
+                    "zeroRecords": "Kayıt bulunamadı",
+                    "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                    "infoEmpty": "Kayıt bulunamadı",
+                    "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
+                    "search": "Ara:",
+                    "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    }
+                },
+                "columnDefs": [
+                    { "targets": [0], "orderable": true },
+                    { "targets": [1], "orderable": true },
+                    { "targets": [2], "orderable": true },
+                    { "targets": [3], "orderable": true },
+                    { "targets": [4], "orderable": true },
+                    { "targets": [5], "orderable": false }
+                ],
+                "order": [],
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true
+            });
+        } catch (e) {
+            // Hataları konsola yazdır ama kullanıcıya gösterme
+            console.log("DataTables Uyarı/Hata (Ödünçler):", e);
+        }
     });
 </script>
 {% endblock %}

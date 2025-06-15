@@ -1,0 +1,199 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Ödünç Aldığım Kitaplar | Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block content %}
+<!--begin::Card-->
+<div class="card mb-10">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-6">
+        <!--begin::Card title-->
+        <div class="card-title">
+            <h2>Ödünç Aldığım Kitaplar</h2>
+        </div>
+        <!--end::Card title-->
+    </div>
+    <!--end::Card header-->
+    <!--begin::Card body-->
+    <div class="card-body py-4">
+        <!--begin::Table-->
+        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_active_loans_table">
+            <!--begin::Table head-->
+            <thead>
+                <!--begin::Table row-->
+                <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                    <th class="min-w-125px">Kitap</th>
+                    <th class="min-w-125px">Kütüphane</th>
+                    <th class="min-w-125px">Ödünç Alınma Tarihi</th>
+                    <th class="min-w-125px">İade Tarihi</th>
+                    <th class="min-w-125px">Durum</th>
+                    <th class="text-end min-w-100px">İşlemler</th>
+                </tr>
+                <!--end::Table row-->
+            </thead>
+            <!--end::Table head-->
+            <!--begin::Table body-->
+            <tbody class="fw-semibold text-gray-600">
+                {% for loan in active_loans %}
+                <tr>
+                    <td class="d-flex align-items-center">
+                        <div class="symbol symbol-50px me-3">
+                            {% if loan.book.cover_image %}
+                            <img src="{{ loan.book.cover_image.url }}" class="" alt="Book Cover" />
+                            {% else %}
+                            <div class="symbol-label fs-2 fw-semibold bg-primary text-inverse-primary">{{ loan.book.title|first }}</div>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'books:detail' loan.book.id %}" class="text-gray-800 text-hover-primary mb-1">{{ loan.book.title }}</a>
+                    </td>
+                    <td><a href="{% url 'libraries:detail' loan.book.library.id %}">{{ loan.book.library.name }}</a></td>
+                    <td>{{ loan.loan_date|date:"d.m.Y" }}</td>
+                    <td>{{ loan.due_date|date:"d.m.Y" }}</td>
+                    <td><span class="badge badge-light-{{ loan.status_color }} fs-7 fw-bold">{{ loan.get_status_display }}</span></td>
+                    <td class="text-end">
+                        <a href="{% url 'books:detail' loan.book.id %}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                            <i class="ki-outline ki-eye fs-2"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Henüz hiç kitap ödünç almamışsınız.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!--end::Table body-->
+        </table>
+        <!--end::Table-->
+    </div>
+    <!--end::Card body-->
+</div>
+<!--end::Card-->
+
+<!--begin::Card-->
+<div class="card">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-6">
+        <!--begin::Card title-->
+        <div class="card-title">
+            <h2>Geçmiş Ödünç Aldığım Kitaplar</h2>
+        </div>
+        <!--end::Card title-->
+    </div>
+    <!--end::Card header-->
+    <!--begin::Card body-->
+    <div class="card-body py-4">
+        <!--begin::Table-->
+        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_past_loans_table">
+            <!--begin::Table head-->
+            <thead>
+                <!--begin::Table row-->
+                <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                    <th class="min-w-125px">Kitap</th>
+                    <th class="min-w-125px">Kütüphane</th>
+                    <th class="min-w-125px">Ödünç Alınma Tarihi</th>
+                    <th class="min-w-125px">İade Tarihi</th>
+                    <th class="min-w-125px">Gerçek İade Tarihi</th>
+                    <th class="min-w-125px">Durum</th>
+                </tr>
+                <!--end::Table row-->
+            </thead>
+            <!--end::Table head-->
+            <!--begin::Table body-->
+            <tbody class="fw-semibold text-gray-600">
+                {% for loan in past_loans %}
+                <tr>
+                    <td class="d-flex align-items-center">
+                        <div class="symbol symbol-50px me-3">
+                            {% if loan.book.cover_image %}
+                            <img src="{{ loan.book.cover_image.url }}" class="" alt="Book Cover" />
+                            {% else %}
+                            <div class="symbol-label fs-2 fw-semibold bg-primary text-inverse-primary">{{ loan.book.title|first }}</div>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'books:detail' loan.book.id %}" class="text-gray-800 text-hover-primary mb-1">{{ loan.book.title }}</a>
+                    </td>
+                    <td><a href="{% url 'libraries:detail' loan.book.library.id %}">{{ loan.book.library.name }}</a></td>
+                    <td>{{ loan.loan_date|date:"d.m.Y" }}</td>
+                    <td>{{ loan.due_date|date:"d.m.Y" }}</td>
+                    <td>{{ loan.return_date|date:"d.m.Y" }}</td>
+                    <td><span class="badge badge-light-{{ loan.status_color }} fs-7 fw-bold">{{ loan.get_status_display }}</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Henüz hiç kitap iade etmemişsiniz.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!--end::Table body-->
+        </table>
+        <!--end::Table-->
+    </div>
+    <!--end::Card body-->
+</div>
+<!--end::Card-->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // DataTable initialization
+    $(document).ready(function() {
+        // DataTables ayarları
+        $.fn.dataTable.ext.errMode = 'throw';
+        
+        try {
+            // Aktif ödünç alınan kitaplar tablosu
+            var activeLoansTable = $("#kt_active_loans_table").DataTable({
+                "language": {
+                    "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
+                    "zeroRecords": "Kayıt bulunamadı",
+                    "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                    "infoEmpty": "Kayıt bulunamadı",
+                    "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
+                    "search": "Ara:",
+                    "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    }
+                },
+                "order": [],
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "deferRender": true
+            });
+            
+            // Geçmiş ödünç alınan kitaplar tablosu
+            var pastLoansTable = $("#kt_past_loans_table").DataTable({
+                "language": {
+                    "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
+                    "zeroRecords": "Kayıt bulunamadı",
+                    "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                    "infoEmpty": "Kayıt bulunamadı",
+                    "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
+                    "search": "Ara:",
+                    "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    }
+                },
+                "order": [],
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "deferRender": true
+            });
+        } catch (e) {
+            // Hataları konsola yazdır ama kullanıcıya gösterme
+            console.log("DataTables Uyarı/Hata:", e);
+        }
+    });
+</script>
+{% endblock %}

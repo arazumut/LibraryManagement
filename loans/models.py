@@ -54,3 +54,13 @@ class Loan(models.Model):
         self.book.status = 'available'
         self.book.save()
         self.save()
+        
+    @property
+    def status_color(self):
+        """Return the appropriate color class for the status badge."""
+        color_map = {
+            'active': 'primary',
+            'returned': 'success',
+            'overdue': 'danger'
+        }
+        return color_map.get(self.status, 'primary')

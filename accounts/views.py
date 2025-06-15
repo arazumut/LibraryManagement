@@ -29,8 +29,25 @@ def profile(request):
     return render(request, 'accounts/profile.html')
 
 def my_books(request):
-    # My books logic here
-    return render(request, 'accounts/my_books.html')
+    from loans.models import Loan
+    
+    # Get all books borrowed by the current user
+    active_loans = Loan.objects.filter(
+        borrower=request.user, 
+        status__in=['active', 'overdue']
+    ).select_related('book', 'book__library')
+    
+    past_loans = Loan.objects.filter(
+        borrower=request.user,
+        status='returned'
+    ).select_related('book', 'book__library')
+    
+    context = {
+        'active_loans': active_loans,
+        'past_loans': past_loans
+    }
+    
+    return render(request, 'accounts/my_books.html', context)
 
 def user_list(request):
     # User list logic here

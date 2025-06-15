@@ -1,0 +1,101 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}{% if book %}Edit Book{% else %}Create Book{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">
+            {% if book %}Edit Book: {{ book.title }}{% else %}Create New Book{% endif %}
+        </h3>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label class="form-label required">Title</label>
+                <input type="text" name="title" class="form-control" required {% if book %}value="{{ book.title }}"{% endif %}>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label required">Author</label>
+                <input type="text" name="author" class="form-control" required {% if book %}value="{{ book.author }}"{% endif %}>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">ISBN</label>
+                <input type="text" name="isbn" class="form-control" {% if book %}value="{{ book.isbn }}"{% endif %}>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" rows="4">{% if book %}{{ book.description }}{% endif %}</textarea>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label required">Library</label>
+                <select name="library" class="form-select" required>
+                    <option value="">Select a library</option>
+                    {% for library in libraries %}
+                        <option value="{{ library.id }}" {% if book and book.library.id == library.id %}selected{% endif %}>
+                            {{ library.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Cover Image</label>
+                {% if book and book.cover_image %}
+                    <div class="mb-2">
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-height: 100px;">
+                    </div>
+                {% endif %}
+                <input type="file" name="cover_image" class="form-control">
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label class="form-label">Publication Year</label>
+                    <input type="number" name="publication_year" class="form-control" {% if book %}value="{{ book.publication_year }}"{% endif %}>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <label class="form-label">Publisher</label>
+                    <input type="text" name="publisher" class="form-control" {% if book %}value="{{ book.publisher }}"{% endif %}>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <label class="form-label">Pages</label>
+                    <input type="number" name="pages" class="form-control" {% if book %}value="{{ book.pages }}"{% endif %}>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Language</label>
+                <input type="text" name="language" class="form-control" {% if book %}value="{{ book.language }}"{% endif %}>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    {% for status_value, status_label in status_choices %}
+                        <option value="{{ status_value }}" {% if book and book.status == status_value %}selected{% endif %}>
+                            {{ status_label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+                <a href="{% url 'books:list' %}" class="btn btn-light me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if book %}Update Book{% else %}Create Book{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

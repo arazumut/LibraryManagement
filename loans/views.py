@@ -15,7 +15,7 @@ def loan_list(request):
 
 @login_required
 def my_loans(request):
-    my_loans = Loan.objects.filter(user=request.user)
+    my_loans = Loan.objects.filter(borrower=request.user)
     context = {
         'active_menu': 'my_loans',
         'loans': my_loans

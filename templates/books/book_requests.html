@@ -55,13 +55,13 @@
             <tbody class="fw-semibold text-gray-600">
                 {% for request in book_requests %}
                 <tr>
-                    <td>{{ request.title }}</td>
-                    <td>{{ request.author }}</td>
-                    <td>{{ request.request_date|date:"d M Y" }}</td>
-                    <td>{{ request.library.name }}</td>
-                    <td><span class="badge badge-light-{{ request.status_color }} fs-7 fw-bold">{{ request.get_status_display }}</span></td>
+                    <td>{{ request.book.title }}</td>
+                    <td>{{ request.book.author }}</td>
+                    <td>{{ request.requested_at|date:"d M Y" }}</td>
+                    <td>{{ request.book.library.name }}</td>
+                    <td><span class="badge badge-light-{% if request.status == 'pending' %}warning{% elif request.status == 'approved' %}success{% elif request.status == 'rejected' %}danger{% else %}primary{% endif %} fs-7 fw-bold">{{ request.get_status_display }}</span></td>
                     <td class="text-end">
-                        {% if request.status == 'pending' and request.user == request.user %}
+                        {% if request.status == 'pending' and request.requester == user %}
                         <a href="#" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="return confirm('Bu isteği iptal etmek istediğinize emin misiniz?');">
                             <i class="ki-outline ki-cross-circle fs-2"></i>
                         </a>
@@ -157,13 +157,49 @@
 
 {% block extra_js %}
 <script>
+    // Debug verilerini konsola yaz
+    const debugData = {% if debug_data %}{{ debug_data|safe }}{% else %}[]{% endif %};
+    console.log("Book Requests Debug Data:", debugData);
+
     // DataTable initialization
     $(document).ready(function() {
-        $("#kt_requests_table").DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-            }
-        });
+        // Debug durumunu ayarla
+        $.fn.dataTable.ext.errMode = 'throw';
+        
+        try {
+            // DataTable'ı başlat ve tüm uyarıları konsola yazdır
+            var requestsTable = $("#kt_requests_table").DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                },
+                "initComplete": function(settings, json) {
+                    console.log("DataTable başarıyla yüklendi:", settings);
+                },
+                "drawCallback": function(settings) {
+                    console.log("DataTable yeniden çizildi:", settings);
+                }
+            });
+            
+            // Herhangi bir uyarı/hata için olay dinleyicisi ekle
+            requestsTable.on('error.dt', function(e, settings, techNote, message) {
+                console.error('DataTable hata:', message);
+                console.error('Teknik not:', techNote);
+            });
+            
+            // Tablo durumunu kaydet
+            console.info("Kitap İstekleri DataTable durumu:", requestsTable.settings()[0]);
+            
+            // Tablo verilerini kontrol et
+            console.log("Tablo verileri:", requestsTable.data().toArray());
+            
+        } catch (error) {
+            console.error("DataTable başlatma hatası:", error);
+        }
+    });
+    
+    // Genel hata yakalama
+    window.addEventListener('error', function(e) {
+        console.error('Global hata:', e.message, e.filename, e.lineno);
     });
 </script>
 {% endblock %}

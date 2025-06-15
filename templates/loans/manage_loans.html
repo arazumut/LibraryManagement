@@ -94,31 +94,43 @@
 <script>
     // DataTable initialization
     $(document).ready(function() {
-        $("#kt_manage_loans_table").DataTable({
-            "language": {
-                "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
-                "zeroRecords": "Kayıt bulunamadı",
-                "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
-                "infoEmpty": "Kayıt bulunamadı",
-                "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
-                "search": "Ara:",
-                "paginate": {
-                    "first": "İlk",
-                    "last": "Son",
-                    "next": "Sonraki",
-                    "previous": "Önceki"
-                }
-            },
-            "columnDefs": [
-                { "targets": [0], "orderable": true },
-                { "targets": [1], "orderable": true },
-                { "targets": [2], "orderable": true },
-                { "targets": [3], "orderable": true },
-                { "targets": [4], "orderable": true },
-                { "targets": [5], "orderable": false }
-            ],
-            "order": []
-        });
+        // DataTables uyarılarını konsola yazdırma ayarı
+        $.fn.dataTable.ext.errMode = 'throw';
+        
+        try {
+            $("#kt_manage_loans_table").DataTable({
+                "language": {
+                    "lengthMenu": "Sayfa başına _MENU_ kayıt göster",
+                    "zeroRecords": "Kayıt bulunamadı",
+                    "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                    "infoEmpty": "Kayıt bulunamadı",
+                    "infoFiltered": "(_MAX_ kayıt arasından filtrelendi)",
+                    "search": "Ara:",
+                    "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    }
+                },
+                "columnDefs": [
+                    { "targets": [0], "orderable": true },
+                    { "targets": [1], "orderable": true },
+                    { "targets": [2], "orderable": true },
+                    { "targets": [3], "orderable": true },
+                    { "targets": [4], "orderable": true },
+                    { "targets": [5], "orderable": false }
+                ],
+                "order": [],
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true
+            });
+        } catch (e) {
+            // Hataları konsola yazdır ama kullanıcıya gösterme
+            console.log("DataTables Uyarı/Hata (Ödünç Yönetimi):", e);
+        }
     });
 </script>
 {% endblock %}

@@ -34,6 +34,22 @@ class Book(models.Model):
         
     def __str__(self):
         return f"{self.title} - {self.author}"
+        
+    @property
+    def status_color(self):
+        """Return the appropriate color class for the status badge."""
+        color_map = {
+            'available': 'success',
+            'borrowed': 'warning',
+            'reserved': 'primary',
+            'maintenance': 'danger'
+        }
+        return color_map.get(self.status, 'primary')
+        
+    @property
+    def loan_count(self):
+        """Return the number of times this book has been loaned."""
+        return self.loans.count()
 
 class BookRequest(models.Model):
     """
