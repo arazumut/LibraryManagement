@@ -77,6 +77,40 @@ class BookRequest(models.Model):
         
     def __str__(self):
         return f"{self.book.title} için {self.requester.username} tarafından istek - {self.get_status_display()}"
+    
+    def cancel(self):
+        """Kullanıcının kendi isteğini iptal etmesi"""
+        if self.status == 'pending':
+            self.status = 'cancelled'
+            self.save()
+            return True
+        return False
+    
+    def approve(self, response_message=None):
+        """Yetkili kişinin isteği onaylaması"""
+        if self.status == 'pending':
+            self.status = 'approved'
+            if response_message:
+                self.response_message = response_message
+            self.save()
+            
+            # Onaylandığında kitabın durumunu güncelle
+            if self.book.status == 'available':
+                self.book.status = 'reserved'
+                self.book.save()
+            
+            return True
+        return False
+    
+    def reject(self, response_message=None):
+        """Yetkili kişinin isteği reddetmesi"""
+        if self.status == 'pending':
+            self.status = 'rejected'
+            if response_message:
+                self.response_message = response_message
+            self.save()
+            return True
+        return False
 
 class BookNote(models.Model):
     """

@@ -133,3 +133,47 @@ def dashboard(request):
     }
     
     return render(request, 'dashboard/index.html', context)
+
+@login_required
+def search(request):
+    """
+    Kitapları ve kütüphaneleri arama fonksiyonu
+    """
+    query = request.GET.get('q', '')
+    
+    # Boş sorgu ise tüm sonuçları gösterme
+    if not query:
+        return render(request, 'search/results.html', {
+            'active_menu': 'search',
+            'query': query,
+            'books': [],
+            'libraries': [],
+            'total_results': 0
+        })
+    
+    # Kitapları ara
+    books = Book.objects.filter(
+        Q(title__icontains=query) | 
+        Q(author__icontains=query) | 
+        Q(isbn__icontains=query) |
+        Q(description__icontains=query)
+    ).distinct()
+    
+    # Kütüphaneleri ara
+    libraries = Library.objects.filter(
+        Q(name__icontains=query) |
+        Q(description__icontains=query) |
+        Q(address__icontains=query)
+    ).distinct()
+    
+    total_results = books.count() + libraries.count()
+    
+    context = {
+        'active_menu': 'search',
+        'query': query,
+        'books': books,
+        'libraries': libraries,
+        'total_results': total_results
+    }
+    
+    return render(request, 'search/results.html', context)

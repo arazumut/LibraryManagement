@@ -153,3 +153,121 @@ def book_requests(request):
         'debug_data': json.dumps(debug_requests)
     }
     return render(request, 'books/book_requests.html', context)
+
+@login_required
+def book_request_create(request):
+    """Yeni bir kitap isteği oluştur"""
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        author = request.POST.get('author')
+        library_id = request.POST.get('library')
+        description = request.POST.get('description')
+        
+        # Önce kitabı bulmaya çalış
+        try:
+            # get yerine filter.first() kullanarak birden fazla sonuç durumunda hata oluşmasını engelle
+            matching_books = Book.objects.filter(title=title, author=author, library_id=library_id)
+            
+            if matching_books.count() == 0:
+                raise Book.DoesNotExist
+            
+            # Eğer birden fazla kitap bulunduysa, ilkini al
+            book = matching_books.first()
+            
+            # İsteğe bağlı olarak birden fazla kitap bulunduğunda bildirim eklenebilir
+            if matching_books.count() > 1:
+                from django.contrib import messages
+                messages.warning(request, f"Aynı başlık ve yazara sahip birden fazla kitap bulundu. İlk bulunan kitap için istek oluşturulacak: {book.title}")
+                
+        except Book.DoesNotExist:
+            # Kitap bulunamadı, mesaj gösterip yönlendir
+            from django.contrib import messages
+            messages.error(request, "Belirtilen kitap bulunamadı. Lütfen bilgileri kontrol ediniz.")
+            return redirect('books:requests')
+            
+        # Daha önce bu kitap için bekleyen bir istek var mı kontrol et
+        existing_request = BookRequest.objects.filter(
+            book=book, 
+            requester=request.user, 
+            status='pending'
+        ).exists()
+        
+        if existing_request:
+            from django.contrib import messages
+            messages.warning(request, "Bu kitap için zaten bekleyen bir isteğiniz bulunmaktadır.")
+            return redirect('books:requests')
+        
+        # Yeni istek oluştur
+        book_request = BookRequest.objects.create(
+            book=book,
+            requester=request.user,
+            message=description,
+            status='pending'
+        )
+        
+        from django.contrib import messages
+        messages.success(request, "Kitap isteği başarıyla oluşturuldu.")
+        
+    return redirect('books:requests')
+
+@login_required
+def book_request_cancel(request, request_id):
+    """Kullanıcının kendi isteğini iptal etmesi"""
+    book_request = get_object_or_404(BookRequest, id=request_id)
+    
+    # İsteğin sahibi olup olmadığını kontrol et
+    if book_request.requester != request.user:
+        from django.contrib import messages
+        messages.error(request, "Bu işlem için yetkiniz bulunmamaktadır.")
+        return redirect('books:requests')
+    
+    if book_request.cancel():
+        from django.contrib import messages
+        messages.success(request, "Kitap isteği başarıyla iptal edildi.")
+    else:
+        from django.contrib import messages
+        messages.error(request, "İstek iptal edilemedi. Sadece bekleyen istekler iptal edilebilir.")
+    
+    return redirect('books:requests')
+
+@login_required
+def book_request_approve(request, request_id):
+    """Yetkili kişinin isteği onaylaması"""
+    if not request.user.is_staff:
+        from django.contrib import messages
+        messages.error(request, "Bu işlem için yetkiniz bulunmamaktadır.")
+        return redirect('books:requests')
+    
+    book_request = get_object_or_404(BookRequest, id=request_id)
+    response_message = request.POST.get('response_message', '')
+    
+    if book_request.approve(response_message):
+        from django.contrib import messages
+        messages.success(request, f"{book_request.book.title} kitabı için istek onaylandı.")
+    else:
+        from django.contrib import messages
+        messages.error(request, "İstek onaylanamadı. Sadece bekleyen istekler onaylanabilir.")
+    
+    # Yönetici paneline yönlendir
+    return redirect('admin:books_bookrequest_changelist')
+
+@login_required
+def book_request_reject(request, request_id):
+    """Yetkili kişinin isteği reddetmesi"""
+    if not request.user.is_staff:
+        from django.contrib import messages
+        messages.error(request, "Bu işlem için yetkiniz bulunmamaktadır.")
+        return redirect('books:requests')
+    
+    book_request = get_object_or_404(BookRequest, id=request_id)
+    response_message = request.POST.get('response_message', '')
+    
+    if book_request.reject(response_message):
+        from django.contrib import messages
+        messages.success(request, f"{book_request.book.title} kitabı için istek reddedildi.")
+    else:
+        from django.contrib import messages
+        messages.error(request, "İstek reddedilemedi. Sadece bekleyen istekler reddedilebilir.")
+    
+    # Yönetici paneline yönlendir
+    return redirect('admin:books_bookrequest_changelist')

@@ -62,15 +62,15 @@
                     <td><span class="badge badge-light-{% if request.status == 'pending' %}warning{% elif request.status == 'approved' %}success{% elif request.status == 'rejected' %}danger{% else %}primary{% endif %} fs-7 fw-bold">{{ request.get_status_display }}</span></td>
                     <td class="text-end">
                         {% if request.status == 'pending' and request.requester == user %}
-                        <a href="#" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="return confirm('Bu isteği iptal etmek istediğinize emin misiniz?');">
+                        <a href="{% url 'books:request_cancel' request_id=request.id %}" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="return confirm('Bu isteği iptal etmek istediğinize emin misiniz?');">
                             <i class="ki-outline ki-cross-circle fs-2"></i>
                         </a>
                         {% endif %}
                         {% if user.is_staff and request.status == 'pending' %}
-                        <a href="#" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1">
+                        <a href="#" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1" data-bs-toggle="modal" data-bs-target="#kt_modal_approve_request_{{ request.id }}">
                             <i class="ki-outline ki-check-circle fs-2"></i>
                         </a>
-                        <a href="#" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm">
+                        <a href="#" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_reject_request_{{ request.id }}">
                             <i class="ki-outline ki-cross-circle fs-2"></i>
                         </a>
                         {% endif %}
@@ -111,7 +111,8 @@
             <!--begin::Modal body-->
             <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                 <!--begin::Form-->
-                <form id="kt_modal_add_request_form" class="form" action="#">
+                <form id="kt_modal_add_request_form" class="form" action="{% url 'books:request_create' %}" method="POST">
+                    {% csrf_token %}
                     <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_request_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_request_header" data-kt-scroll-wrappers="#kt_modal_add_request_scroll" data-kt-scroll-offset="300px">
                         <div class="fv-row mb-7">
                             <label class="required fw-semibold fs-6 mb-2">Kitap Adı</label>
@@ -203,3 +204,98 @@
     });
 </script>
 {% endblock %}
+
+<!-- İstek Onaylama Modalları -->
+{% for request in book_requests %}
+{% if request.status == 'pending' %}
+<!--begin::Modal - Approve Request-->
+<div class="modal fade" id="kt_modal_approve_request_{{ request.id }}" tabindex="-1" aria-hidden="true">
+    <!--begin::Modal dialog-->
+    <div class="modal-dialog modal-dialog-centered mw-650px">
+        <!--begin::Modal content-->
+        <div class="modal-content">
+            <!--begin::Modal header-->
+            <div class="modal-header">
+                <!--begin::Modal title-->
+                <h2>Kitap İsteği Onaylama</h2>
+                <!--end::Modal title-->
+                <!--begin::Close-->
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </div>
+                <!--end::Close-->
+            </div>
+            <!--end::Modal header-->
+            <!--begin::Modal body-->
+            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                <form action="{% url 'books:request_approve' request_id=request.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="text-center mb-7">
+                        <h3>{{ request.book.title }} kitabı için {{ request.requester.get_full_name|default:request.requester.username }} tarafından yapılan isteği onaylamak istiyor musunuz?</h3>
+                    </div>
+                    <div class="fv-row mb-7">
+                        <label class="fw-semibold fs-6 mb-2">Yanıt Mesajı (İsteğe Bağlı)</label>
+                        <textarea name="response_message" class="form-control form-control-solid" rows="4" placeholder="İsteği onaylarken eklemek istediğiniz bir mesaj"></textarea>
+                    </div>
+                    <div class="text-center pt-15">
+                        <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-success">
+                            <span class="indicator-label">Onayla</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!--end::Modal body-->
+        </div>
+        <!--end::Modal content-->
+    </div>
+    <!--end::Modal dialog-->
+</div>
+<!--end::Modal - Approve Request-->
+
+<!--begin::Modal - Reject Request-->
+<div class="modal fade" id="kt_modal_reject_request_{{ request.id }}" tabindex="-1" aria-hidden="true">
+    <!--begin::Modal dialog-->
+    <div class="modal-dialog modal-dialog-centered mw-650px">
+        <!--begin::Modal content-->
+        <div class="modal-content">
+            <!--begin::Modal header-->
+            <div class="modal-header">
+                <!--begin::Modal title-->
+                <h2>Kitap İsteği Reddetme</h2>
+                <!--end::Modal title-->
+                <!--begin::Close-->
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </div>
+                <!--end::Close-->
+            </div>
+            <!--end::Modal header-->
+            <!--begin::Modal body-->
+            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                <form action="{% url 'books:request_reject' request_id=request.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="text-center mb-7">
+                        <h3>{{ request.book.title }} kitabı için {{ request.requester.get_full_name|default:request.requester.username }} tarafından yapılan isteği reddetmek istiyor musunuz?</h3>
+                    </div>
+                    <div class="fv-row mb-7">
+                        <label class="fw-semibold fs-6 mb-2">Ret Nedeni (İsteğe Bağlı)</label>
+                        <textarea name="response_message" class="form-control form-control-solid" rows="4" placeholder="İsteği reddetme nedeniniz"></textarea>
+                    </div>
+                    <div class="text-center pt-15">
+                        <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-danger">
+                            <span class="indicator-label">Reddet</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!--end::Modal body-->
+        </div>
+        <!--end::Modal content-->
+    </div>
+    <!--end::Modal dialog-->
+</div>
+<!--end::Modal - Reject Request-->
+{% endif %}
+{% endfor %}

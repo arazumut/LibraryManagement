@@ -43,11 +43,11 @@
                                 <!--begin::Actions-->
                                 <div class="d-flex flex-center flex-wrap">
                                     {% if book.status == 'available' %}
-                                    <a href="{% url 'loans:borrow' book.id %}" class="btn btn-sm btn-primary me-2">
+                                    <a href="#" class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#kt_modal_borrow_book">
                                         <i class="ki-outline ki-arrow-right fs-3"></i>Ödünç Al
                                     </a>
                                     {% endif %}
-                                    {% if user.is_staff or book.library.created_by == user %}
+                                    {% if user.is_staff or book.library.owner == user %}
                                     <a href="{% url 'books:edit' book.id %}" class="btn btn-sm btn-light-warning me-2">
                                         <i class="ki-outline ki-pencil fs-3"></i>Düzenle
                                     </a>
@@ -193,6 +193,42 @@
     <!--end::Post-->
 </div>
 <!--end::Content-->
+{% endblock %}
+
+{% block modals %}
+<!-- Ödünç Al Modal -->
+<div class="modal fade" tabindex="-1" id="kt_modal_borrow_book">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'loans:borrow' book.id %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Kitap Ödünç Alma</h5>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ki-outline ki-cross fs-1"></i>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <p>"<strong>{{ book.title }}</strong>" isimli kitabı ödünç almak istediğinize emin misiniz?</p>
+                    <p>Kitap bilgileri:</p>
+                    <ul>
+                        <li><strong>Yazar:</strong> {{ book.author }}</li>
+                        <li><strong>Kütüphane:</strong> {{ book.library.name }}</li>
+                        <li><strong>Sayfa Sayısı:</strong> {{ book.pages|default:"Belirtilmemiş" }}</li>
+                    </ul>
+                    <div class="fv-row mb-5">
+                        <label for="notes" class="form-label">Notlar (İsteğe Bağlı):</label>
+                        <textarea class="form-control" name="notes" id="notes" rows="3" placeholder="Ödünç alma ile ilgili notlar..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Ödünç Al</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

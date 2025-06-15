@@ -35,13 +35,14 @@
                     <!--begin::Tablet and mobile search toggle-->
                     <div data-kt-search-element="toggle" class="search-toggle-mobile d-flex d-lg-none align-items-center">
                         <div class="d-flex">
-                            <i class="ki-outline ki-magnifier fs-1 fs-1"></i>
+                            <a href="#" class="btn btn-icon btn-color-gray-700 btn-active-color-primary btn-outline w-40px h-40px" data-bs-toggle="modal" data-bs-target="#kt_modal_search">
+                                <i class="ki-outline ki-magnifier fs-1"></i>
+                            </a>
                         </div>
-                        
                     </div>
                     <!--end::Tablet and mobile search toggle-->
                     <!--begin::Form-->
-                    <form data-kt-search-element="form" class="d-none d-lg-block w-100 position-relative mb-5 mb-lg-0"
+                    <form action="{% url 'search' %}" method="GET" data-kt-search-element="form" class="d-none d-lg-block w-100 position-relative mb-5 mb-lg-0"
                         autocomplete="off">
                         <!--begin::Hidden input-->
                         <input type="hidden" />
@@ -52,7 +53,7 @@
                         <!--end::Icon-->
                         <!--begin::Input-->
                         <input type="text" class="search-input form-control form-control border h-lg-45px ps-13"
-                            name="search" value="" placeholder="Kitapları, kütüphaneleri ara..." data-kt-search-element="input" />
+                            name="q" value="{{ request.GET.q|default:'' }}" placeholder="Kitapları, kütüphaneleri ara..." data-kt-search-element="input" />
                         <!--end::Input-->
                     </form>
                     <!--end::Form-->

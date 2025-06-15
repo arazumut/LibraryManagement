@@ -35,7 +35,47 @@ def manage_loans(request):
 
 @login_required
 def borrow_book(request, book_id):
-    # Borrow book logic here
+    # Kitabı bul veya 404 hatası döndür
+    book = get_object_or_404(Book, id=book_id)
+    
+    # Kitap ödünç alınabilir durumda mı kontrol et
+    if book.status != 'available':
+        messages.error(request, "Bu kitap şu anda ödünç alınamaz.")
+        return redirect('books:detail', book_id=book_id)
+    
+    if request.method == "POST":
+        # Kitabı ödünç verecek kişi
+        # Basit çözüm: İlk kütüphane görevlisi veya admin kullanıcıyı kullanma
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        # Önce kitabın kütüphanesinin sahibini kullan
+        if hasattr(book.library, 'owner') and book.library.owner:
+            loaned_by = book.library.owner
+        else:
+            # Yoksa admin yetkisi olan ilk kullanıcıyı bul
+            try:
+                loaned_by = User.objects.filter(is_staff=True).first()
+            except User.DoesNotExist:
+                # Yetkili bulunamadı
+                loaned_by = request.user
+        
+        # Notları al
+        notes = request.POST.get('notes', '')
+        
+        # Yeni ödünç verme kaydı oluştur
+        loan = Loan(
+            book=book,
+            borrower=request.user,
+            loaned_by=loaned_by,
+            notes=notes
+        )
+        loan.save()
+        
+        messages.success(request, f"{book.title} kitabını başarıyla ödünç aldınız. Son iade tarihi: {loan.due_date.strftime('%d.%m.%Y')}")
+        return redirect('loans:my_loans')
+    
+    # GET istekleri için book detail sayfasına yönlendir
     return redirect('books:detail', book_id=book_id)
 
 @login_required

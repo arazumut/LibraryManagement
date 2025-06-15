@@ -101,6 +101,33 @@
     </div>
     <!--end::Scrolltop-->
 
+    <!-- Mobile Search Modal -->
+    <div class="modal fade" tabindex="-1" id="kt_modal_search">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ara</h5>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ki-outline ki-cross fs-1"></i>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'search' %}" method="GET">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent">
+                                <i class="ki-outline ki-magnifier fs-2"></i>
+                            </span>
+                            <input type="text" class="form-control form-control-lg ps-3" name="q" placeholder="Kitapları, kütüphaneleri ara..." value="{{ request.GET.q|default:'' }}">
+                            <button class="btn btn-primary" type="submit">Ara</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block modals %}{% endblock %}
+
     <!--begin::Javascript-->
     <script>var hostUrl = "{% static '' %}";</script>
     <!--begin::Global Javascript Bundle-->

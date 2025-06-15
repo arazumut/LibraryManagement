@@ -16,6 +16,7 @@ urlpatterns = [
     path('books/', include('books.urls')),
     path('libraries/', include('libraries.urls')),
     path('loans/', include('loans.urls')),
+    path('search/', views.search, name='search'),
 ]
 
 # Serve media files in development
