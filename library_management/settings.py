@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'books',
     'libraries',
     'loans',
+    'api',
+    'analytics',
 ]
 
 MIDDLEWARE = [

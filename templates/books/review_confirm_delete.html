@@ -1,0 +1,43 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Değerlendirme Sil{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white">
+            <h3 class="card-title">Değerlendirmeyi Sil</h3>
+        </div>
+        <div class="card-body">
+            <p class="lead">
+                "<strong>{{ review.book.title }}</strong>" kitabı için yapmış olduğunuz değerlendirmeyi silmek istediğinizden emin misiniz?
+            </p>
+            
+            <div class="alert alert-warning">
+                <p class="mb-0">Bu işlem geri alınamaz.</p>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Değerlendirme Detayları</h5>
+                    <p><strong>Kitap:</strong> {{ review.book.title }}</p>
+                    <p><strong>Değerlendirme:</strong> {{ review.rating }} / 5</p>
+                    {% if review.review_text %}
+                    <p><strong>Yorum:</strong> {{ review.review_text }}</p>
+                    {% endif %}
+                    <p><strong>Tarih:</strong> {{ review.created_at|date:"d F Y H:i" }}</p>
+                </div>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">Değerlendirmeyi Sil</button>
+                    <a href="{% url 'books:detail' review.book.id %}" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

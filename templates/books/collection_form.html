@@ -1,0 +1,88 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if is_edit %}
+        Koleksiyonu Düzenle
+    {% else %}
+        Yeni Koleksiyon
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header">
+            <h3 class="card-title">
+                {% if is_edit %}
+                    Koleksiyonu Düzenle
+                {% else %}
+                    Yeni Koleksiyon Oluştur
+                {% endif %}
+            </h3>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+                    {{ form.name.errors }}
+                    <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" 
+                           class="form-control{% if form.name.errors %} is-invalid{% endif %}" 
+                           value="{{ form.name.value|default:'' }}">
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                    {{ form.description.errors }}
+                    <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" 
+                              class="form-control{% if form.description.errors %} is-invalid{% endif %}" 
+                              rows="3">{{ form.description.value|default:'' }}</textarea>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.visibility.id_for_label }}" class="form-label">{{ form.visibility.label }}</label>
+                    {{ form.visibility.errors }}
+                    <select name="{{ form.visibility.name }}" id="{{ form.visibility.id_for_label }}" 
+                            class="form-control{% if form.visibility.errors %} is-invalid{% endif %}">
+                        {% for value, text in form.visibility.field.choices %}
+                            <option value="{{ value }}" {% if form.visibility.value == value %}selected{% endif %}>
+                                {{ text }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.cover_image.id_for_label }}" class="form-label">{{ form.cover_image.label }}</label>
+                    {{ form.cover_image.errors }}
+                    
+                    {% if is_edit and collection.cover_image %}
+                        <div class="mb-2">
+                            <img src="{{ collection.cover_image.url }}" class="img-thumbnail" style="max-height: 200px;" alt="Mevcut Kapak Resmi">
+                            <p class="text-muted small mt-1">Yeni bir resim seçerseniz mevcut resim değiştirilecektir.</p>
+                        </div>
+                    {% endif %}
+                    
+                    <input type="file" name="{{ form.cover_image.name }}" id="{{ form.cover_image.id_for_label }}" 
+                           class="form-control{% if form.cover_image.errors %} is-invalid{% endif %}">
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        {% if is_edit %}
+                            Güncelle
+                        {% else %}
+                            Oluştur
+                        {% endif %}
+                    </button>
+                    <a href="{% if is_edit %}{% url 'books:collection_detail' collection.id %}{% else %}{% url 'books:collection_list' %}{% endif %}" class="btn btn-secondary">
+                        İptal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

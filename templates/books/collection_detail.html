@@ -1,0 +1,122 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}{{ collection.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card shadow">
+                {% if collection.cover_image %}
+                    <img src="{{ collection.cover_image.url }}" class="card-img-top" alt="{{ collection.name }}">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-book-open fa-4x text-muted"></i>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ collection.name }}</h5>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-{{ collection.visibility_icon }}"></i> 
+                        {{ collection.get_visibility_display }}
+                    </p>
+                    <p class="card-text">
+                        <i class="fas fa-user"></i> {{ collection.owner.username }}
+                    </p>
+                    {% if collection.description %}
+                        <p class="card-text">{{ collection.description }}</p>
+                    {% endif %}
+                    <p class="card-text text-muted small">
+                        <i class="fas fa-calendar"></i> {{ collection.created_at|date:"d F Y" }}
+                    </p>
+                </div>
+                
+                {% if is_owner %}
+                    <div class="card-footer bg-transparent">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'books:collection_edit' collection.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i> Düzenle
+                            </a>
+                            <a href="{% url 'books:collection_delete' collection.id %}" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Sil
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card shadow">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">Koleksiyondaki Kitaplar</h3>
+                    {% if is_owner %}
+                        <a href="{% url 'books:collection_add_book' collection.id %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus"></i> Kitap Ekle
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if collection_items %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 60px;">#</th>
+                                        <th>Kitap</th>
+                                        <th>Yazar</th>
+                                        <th>Kütüphane</th>
+                                        <th>Durum</th>
+                                        {% if is_owner %}
+                                            <th>İşlemler</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in collection_items %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>
+                                                <a href="{% url 'books:detail' item.book.id %}">
+                                                    {{ item.book.title }}
+                                                </a>
+                                                {% if item.notes %}
+                                                    <i class="fas fa-comment-dots text-muted ml-2" title="{{ item.notes }}"></i>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ item.book.author }}</td>
+                                            <td>{{ item.book.library.name }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ item.book.status_color }}">
+                                                    {{ item.book.get_status_display }}
+                                                </span>
+                                            </td>
+                                            {% if is_owner %}
+                                                <td>
+                                                    <a href="{% url 'books:collection_remove_book' collection.id item.id %}" class="btn btn-sm btn-outline-danger">
+                                                        <i class="fas fa-times"></i>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">Bu koleksiyonda henüz kitap bulunmuyor.</p>
+                        </div>
+                        {% if is_owner %}
+                            <a href="{% url 'books:collection_add_book' collection.id %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Kitap Ekle
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
