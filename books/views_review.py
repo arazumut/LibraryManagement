@@ -108,3 +108,13 @@ def book_review_like_toggle(request, review_id):
     
     # POST değilse, yönlendir
     return redirect('home')
+
+@login_required
+def book_review_list(request):
+    """Tüm kitap değerlendirmeleri."""
+    reviews = BookReview.objects.all().order_by('-created_at')
+    
+    return render(request, 'books/review_list.html', {
+        'reviews': reviews,
+        'active_menu': 'reviews',
+    })

@@ -73,11 +73,83 @@
                 <!--begin:Menu item-->
                 <div class="menu-item py-2">
                     <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'reservations' %}active{% endif %}" href="{% url 'books:reservation_list' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-calendar-add fs-2"></i>
+                        </span>
+                        <span class="menu-title">Reservations</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'collections' %}active{% endif %}" href="{% url 'books:collection_list' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-bookmark fs-2"></i>
+                        </span>
+                        <span class="menu-title">Collections</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'reviews' %}active{% endif %}" href="{% url 'books:review_list' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-star fs-2"></i>
+                        </span>
+                        <span class="menu-title">Reviews</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'notifications' %}active{% endif %}" href="{% url 'accounts:notification_list' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-notification fs-2"></i>
+                        </span>
+                        <span class="menu-title">Notifications</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'reading_goals' %}active{% endif %}" href="{% url 'books:goal_list' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-award fs-2"></i>
+                        </span>
+                        <span class="menu-title">Reading Goals</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
                     <a class="menu-link {% if active_menu == 'requests' %}active{% endif %}" href="{% url 'books:requests' %}">
                         <span class="menu-icon">
                             <i class="ki-outline ki-notification-status fs-2"></i>
                         </span>
                         <span class="menu-title">Book Requests</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'social' %}active{% endif %}" href="{% url 'accounts:social_feed' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-people fs-2"></i>
+                        </span>
+                        <span class="menu-title">Social Network</span>
                     </a>
                     <!--end:Menu link-->
                 </div>
@@ -95,6 +167,30 @@
                     <!--end:Menu link-->
                 </div>
                 <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'analytics' %}active{% endif %}" href="{% url 'analytics:dashboard' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-chart-line fs-2"></i>
+                        </span>
+                        <span class="menu-title">Analytics</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'qr_codes' %}active{% endif %}" href="{% url 'books:identifier_list' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-barcode fs-2"></i>
+                        </span>
+                        <span class="menu-title">QR/Barcodes</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
                 {% endif %}
                 {% if user.is_super_admin %}
                 <!--begin:Menu item-->
@@ -105,6 +201,18 @@
                             <i class="ki-outline ki-profile-user fs-2"></i>
                         </span>
                         <span class="menu-title">Users</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'api' %}active{% endif %}" href="{% url 'api:documentation' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-code fs-2"></i>
+                        </span>
+                        <span class="menu-title">API</span>
                     </a>
                     <!--end:Menu link-->
                 </div>

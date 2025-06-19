@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from . import views_review, views_collection, views_reservation
+from . import views_review, views_collection, views_reservation, views_goals
 
 app_name = 'books'
 
@@ -22,6 +22,7 @@ urlpatterns = [
     path('review/<int:review_id>/edit/', views_review.book_review_edit, name='review_edit'),
     path('review/<int:review_id>/delete/', views_review.book_review_delete, name='review_delete'),
     path('review/<int:review_id>/like/', views_review.book_review_like_toggle, name='review_like'),
+    path('reviews/', views_review.book_review_list, name='review_list'),
     
     # Koleksiyon sistemi
     path('collections/', views_collection.collection_list, name='collection_list'),
@@ -39,4 +40,12 @@ urlpatterns = [
     path('reservations/<int:reservation_id>/cancel/', views_reservation.reservation_cancel, name='reservation_cancel'),
     path('reservations/<int:reservation_id>/fulfill/', views_reservation.reservation_fulfill, name='reservation_fulfill'),
     path('<int:book_id>/notify-reservations/', views_reservation.book_return_notify_reservations, name='notify_reservations'),
+    
+    # Okuma hedefleri
+    path('goals/', views_goals.goal_list, name='goal_list'),
+    path('goals/create/', views_goals.goal_create, name='goal_create'),
+    path('goals/<int:goal_id>/', views_goals.goal_detail, name='goal_detail'),
+    path('goals/<int:goal_id>/edit/', views_goals.goal_update, name='goal_edit'),
+    path('goals/<int:goal_id>/delete/', views_goals.goal_delete, name='goal_delete'),
+    path('goals/<int:goal_id>/progress/', views_goals.goal_update_progress, name='goal_progress'),
 ]

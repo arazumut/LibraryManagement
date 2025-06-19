@@ -1,0 +1,74 @@
+{% extends 'layouts/default.html' %}
+{% load static %}
+
+{% block title %}Book Reviews{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">All Book Reviews</h3>
+    </div>
+    <div class="card-body">
+        {% if reviews %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Rating</th>
+                            <th>Reviewer</th>
+                            <th>Review</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for review in reviews %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'books:detail' review.book.id %}">
+                                        {{ review.book.title }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="rating">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                <i class="ki-outline ki-star fs-6 text-warning"></i>
+                                            {% else %}
+                                                <i class="ki-outline ki-star fs-6 text-muted"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>{{ review.user.username }}</td>
+                                <td>{{ review.comment|truncatechars:50 }}</td>
+                                <td>{{ review.created_at|date:"d M Y" }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'books:detail' review.book.id %}" class="btn btn-sm btn-light btn-active-light-primary">
+                                            <i class="ki-outline ki-eye"></i> View
+                                        </a>
+                                        {% if request.user == review.user or request.user.is_staff %}
+                                            <a href="{% url 'books:review_edit' review.id %}" class="btn btn-sm btn-light btn-active-light-primary">
+                                                <i class="ki-outline ki-pencil"></i> Edit
+                                            </a>
+                                            <a href="{% url 'books:review_delete' review.id %}" class="btn btn-sm btn-light btn-active-light-danger">
+                                                <i class="ki-outline ki-trash"></i> Delete
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                No reviews found.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
