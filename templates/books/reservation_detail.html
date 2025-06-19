@@ -1,0 +1,152 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Rezervasyon Detayı{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">Rezervasyon Detayı</h3>
+            <span class="badge bg-{{ reservation.status_color }} fs-6">
+                {{ reservation.get_status_display }}
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if reservation.book.cover_image %}
+                            <img src="{{ reservation.book.cover_image.url }}" class="card-img-top" alt="{{ reservation.book.title }}">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-book fa-4x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ reservation.book.title }}</h5>
+                            <p class="card-text text-muted">{{ reservation.book.author }}</p>
+                            
+                            {% if reservation.book.isbn %}
+                                <p class="card-text small">
+                                    <strong>ISBN:</strong> {{ reservation.book.isbn }}
+                                </p>
+                            {% endif %}
+                            
+                            <p class="card-text">
+                                <strong>Kütüphane:</strong> {{ reservation.book.library.name }}
+                            </p>
+                            
+                            <p class="card-text">
+                                <strong>Kitap Durumu:</strong>
+                                <span class="badge bg-{{ reservation.book.status_color }}">
+                                    {{ reservation.book.get_status_display }}
+                                </span>
+                            </p>
+                            
+                            <div class="d-grid">
+                                <a href="{% url 'books:detail' reservation.book.id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-info-circle"></i> Kitap Detayları
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Rezervasyon Bilgileri</h5>
+                            
+                            <div class="row mb-2">
+                                <div class="col-md-4 fw-bold">Rezervasyon Tarihi:</div>
+                                <div class="col-md-8">{{ reservation.reservation_date|date:"d F Y H:i" }}</div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-md-4 fw-bold">Durum:</div>
+                                <div class="col-md-8">
+                                    <span class="badge bg-{{ reservation.status_color }}">
+                                        {{ reservation.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            {% if reservation.status == 'notified' %}
+                                <div class="row mb-2">
+                                    <div class="col-md-4 fw-bold">Bildirim Tarihi:</div>
+                                    <div class="col-md-8">{{ reservation.notification_date|date:"d F Y H:i" }}</div>
+                                </div>
+                                
+                                <div class="row mb-2">
+                                    <div class="col-md-4 fw-bold">Son Alma Tarihi:</div>
+                                    <div class="col-md-8 text-danger">{{ reservation.expiry_date|date:"d F Y H:i" }}</div>
+                                </div>
+                                
+                                <div class="alert alert-warning mt-3">
+                                    <p class="mb-0">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Kitabı son alma tarihine kadar almazsanız, rezervasyonunuz otomatik olarak iptal edilecektir.
+                                    </p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if reservation.notes %}
+                                <div class="row mb-2">
+                                    <div class="col-md-4 fw-bold">Notlar:</div>
+                                    <div class="col-md-8">{{ reservation.notes }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">İşlemler</h5>
+                            
+                            {% if reservation.status == 'pending' %}
+                                <div class="alert alert-info mb-3">
+                                    <p class="mb-0">
+                                        <i class="fas fa-info-circle"></i>
+                                        Kitap müsait olduğunda size bildirim gönderilecektir.
+                                    </p>
+                                </div>
+                                
+                                <a href="{% url 'books:reservation_cancel' reservation.id %}" class="btn btn-danger">
+                                    <i class="fas fa-times"></i> Rezervasyonu İptal Et
+                                </a>
+                            {% elif reservation.status == 'notified' %}
+                                <div class="alert alert-success mb-3">
+                                    <p class="mb-0">
+                                        <i class="fas fa-check-circle"></i>
+                                        Kitap sizin için hazır! Lütfen {{ reservation.expiry_date|date:"d F Y H:i" }} tarihine kadar alınız.
+                                    </p>
+                                </div>
+                                
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'books:reservation_cancel' reservation.id %}" class="btn btn-danger">
+                                        <i class="fas fa-times"></i> Rezervasyonu İptal Et
+                                    </a>
+                                    
+                                    {% if user.is_library_admin %}
+                                        <a href="{% url 'books:reservation_fulfill' reservation.id %}" class="btn btn-success">
+                                            <i class="fas fa-check"></i> Tamamla (Kitabı Ver)
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-secondary mb-3">
+                                    <p class="mb-0">
+                                        <i class="fas fa-info-circle"></i>
+                                        Bu rezervasyon {{ reservation.get_status_display|lower }} durumunda olduğu için herhangi bir işlem yapılamaz.
+                                    </p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

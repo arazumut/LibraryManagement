@@ -1,0 +1,124 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Kitap Rezervasyonlarım{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="h3 mb-4">Kitap Rezervasyonlarım</h1>
+    
+    <!-- Aktif Rezervasyonlar -->
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Aktif Rezervasyonlar</h3>
+        </div>
+        <div class="card-body">
+            {% if active_reservations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Kitap</th>
+                                <th>Kütüphane</th>
+                                <th>Rezervasyon Tarihi</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in active_reservations %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'books:detail' reservation.book.id %}">
+                                            {{ reservation.book.title }}
+                                        </a>
+                                        <div class="text-muted small">{{ reservation.book.author }}</div>
+                                    </td>
+                                    <td>{{ reservation.book.library.name }}</td>
+                                    <td>{{ reservation.reservation_date|date:"d F Y H:i" }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ reservation.status_color }}">
+                                            {{ reservation.get_status_display }}
+                                        </span>
+                                        {% if reservation.status == 'notified' %}
+                                            <div class="text-danger small">
+                                                Son alım: {{ reservation.expiry_date|date:"d F Y H:i" }}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'books:reservation_detail' reservation.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> Detay
+                                            </a>
+                                            <a href="{% url 'books:reservation_cancel' reservation.id %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-times"></i> İptal
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p class="mb-0">Aktif rezervasyonunuz bulunmuyor.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Geçmiş Rezervasyonlar -->
+    <div class="card shadow">
+        <div class="card-header">
+            <h3 class="card-title">Geçmiş Rezervasyonlar</h3>
+        </div>
+        <div class="card-body">
+            {% if past_reservations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Kitap</th>
+                                <th>Kütüphane</th>
+                                <th>Rezervasyon Tarihi</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in past_reservations %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'books:detail' reservation.book.id %}">
+                                            {{ reservation.book.title }}
+                                        </a>
+                                        <div class="text-muted small">{{ reservation.book.author }}</div>
+                                    </td>
+                                    <td>{{ reservation.book.library.name }}</td>
+                                    <td>{{ reservation.reservation_date|date:"d F Y H:i" }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ reservation.status_color }}">
+                                            {{ reservation.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'books:reservation_detail' reservation.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Detay
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p class="mb-0">Geçmiş rezervasyonunuz bulunmuyor.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

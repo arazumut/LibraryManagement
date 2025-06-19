@@ -135,6 +135,114 @@
                     <!--begin::Card-->
                     <div class="card pt-4 mb-6 mb-xl-9">
                         <!--begin::Card header-->
+                        <div class="card-header border-0 d-flex justify-content-between align-items-center">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Değerlendirmeler</h2>
+                            </div>
+                            <!--end::Card title-->
+                            <div>
+                                <a href="{% url 'books:review_create' book.id %}" class="btn btn-sm btn-primary">
+                                    <i class="ki-outline ki-star fs-2"></i>Değerlendirme Yap
+                                </a>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0 pb-5">
+                            {% if book.reviews.all %}
+                                <div class="review-summary mb-7">
+                                    {% with reviews=book.reviews.all %}
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="fs-1 fw-bold me-2">
+                                            {{ reviews|length }}
+                                        </div>
+                                        <div class="text-muted">Değerlendirme</div>
+                                    </div>
+                                    <div class="review-stars fs-2">
+                                        {% with avg_rating=reviews|dictsort:"rating"|last %}
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= avg_rating.rating %}
+                                                <i class="ki-outline ki-star text-warning"></i>
+                                            {% else %}
+                                                <i class="ki-outline ki-star text-muted"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="fs-4 ms-2">{{ avg_rating.rating|floatformat:1 }} / 5</span>
+                                        {% endwith %}
+                                    </div>
+                                    {% endwith %}
+                                </div>
+
+                                {% for review in book.reviews.all %}
+                                    <div class="d-flex mb-7">
+                                        <div class="symbol symbol-60px me-5">
+                                            {% if review.user.profile_picture %}
+                                                <img src="{{ review.user.profile_picture.url }}" class="symbol-label" alt="{{ review.user.username }}">
+                                            {% else %}
+                                                <div class="symbol-label fs-3 bg-light-primary text-primary">{{ review.user.username|first|upper }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex flex-column flex-grow-1">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <a href="#" class="text-gray-900 text-hover-primary fs-5 fw-bold me-3">{{ review.user.get_full_name|default:review.user.username }}</a>
+                                                <span class="text-muted fs-7">{{ review.created_at|date:"d M Y" }}</span>
+                                            </div>
+                                            <div class="review-stars mb-2">
+                                                {% for i in "12345"|make_list %}
+                                                    {% if forloop.counter <= review.rating %}
+                                                        <i class="ki-outline ki-star text-warning"></i>
+                                                    {% else %}
+                                                        <i class="ki-outline ki-star text-muted"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <p class="text-gray-800 fs-6 fw-normal mb-2">{{ review.review_text|linebreaks }}</p>
+                                            <div class="d-flex align-items-center">
+                                                <span class="text-muted fs-7 me-3">{{ review.likes.count }} beğeni</span>
+                                                {% if user != review.user %}
+                                                    <form action="{% url 'books:review_like' review.id %}" method="post" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-sm btn-light-primary">
+                                                            <i class="ki-outline ki-heart fs-7"></i> Beğen
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                                {% if user == review.user %}
+                                                    <div class="ms-auto">
+                                                        <a href="{% url 'books:review_edit' review.id %}" class="btn btn-sm btn-light-warning me-2">
+                                                            <i class="ki-outline ki-pencil fs-7"></i> Düzenle
+                                                        </a>
+                                                        <a href="{% url 'books:review_delete' review.id %}" class="btn btn-sm btn-light-danger">
+                                                            <i class="ki-outline ki-trash fs-7"></i> Sil
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="alert alert-primary">
+                                    <div class="d-flex flex-column">
+                                        <h4 class="mb-1 text-dark">Henüz değerlendirme yok</h4>
+                                        <span>Bu kitap hakkında ilk değerlendirmeyi siz yapın!</span>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <a href="{% url 'books:review_create' book.id %}" class="btn btn-light-primary">
+                                        <i class="ki-outline ki-star fs-2"></i>Değerlendirme Yap
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+                    
+                    <!--begin::Card-->
+                    <div class="card pt-4 mb-6 mb-xl-9">
+                        <!--begin::Card header-->
                         <div class="card-header border-0">
                             <!--begin::Card title-->
                             <div class="card-title">
@@ -183,6 +291,55 @@
                         <!--end::Card body-->
                     </div>
                     <!--end::Card-->
+                    
+                    {% if book.status == 'borrowed' %}
+                    <!--begin::Card-->
+                    <div class="card pt-4 mb-6 mb-xl-9">
+                        <!--begin::Card header-->
+                        <div class="card-header border-0">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Rezervasyon</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0 pb-5">
+                            <div class="alert alert-info mb-5">
+                                <div class="d-flex flex-column">
+                                    <h4 class="mb-1 text-dark">Kitap şu anda ödünç verilmiş durumda</h4>
+                                    <span>Bu kitabı rezerve edebilir ve müsait olduğunda bildirim alabilirsiniz.</span>
+                                </div>
+                            </div>
+                            
+                            {% if user_has_reservation %}
+                                <div class="alert alert-success mb-5">
+                                    <div class="d-flex flex-column">
+                                        <h4 class="mb-1 text-dark">Zaten rezervasyonunuz var</h4>
+                                        <span>Bu kitap için daha önce bir rezervasyon yapmışsınız. Rezervasyon durumunuzu <a href="{% url 'books:reservation_detail' user_reservation.id %}" class="text-primary fw-bold">buradan</a> kontrol edebilirsiniz.</span>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="text-center">
+                                    <a href="{% url 'books:reservation_create' book.id %}" class="btn btn-primary">
+                                        <i class="ki-outline ki-calendar fs-2"></i>Kitabı Rezerve Et
+                                    </a>
+                                </div>
+                                
+                                {% if book.reservations.count > 0 %}
+                                    <div class="separator my-10"></div>
+                                    
+                                    <div class="text-muted fs-6">
+                                        <p>Şu anda bu kitap için <strong>{{ book.reservations.count }}</strong> kişi sırada bekliyor.</p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+                    {% endif %}
                 </div>
                 <!--end::Content-->
             </div>

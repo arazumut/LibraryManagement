@@ -1,0 +1,42 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Kitabı Koleksiyondan Çıkar{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white">
+            <h3 class="card-title">Kitabı Koleksiyondan Çıkar</h3>
+        </div>
+        <div class="card-body">
+            <p class="lead">
+                "<strong>{{ item.book.title }}</strong>" kitabını "<strong>{{ collection.name }}</strong>" koleksiyonundan çıkarmak istediğinizden emin misiniz?
+            </p>
+            
+            <div class="alert alert-warning">
+                <p class="mb-0">Bu işlem kitabı sadece koleksiyonunuzdan çıkaracaktır, kitap kütüphaneden silinmeyecektir.</p>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Kitap Bilgileri</h5>
+                    <p><strong>Başlık:</strong> {{ item.book.title }}</p>
+                    <p><strong>Yazar:</strong> {{ item.book.author }}</p>
+                    {% if item.notes %}
+                    <p><strong>Notlarınız:</strong> {{ item.notes }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">Kitabı Çıkar</button>
+                    <a href="{% url 'books:collection_detail' collection.id %}" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

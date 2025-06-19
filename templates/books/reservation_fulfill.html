@@ -1,0 +1,48 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Rezervasyonu Tamamla{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h3 class="card-title">Rezervasyonu Tamamla (Kitabı Ver)</h3>
+        </div>
+        <div class="card-body">
+            <p class="lead">
+                "<strong>{{ reservation.book.title }}</strong>" kitabını <strong>{{ reservation.user.username }}</strong> kullanıcısına vermek üzeresiniz.
+            </p>
+            
+            <div class="alert alert-info">
+                <p class="mb-0">Bu işlem rezervasyonu tamamlayacak ve kitabı ödünç verme işlemine yönlendirecektir.</p>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Rezervasyon Bilgileri</h5>
+                    <p><strong>Kitap:</strong> {{ reservation.book.title }}</p>
+                    <p><strong>Yazar:</strong> {{ reservation.book.author }}</p>
+                    <p><strong>Kütüphane:</strong> {{ reservation.book.library.name }}</p>
+                    <p><strong>Rezervasyon Tarihi:</strong> {{ reservation.reservation_date|date:"d F Y H:i" }}</p>
+                    <p><strong>Bildirim Tarihi:</strong> {{ reservation.notification_date|date:"d F Y H:i" }}</p>
+                    <p><strong>Son Alma Tarihi:</strong> {{ reservation.expiry_date|date:"d F Y H:i" }}</p>
+                    <p><strong>Durum:</strong> 
+                        <span class="badge bg-{{ reservation.status_color }}">
+                            {{ reservation.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Kitabı Ver ve Rezervasyonu Tamamla</button>
+                    <a href="{% url 'books:reservation_detail' reservation.id %}" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
