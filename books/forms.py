@@ -42,9 +42,14 @@ class BookCollectionForm(forms.ModelForm):
 class BookCollectionItemForm(forms.Form):
     """Koleksiyona kitap ekleme formu."""
     book = forms.ModelChoiceField(
-        queryset=Book.objects.filter(status='available'),
+        queryset=Book.objects.filter(status='available').order_by('title'),
         label='Kitap',
-        widget=forms.Select(attrs={'class': 'form-control select2'})
+        widget=forms.Select(attrs={
+            'class': 'form-control select2-ajax',
+            'data-placeholder': 'Kitap arayın...',
+            'data-ajax--url': '', # Bu URL view'da dinamik olarak doldurulacak
+            'style': 'width: 100%;'
+        })
     )
     notes = forms.CharField(
         required=False,

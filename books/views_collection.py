@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from books.models import Book
 from books.models_collection import BookCollection, BookCollectionItem
 from .forms import BookCollectionForm, BookCollectionItemForm
+from django.db.models import Q
 
 @login_required
 def collection_list(request):
@@ -29,7 +30,7 @@ def collection_detail(request, collection_id):
     # Koleksiyonu görüntüleme yetkisi kontrol et
     if collection.visibility == 'private' and collection.owner != request.user:
         messages.error(request, 'Bu koleksiyonu görüntüleme yetkiniz yok.')
-        return redirect('collection_list')
+        return redirect('books:collection_list')
     
     # Koleksiyondaki kitaplar
     collection_items = collection.bookcollectionitem_set.all().select_related('book')
@@ -50,7 +51,7 @@ def collection_create(request):
             collection.owner = request.user
             collection.save()
             messages.success(request, 'Koleksiyon başarıyla oluşturuldu.')
-            return redirect('collection_detail', collection_id=collection.id)
+            return redirect('books:collection_detail', collection_id=collection.id)
     else:
         form = BookCollectionForm()
     
@@ -67,14 +68,14 @@ def collection_edit(request, collection_id):
     # Sadece sahip düzenleyebilir
     if collection.owner != request.user:
         messages.error(request, 'Bu koleksiyonu düzenleme yetkiniz yok.')
-        return redirect('collection_list')
+        return redirect('books:collection_list')
     
     if request.method == 'POST':
         form = BookCollectionForm(request.POST, request.FILES, instance=collection)
         if form.is_valid():
             form.save()
             messages.success(request, 'Koleksiyon başarıyla güncellendi.')
-            return redirect('collection_detail', collection_id=collection.id)
+            return redirect('books:collection_detail', collection_id=collection.id)
     else:
         form = BookCollectionForm(instance=collection)
     
@@ -92,12 +93,12 @@ def collection_delete(request, collection_id):
     # Sadece sahip silebilir
     if collection.owner != request.user:
         messages.error(request, 'Bu koleksiyonu silme yetkiniz yok.')
-        return redirect('collection_list')
+        return redirect('books:collection_list')
     
     if request.method == 'POST':
         collection.delete()
         messages.success(request, 'Koleksiyon başarıyla silindi.')
-        return redirect('collection_list')
+        return redirect('books:collection_list')
     
     return render(request, 'books/collection_confirm_delete.html', {
         'collection': collection,
@@ -111,10 +112,37 @@ def collection_add_book(request, collection_id):
     # Sadece sahip kitap ekleyebilir
     if collection.owner != request.user:
         messages.error(request, 'Bu koleksiyona kitap ekleme yetkiniz yok.')
-        return redirect('collection_detail', collection_id=collection.id)
+        return redirect('books:collection_detail', collection_id=collection.id)
+    
+    # Koleksiyonda zaten bulunan kitapları dışla
+    existing_books = BookCollectionItem.objects.filter(
+        collection=collection
+    ).values_list('book_id', flat=True)
+    
+    # AJAX Kitap arama isteği
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and 'term' in request.GET:
+        term = request.GET.get('term', '')
+        books = Book.objects.filter(
+            Q(title__icontains=term) | Q(author__icontains=term),
+            status='available'
+        ).exclude(id__in=existing_books).order_by('title')[:20]
+        
+        results = []
+        for book in books:
+            results.append({
+                'id': book.id,
+                'text': f"{book.title} - {book.author}"
+            })
+        
+        return JsonResponse({'results': results})
     
     if request.method == 'POST':
         form = BookCollectionItemForm(request.POST)
+        # Mevcut kitapları formun queryset'inden çıkar
+        form.fields['book'].queryset = Book.objects.filter(
+            status='available'
+        ).exclude(id__in=existing_books).order_by('title')
+        
         if form.is_valid():
             book = form.cleaned_data['book']
             notes = form.cleaned_data['notes']
@@ -128,9 +156,13 @@ def collection_add_book(request, collection_id):
                 item.save()
                 messages.success(request, 'Kitap başarıyla koleksiyona eklendi.')
             
-            return redirect('collection_detail', collection_id=collection.id)
+            return redirect('books:collection_detail', collection_id=collection.id)
     else:
         form = BookCollectionItemForm()
+        # Mevcut kitapları formun queryset'inden çıkar
+        form.fields['book'].queryset = Book.objects.filter(
+            status='available'
+        ).exclude(id__in=existing_books).order_by('title')
     
     return render(request, 'books/collection_add_book.html', {
         'form': form,
@@ -146,12 +178,12 @@ def collection_remove_book(request, collection_id, item_id):
     # Sadece sahip kitap çıkarabilir
     if collection.owner != request.user:
         messages.error(request, 'Bu koleksiyondan kitap çıkarma yetkiniz yok.')
-        return redirect('collection_detail', collection_id=collection.id)
+        return redirect('books:collection_detail', collection_id=collection.id)
     
     if request.method == 'POST':
         item.delete()
         messages.success(request, 'Kitap başarıyla koleksiyondan çıkarıldı.')
-        return redirect('collection_detail', collection_id=collection.id)
+        return redirect('books:collection_detail', collection_id=collection.id)
     
     return render(request, 'books/collection_remove_book.html', {
         'item': item,

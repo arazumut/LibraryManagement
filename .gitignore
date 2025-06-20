@@ -28,6 +28,9 @@ db.sqlite3-journal
 
 # Static files
 staticfiles/
+# Media files
+media/
+media/collection_covers/
 
 # Virtual Environment
 library_env/
