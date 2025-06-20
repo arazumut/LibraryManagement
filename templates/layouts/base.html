@@ -20,6 +20,8 @@
     <!--begin::Global Stylesheets Bundle-->
     <link href="{% static 'plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Theme Styles -->
+    <link href="{% static 'css/themes.css' %}" rel="stylesheet" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
     {% block extra_css %}{% endblock %}
     <script>
@@ -37,23 +39,7 @@
     class="app-default">
     <!--begin::Theme mode setup on page load-->
     <script>
-        var defaultThemeMode = "light";
-        var themeMode;
-        if (document.documentElement) {
-            if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
-                themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
-            } else {
-                if (localStorage.getItem("data-bs-theme") !== null) {
-                    themeMode = localStorage.getItem("data-bs-theme");
-                } else {
-                    themeMode = defaultThemeMode;
-                }
-            }
-            if (themeMode === "system") {
-                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-            }
-            document.documentElement.setAttribute("data-bs-theme", themeMode);
-        }
+        // Tema değişikliği artık theme-switcher.js tarafından yönetilecek
     </script>
     <!--end::Theme mode setup on page load-->
     <!--begin::App-->
@@ -141,6 +127,8 @@
     <!--begin::Custom Javascript-->
     <script src="{% static 'js/widgets.bundle.js' %}"></script>
     <script src="{% static 'js/custom/widgets.js' %}"></script>
+    <!-- Theme Switcher JS -->
+    <script src="{% static 'js/theme-switcher.js' %}"></script>
     <!--end::Custom Javascript-->
     {% block extra_js %}{% endblock %}
     <!--end::Javascript-->
