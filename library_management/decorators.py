@@ -20,7 +20,10 @@ def user_is_library_admin(view_func):
         if request.user.is_authenticated and (request.user.is_library_admin or request.user.is_super_admin):
             return view_func(request, *args, **kwargs)
         messages.error(request, 'Bu işlemi yapmak için kütüphane yöneticisi olmalısınız.')
-        return redirect('dashboard')
+        # Attempt to return to the referring page if available
+        if request.META.get('HTTP_REFERER'):
+            return redirect(request.META.get('HTTP_REFERER'))
+        return redirect('books:list')
     return wrapped_view
 
 def user_is_super_admin(view_func):

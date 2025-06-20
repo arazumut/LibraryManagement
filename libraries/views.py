@@ -30,7 +30,6 @@ def library_detail(request, library_id):
 
 @login_required
 @check_account_activation
-@user_is_super_admin
 def library_create(request):
     if request.method == 'POST':
         form = LibraryForm(request.POST)
@@ -45,14 +44,13 @@ def library_create(request):
         form = LibraryForm()
     
     context = {
-        'active_menu': 'libraries',
+        'active_menu': 'library_create',
         'form': form
     }
     return render(request, 'libraries/library_form.html', context)
 
 @login_required
 @check_account_activation
-@user_is_super_admin
 def library_edit(request, library_id):
     library = get_object_or_404(Library, id=library_id)
     

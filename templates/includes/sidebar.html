@@ -47,6 +47,19 @@
                     <!--end:Menu link-->
                 </div>
                 <!--end:Menu item-->
+
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'library_create' %}active{% endif %}" href="{% url 'libraries:create' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-plus-square fs-2"></i>
+                        </span>
+                        <span class="menu-title">Yeni Kütüphane Ekle</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
                 
                 <!--begin:Menu item-->
                 <div class="menu-item py-2">
@@ -61,7 +74,21 @@
                 </div>
                 <!--end:Menu item-->
                 
+                <!--begin:Menu item-->
+                <div class="menu-item py-2">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {% if active_menu == 'book_create' %}active{% endif %}" href="{% url 'books:create' %}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-plus-square fs-2"></i>
+                        </span>
+                        <span class="menu-title">Yeni Kitap Ekle</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                
                 {% if user.is_library_admin or user.is_super_admin %}
+                
                 <!--begin:Menu item-->
                 <div class="menu-item py-2">
                     <!--begin:Menu link-->

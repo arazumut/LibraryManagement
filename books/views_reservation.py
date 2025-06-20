@@ -35,7 +35,7 @@ def reservation_create(request, book_id):
     # Kitap zaten müsait mi kontrol et
     if book.status == 'available':
         messages.info(request, 'Bu kitap zaten müsait, doğrudan ödünç alabilirsiniz.')
-        return redirect('book_detail', pk=book.id)
+        return redirect('books:detail', pk=book.id)
     
     # Kullanıcının bu kitap için zaten aktif bir rezervasyonu var mı kontrol et
     existing_reservation = BookReservation.objects.filter(
@@ -46,7 +46,7 @@ def reservation_create(request, book_id):
     
     if existing_reservation:
         messages.warning(request, 'Bu kitap için zaten bir rezervasyonunuz bulunuyor.')
-        return redirect('reservation_detail', reservation_id=existing_reservation.id)
+        return redirect('books:reservation_detail', reservation_id=existing_reservation.id)
     
     # Yeni rezervasyon oluştur
     reservation = BookReservation(
@@ -56,7 +56,7 @@ def reservation_create(request, book_id):
     reservation.save()
     
     messages.success(request, 'Kitap başarıyla rezerve edildi. Müsait olduğunda bildirim alacaksınız.')
-    return redirect('reservation_detail', reservation_id=reservation.id)
+    return redirect('books:reservation_detail', reservation_id=reservation.id)
 
 @login_required
 def reservation_detail(request, reservation_id):
@@ -66,7 +66,7 @@ def reservation_detail(request, reservation_id):
     # Sadece rezervasyonu yapan kişi veya kütüphane yöneticisi görüntüleyebilir
     if reservation.user != request.user and not request.user.is_library_admin:
         messages.error(request, 'Bu rezervasyonu görüntüleme yetkiniz yok.')
-        return redirect('reservation_list')
+        return redirect('books:reservation_list')
     
     return render(request, 'books/reservation_detail.html', {
         'reservation': reservation,
@@ -85,12 +85,12 @@ def reservation_cancel(request, reservation_id):
     # Sadece aktif rezervasyonlar iptal edilebilir
     if reservation.status not in ['pending', 'notified']:
         messages.error(request, 'Bu rezervasyon zaten tamamlanmış veya iptal edilmiş.')
-        return redirect('reservation_detail', reservation_id=reservation.id)
+        return redirect('books:reservation_detail', reservation_id=reservation.id)
     
     if request.method == 'POST':
         reservation.cancel()
         messages.success(request, 'Rezervasyonunuz başarıyla iptal edildi.')
-        return redirect('reservation_list')
+        return redirect('books:reservation_list')
     
     return render(request, 'books/reservation_cancel.html', {
         'reservation': reservation,
@@ -104,18 +104,18 @@ def reservation_fulfill(request, reservation_id):
     # Sadece kütüphane yöneticisi tamamlayabilir
     if not request.user.is_library_admin:
         messages.error(request, 'Bu işlemi yapmaya yetkiniz yok.')
-        return redirect('reservation_list')
+        return redirect('books:reservation_list')
     
     # Sadece bildirim gönderilmiş rezervasyonlar tamamlanabilir
     if reservation.status != 'notified':
         messages.error(request, 'Bu rezervasyon henüz tamamlanmaya uygun değil.')
-        return redirect('reservation_detail', reservation_id=reservation.id)
+        return redirect('books:reservation_detail', reservation_id=reservation.id)
     
     if request.method == 'POST':
         reservation.fulfill()
         messages.success(request, 'Rezervasyon başarıyla tamamlandı.')
         # Burada ödünç verme işlemi için yönlendirme yapılabilir
-        return redirect('reservation_list')
+        return redirect('books:reservation_list')
     
     return render(request, 'books/reservation_fulfill.html', {
         'reservation': reservation,
@@ -131,7 +131,7 @@ def book_return_notify_reservations(request, book_id):
     # Kitabın müsait olduğundan emin ol
     if book.status != 'available':
         messages.error(request, 'Kitap şu anda müsait değil, rezervasyon bildirimi gönderilemez.')
-        return redirect('book_detail', pk=book.id)
+        return redirect('books:detail', pk=book.id)
     
     # İlk bekleyen rezervasyonu bul
     next_reservation = BookReservation.objects.filter(
@@ -151,4 +151,4 @@ def book_return_notify_reservations(request, book_id):
     else:
         messages.info(request, 'Bu kitap için bekleyen rezervasyon bulunmuyor.')
     
-    return redirect('book_detail', pk=book.id)
+    return redirect('books:detail', pk=book.id)

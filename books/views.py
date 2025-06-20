@@ -28,9 +28,10 @@ def book_detail(request, book_id):
 
 @login_required
 @check_account_activation
-@user_is_library_admin
 def book_create(request):
     from .models import Book
+    
+    # All users can now create books - removed admin check
     
     libraries = Library.objects.all()
     status_choices = Book.STATUS_CHOICES
@@ -70,7 +71,7 @@ def book_create(request):
         return redirect('books:detail', book_id=book.id)
     
     context = {
-        'active_menu': 'books',
+        'active_menu': 'book_create',
         'libraries': libraries,
         'status_choices': status_choices
     }
@@ -79,7 +80,6 @@ def book_create(request):
 @login_required
 @login_required
 @check_account_activation
-@user_is_library_admin
 def book_edit(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     libraries = Library.objects.all()
@@ -122,7 +122,6 @@ def book_edit(request, book_id):
 @login_required
 @login_required
 @check_account_activation
-@user_is_library_admin
 def book_delete(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     
