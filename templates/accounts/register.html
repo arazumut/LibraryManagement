@@ -75,9 +75,15 @@
                             {% if messages %}
                             {% for message in messages %}
                             <!--begin::Alert-->
-                            <div class="alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row p-5 mb-10">
+                            <div class="alert alert-dismissible {% if message.tags == 'error' %}bg-light-danger{% elif message.tags == 'success' %}bg-light-success{% else %}bg-light-info{% endif %} d-flex flex-column flex-sm-row p-5 mb-10">
                                 <!--begin::Icon-->
+                                {% if message.tags == 'error' %}
                                 <i class="ki-duotone ki-notification-bing fs-2hx text-danger me-4 mb-5 mb-sm-0"></i>
+                                {% elif message.tags == 'success' %}
+                                <i class="ki-duotone ki-shield-tick fs-2hx text-success me-4 mb-5 mb-sm-0"></i>
+                                {% else %}
+                                <i class="ki-duotone ki-information-5 fs-2hx text-info me-4 mb-5 mb-sm-0"></i>
+                                {% endif %}
                                 <!--end::Icon-->
                                 <!--begin::Wrapper-->
                                 <div class="d-flex flex-column">
@@ -88,7 +94,7 @@
                                 <!--end::Wrapper-->
                                 <!--begin::Close-->
                                 <button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
-                                    <i class="ki-duotone ki-cross fs-1 text-danger"><span class="path1"></span><span class="path2"></span></i>
+                                    <i class="ki-duotone ki-cross fs-1 {% if message.tags == 'error' %}text-danger{% elif message.tags == 'success' %}text-success{% else %}text-info{% endif %}"><span class="path1"></span><span class="path2"></span></i>
                                 </button>
                                 <!--end::Close-->
                             </div>
@@ -101,27 +107,29 @@
                                 <!--begin::Col-->
                                 <div class="col-xl-6">
                                     <label class="form-label fw-bold text-dark fs-6">Ad</label>
-                                    <input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="first_name" autocomplete="off" />
+                                    <input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="first_name" autocomplete="off" value="{{ request.POST.first_name|default:'' }}" />
                                 </div>
                                 <!--end::Col-->
                                 <!--begin::Col-->
                                 <div class="col-xl-6">
                                     <label class="form-label fw-bold text-dark fs-6">Soyad</label>
-                                    <input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="last_name" autocomplete="off" />
+                                    <input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="last_name" autocomplete="off" value="{{ request.POST.last_name|default:'' }}" />
                                 </div>
                                 <!--end::Col-->
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
-                                <label class="form-label fw-bold text-dark fs-6">Kullanıcı Adı</label>
-                                <input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="username" autocomplete="off" />
+                                <label class="form-label fw-bold text-dark fs-6">Kullanıcı Adı <span class="text-danger">*</span></label>
+                                <input class="form-control form-control-lg form-control-solid" type="text" placeholder="" name="username" autocomplete="off" required value="{{ request.POST.username|default:'' }}" />
+                                <div class="text-muted fs-7 mt-1">Kullanıcı adınız sistemde benzersiz olmalıdır. Giriş yaparken kullanacağınız isimdir.</div>
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
-                                <label class="form-label fw-bold text-dark fs-6">E-posta</label>
-                                <input class="form-control form-control-lg form-control-solid" type="email" placeholder="" name="email" autocomplete="off" />
+                                <label class="form-label fw-bold text-dark fs-6">E-posta <span class="text-danger">*</span></label>
+                                <input class="form-control form-control-lg form-control-solid" type="email" placeholder="" name="email" autocomplete="off" required value="{{ request.POST.email|default:'' }}" />
+                                <div class="text-muted fs-7 mt-1">Hesabınıza erişim ve bildirimler için kullanılacaktır.</div>
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
@@ -129,11 +137,11 @@
                                 <!--begin::Wrapper-->
                                 <div class="mb-1">
                                     <!--begin::Label-->
-                                    <label class="form-label fw-bold text-dark fs-6">Şifre</label>
+                                    <label class="form-label fw-bold text-dark fs-6">Şifre <span class="text-danger">*</span></label>
                                     <!--end::Label-->
                                     <!--begin::Input wrapper-->
                                     <div class="position-relative mb-3">
-                                        <input class="form-control form-control-lg form-control-solid" type="password" placeholder="" name="password" autocomplete="off" />
+                                        <input class="form-control form-control-lg form-control-solid" type="password" placeholder="" name="password" autocomplete="off" required />
                                         <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2" data-kt-password-meter-control="visibility">
                                             <i class="ki-duotone ki-eye-slash fs-2"></i>
                                             <i class="ki-duotone ki-eye fs-2 d-none"></i>
@@ -157,14 +165,14 @@
                             <!--end::Input group=-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-5">
-                                <label class="form-label fw-bold text-dark fs-6">Şifreyi Onaylayın</label>
-                                <input class="form-control form-control-lg form-control-solid" type="password" placeholder="" name="password_confirmation" autocomplete="off" />
+                                <label class="form-label fw-bold text-dark fs-6">Şifreyi Onaylayın <span class="text-danger">*</span></label>
+                                <input class="form-control form-control-lg form-control-solid" type="password" placeholder="" name="password_confirmation" autocomplete="off" required />
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-10">
                                 <label class="form-check form-check-custom form-check-solid form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="terms" value="1" />
+                                    <input class="form-check-input" type="checkbox" name="terms" value="1" required />
                                     <span class="form-check-label fw-semibold text-gray-700 fs-6">
                                     <a href="#" class="ms-1 link-primary">Şartlar ve Koşullar</a>'ı Kabul Ediyorum.</span>
                                 </label>
@@ -210,6 +218,100 @@
     <!--end::Global Javascript Bundle-->
     <!--begin::Custom Javascript(used by this page)-->
     <script src="{% static 'js/custom/authentication/sign-up/general.js' %}"></script>
+    <script>
+        // Form doğrulama ve gönderim öncesi kontrol
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const submitBtn = document.getElementById('kt_sign_up_submit');
+            
+            form.addEventListener('submit', function(e) {
+                let hasError = false;
+                const username = form.querySelector('input[name="username"]');
+                const email = form.querySelector('input[name="email"]');
+                const password = form.querySelector('input[name="password"]');
+                const passwordConfirmation = form.querySelector('input[name="password_confirmation"]');
+                const terms = form.querySelector('input[name="terms"]');
+                
+                // Boş alan kontrolü
+                if (!username.value.trim()) {
+                    hasError = true;
+                    showFieldError(username, 'Kullanıcı adı zorunludur');
+                }
+                
+                if (!email.value.trim()) {
+                    hasError = true;
+                    showFieldError(email, 'E-posta adresi zorunludur');
+                } else if (!isValidEmail(email.value)) {
+                    hasError = true;
+                    showFieldError(email, 'Geçerli bir e-posta adresi giriniz');
+                }
+                
+                if (!password.value) {
+                    hasError = true;
+                    showFieldError(password, 'Şifre zorunludur');
+                } else if (password.value.length < 8) {
+                    hasError = true;
+                    showFieldError(password, 'Şifreniz en az 8 karakter olmalıdır');
+                }
+                
+                if (password.value !== passwordConfirmation.value) {
+                    hasError = true;
+                    showFieldError(passwordConfirmation, 'Şifreler eşleşmiyor');
+                }
+                
+                if (!terms.checked) {
+                    hasError = true;
+                    showFieldError(terms, 'Şartlar ve koşulları kabul etmelisiniz');
+                }
+                
+                if (hasError) {
+                    e.preventDefault();
+                }
+            });
+            
+            // Alan hata mesajı gösterme fonksiyonu
+            function showFieldError(field, message) {
+                // Mevcut hata mesajını temizle
+                const existingError = field.parentElement.querySelector('.invalid-feedback');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                // Yeni hata mesajı ekle
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback d-block';
+                errorDiv.textContent = message;
+                
+                // Checkbox için parent kullan
+                if (field.type === 'checkbox') {
+                    field.parentElement.parentElement.appendChild(errorDiv);
+                } else {
+                    field.parentElement.appendChild(errorDiv);
+                }
+                
+                // Hata sınıfını ekle
+                field.classList.add('is-invalid');
+            }
+            
+            // E-posta doğrulama
+            function isValidEmail(email) {
+                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(String(email).toLowerCase());
+            }
+            
+            // Input alanlarına focus olduğunda hata mesajlarını temizle
+            const formInputs = form.querySelectorAll('input');
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.classList.remove('is-invalid');
+                    const errorMsg = this.parentElement.querySelector('.invalid-feedback');
+                    if (errorMsg) {
+                        errorMsg.remove();
+                    }
+                });
+            });
+        });
+    </script>
     <!--end::Custom Javascript-->
     <!--end::Javascript-->
 </body>

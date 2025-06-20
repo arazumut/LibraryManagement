@@ -23,7 +23,67 @@ def logout_view(request):
     return redirect('accounts:login')
 
 def register(request):
-    # Registration logic here
+    if request.method == 'POST':
+        # Form validasyonu ve kullanıcı kaydı
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        password_confirmation = request.POST.get('password_confirmation')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        terms = request.POST.get('terms')
+        
+        # Temel validasyonlar
+        error = False
+        
+        # Tüm gerekli alanların doldurulduğunu kontrol et
+        if not (username and email and password and password_confirmation):
+            messages.error(request, 'Lütfen tüm zorunlu alanları doldurun.')
+            error = True
+        
+        # Kullanıcı adının benzersiz olduğunu kontrol et
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Bu kullanıcı adı zaten kullanımda. Lütfen başka bir kullanıcı adı seçin.')
+            error = True
+            
+        # E-posta adresinin benzersiz olduğunu kontrol et
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'Bu e-posta adresi zaten kullanımda. Lütfen başka bir e-posta adresi kullanın.')
+            error = True
+            
+        # Şifrelerin eşleştiğini kontrol et
+        if password != password_confirmation:
+            messages.error(request, 'Şifreler eşleşmiyor. Lütfen tekrar deneyin.')
+            error = True
+            
+        # Şifre uzunluğunu kontrol et
+        if len(password) < 8:
+            messages.error(request, 'Şifreniz en az 8 karakter uzunluğunda olmalıdır.')
+            error = True
+            
+        # Şartlar ve koşulların kabul edildiğini kontrol et
+        if not terms:
+            messages.error(request, 'Kayıt olmak için şartlar ve koşulları kabul etmelisiniz.')
+            error = True
+            
+        # Hata yoksa, kullanıcıyı oluştur
+        if not error:
+            try:
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name
+                )
+                messages.success(request, 'Hesabınız başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.')
+                return redirect('accounts:login')
+            except Exception as e:
+                messages.error(request, f'Kayıt sırasında bir hata oluştu: {str(e)}')
+    
     return render(request, 'accounts/register.html')
 
 def profile(request):
