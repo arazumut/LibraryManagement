@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Book, BookRequest
 from libraries.models import Library
+from library_management.decorators import check_account_activation, user_is_library_admin
 
 @login_required
+@check_account_activation
 def book_list(request):
     books = Book.objects.all()
     context = {
@@ -13,6 +16,7 @@ def book_list(request):
     return render(request, 'books/book_list.html', context)
 
 @login_required
+@check_account_activation
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     
@@ -23,6 +27,8 @@ def book_detail(request, book_id):
     return render(request, 'books/book_detail.html', context)
 
 @login_required
+@check_account_activation
+@user_is_library_admin
 def book_create(request):
     from .models import Book
     
@@ -71,6 +77,9 @@ def book_create(request):
     return render(request, 'books/book_form.html', context)
 
 @login_required
+@login_required
+@check_account_activation
+@user_is_library_admin
 def book_edit(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     libraries = Library.objects.all()
@@ -111,6 +120,9 @@ def book_edit(request, book_id):
     return render(request, 'books/book_form.html', context)
 
 @login_required
+@login_required
+@check_account_activation
+@user_is_library_admin
 def book_delete(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     

@@ -8,13 +8,33 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        
+        if not username or not password:
+            messages.error(request, 'Lütfen kullanıcı adı ve şifre giriniz.')
+            return render(request, 'accounts/login.html')
+            
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
+            # Kullanıcı hesabı aktif mi kontrol et
+            if not user.is_active:
+                messages.warning(request, 'Hesabınız henüz aktif değil. Lütfen yönetici onayını bekleyin.')
+                return redirect('accounts:inactive_account')
+                
             login(request, user)
-            return redirect('dashboard')
+            
+            # Giriş başarılı olduğunda, son giriş tarihini güncelle
+            user.last_login = timezone.now()
+            user.save()
+            
+            # Başarılı giriş bildirimi
+            messages.success(request, f'Hoş geldiniz, {user.first_name if user.first_name else user.username}!')
+            
+            # Kullanıcıyı yönlendir
+            next_url = request.GET.get('next', 'dashboard')
+            return redirect(next_url)
         else:
-            messages.error(request, 'Invalid username or password')
+            messages.error(request, 'Geçersiz kullanıcı adı veya şifre')
     
     return render(request, 'accounts/login.html')
 
@@ -79,7 +99,23 @@ def register(request):
                     first_name=first_name,
                     last_name=last_name
                 )
-                messages.success(request, 'Hesabınız başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.')
+                # Yeni kullanıcıları varsayılan olarak devre dışı bırak (onay gerekli)
+                user.is_active = False
+                user.save()
+                
+                # Bildirim oluştur
+                from .models_notification import Notification
+                # Tüm süper yöneticilere bildirim gönder
+                for admin in User.objects.filter(user_type='super_admin'):
+                    Notification.objects.create(
+                        recipient=admin,
+                        title='Yeni Kullanıcı Kaydı',
+                        message=f'{username} adlı yeni bir kullanıcı kaydoldu ve onay bekliyor.',
+                        notification_type='user_registration',
+                        link='/admin/accounts/user/'
+                    )
+                
+                messages.success(request, 'Hesabınız başarıyla oluşturuldu! Hesabınız yönetici onayı bekliyor. Onaylandıktan sonra giriş yapabileceksiniz.')
                 return redirect('accounts:login')
             except Exception as e:
                 messages.error(request, f'Kayıt sırasında bir hata oluştu: {str(e)}')
@@ -186,3 +222,68 @@ def social_feed(request):
     }
     
     return render(request, 'accounts/social_feed.html', context)
+
+def inactive_account(request):
+    """
+    Hesabı henüz aktif olmayan kullanıcılar için bilgilendirme sayfası
+    """
+    return render(request, 'accounts/inactive_account.html')
+
+@login_required
+def admin_user_management(request):
+    """
+    Kullanıcı yönetim sayfası - Yalnızca süper yöneticiler erişebilir
+    """
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    
+    # Kullanıcıları listele
+    users = User.objects.all().order_by('-date_joined')
+    
+    # Kullanıcı aktivasyon işlemi
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        action = request.POST.get('action')
+        
+        if user_id and action:
+            try:
+                user = User.objects.get(id=user_id)
+                
+                if action == 'activate':
+                    user.is_active = True
+                    user.save()
+                    messages.success(request, f"{user.username} kullanıcısı başarıyla aktifleştirildi.")
+                    
+                    # Bildirim gönder
+                    from accounts.models_notification import Notification
+                    Notification.objects.create(
+                        recipient=user,
+                        title='Hesabınız Aktifleştirildi',
+                        message='Hesabınız yönetici tarafından onaylandı. Artık tüm özelliklere erişebilirsiniz.',
+                        notification_type='account_activated'
+                    )
+                    
+                elif action == 'deactivate':
+                    user.is_active = False
+                    user.save()
+                    messages.success(request, f"{user.username} kullanıcısı başarıyla devre dışı bırakıldı.")
+                
+                elif action == 'promote_to_admin':
+                    user.user_type = 'library_admin'
+                    user.save()
+                    messages.success(request, f"{user.username} kullanıcısı kütüphane yöneticisi olarak atandı.")
+                
+                elif action == 'demote_to_reader':
+                    user.user_type = 'reader'
+                    user.save()
+                    messages.success(request, f"{user.username} kullanıcısı okuyucu olarak atandı.")
+                    
+            except User.DoesNotExist:
+                messages.error(request, "Belirtilen kullanıcı bulunamadı.")
+    
+    context = {
+        'active_menu': 'admin_users',
+        'users': users
+    }
+    
+    return render(request, 'accounts/admin_user_management.html', context)

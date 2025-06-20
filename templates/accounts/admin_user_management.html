@@ -1,0 +1,143 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Kullanıcı Yönetimi{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Kullanıcı Yönetimi</h3>
+        <div class="card-toolbar">
+            <a href="{% url 'accounts:register' %}" class="btn btn-sm btn-primary">
+                <i class="ki-duotone ki-plus fs-2"></i>Yeni Kullanıcı
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} d-flex align-items-center p-5 mb-10">
+                {% if message.tags == 'success' %}
+                <i class="ki-duotone ki-shield-tick fs-2hx text-success me-4"></i>
+                {% elif message.tags == 'error' %}
+                <i class="ki-duotone ki-shield-cross fs-2hx text-danger me-4"></i>
+                {% elif message.tags == 'warning' %}
+                <i class="ki-duotone ki-shield-warning fs-2hx text-warning me-4"></i>
+                {% else %}
+                <i class="ki-duotone ki-shield-info fs-2hx text-info me-4"></i>
+                {% endif %}
+                <div class="d-flex flex-column">
+                    <span>{{ message }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+        
+        <div class="table-responsive">
+            <table id="users-table" class="table table-hover align-middle gs-0 gy-4">
+                <thead>
+                    <tr class="fw-bold text-muted bg-light">
+                        <th class="ps-4 min-w-200px rounded-start">Kullanıcı</th>
+                        <th class="min-w-125px">Rol</th>
+                        <th class="min-w-125px">Durum</th>
+                        <th class="min-w-125px">Kayıt Tarihi</th>
+                        <th class="min-w-125px">Son Giriş</th>
+                        <th class="min-w-200px text-end rounded-end pe-4">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="symbol symbol-50px me-5">
+                                    {% if user.profile_picture %}
+                                    <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" />
+                                    {% else %}
+                                    <div class="symbol-label fs-3 bg-light-primary text-primary">{{ user.username|first|upper }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex justify-content-start flex-column">
+                                    <a href="#" class="text-dark fw-bold text-hover-primary mb-1 fs-6">{{ user.username }}</a>
+                                    <span class="text-muted fw-semibold text-muted d-block fs-7">{{ user.email }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if user.is_super_admin %}
+                            <span class="badge badge-light-danger fs-7 fw-bold">Süper Yönetici</span>
+                            {% elif user.is_library_admin %}
+                            <span class="badge badge-light-primary fs-7 fw-bold">Kütüphane Yöneticisi</span>
+                            {% else %}
+                            <span class="badge badge-light-info fs-7 fw-bold">Okuyucu</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                            <span class="badge badge-light-success fs-7 fw-bold">Aktif</span>
+                            {% else %}
+                            <span class="badge badge-light-warning fs-7 fw-bold">Beklemede</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.date_joined|date:"d.m.Y H:i" }}</td>
+                        <td>{{ user.last_login|date:"d.m.Y H:i"|default:"-" }}</td>
+                        <td class="text-end">
+                            {% if not user.is_super_admin %}
+                            <form method="post" action="{% url 'accounts:admin_user_management' %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                
+                                {% if user.is_active %}
+                                <input type="hidden" name="action" value="deactivate">
+                                <button type="submit" class="btn btn-sm btn-light-warning btn-active-warning me-1">
+                                    <i class="ki-duotone ki-lock fs-5"></i> Devre Dışı Bırak
+                                </button>
+                                {% else %}
+                                <input type="hidden" name="action" value="activate">
+                                <button type="submit" class="btn btn-sm btn-light-success btn-active-success me-1">
+                                    <i class="ki-duotone ki-lock-open fs-5"></i> Aktifleştir
+                                </button>
+                                {% endif %}
+                            </form>
+                            
+                            <form method="post" action="{% url 'accounts:admin_user_management' %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                
+                                {% if user.is_library_admin %}
+                                <input type="hidden" name="action" value="demote_to_reader">
+                                <button type="submit" class="btn btn-sm btn-light-danger btn-active-danger me-1">
+                                    <i class="ki-duotone ki-arrow-down fs-5"></i> Okuyucu Yap
+                                </button>
+                                {% else %}
+                                <input type="hidden" name="action" value="promote_to_admin">
+                                <button type="submit" class="btn btn-sm btn-light-primary btn-active-primary me-1">
+                                    <i class="ki-duotone ki-arrow-up fs-5"></i> Yönetici Yap
+                                </button>
+                                {% endif %}
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+    $(document).ready(function() {
+        // Veri tablosu için
+        $("#users-table").DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"
+            },
+            "order": [[ 3, "desc" ]],
+            "pageLength": 25
+        });
+    });
+</script>
+{% endblock %}

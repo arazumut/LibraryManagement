@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<!--begin::Head-->
+<head>
+    <base href="/" />
+    <title>Hesap Beklemede | Kütüphane Yönetim Sistemi</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Django ile oluşturulmuş kapsamlı bir web tabanlı kütüphane yönetim sistemi." />
+    <meta name="keywords" content="kütüphane, yönetim, sistem, kitaplar, ödünç verme, django" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="{% static 'media/logos/favicon.ico' %}" />
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="{% static 'plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" />
+    <!--end::Global Stylesheets Bundle-->
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body" class="auth-bg">
+    <!--begin::Main-->
+    <div class="d-flex flex-column flex-root">
+        <!--begin::Authentication - Suspended Account -->
+        <div class="d-flex flex-column flex-lg-row flex-column-fluid">
+            <!--begin::Aside-->
+            <div class="d-flex flex-column flex-lg-row-auto bg-primary w-xl-600px positon-xl-relative">
+                <!--begin::Wrapper-->
+                <div class="d-flex flex-column position-xl-fixed top-0 bottom-0 w-xl-600px scroll-y">
+                    <!--begin::Content-->
+                    <div class="d-flex flex-row-fluid flex-column text-center p-10 pt-lg-20">
+                        <!--begin::Logo-->
+                        <a href="/" class="py-9 mb-5">
+                            <img alt="Logo" src="{% static 'media/logos/logo-white.svg' %}" class="h-60px" />
+                        </a>
+                        <!--end::Logo-->
+                        <!--begin::Title-->
+                        <h1 class="fw-bolder fs-2qx pb-5 pb-md-10 text-white">Kütüphane Yönetim Sistemi</h1>
+                        <!--end::Title-->
+                        <!--begin::Description-->
+                        <p class="fw-bold fs-2 text-white">Hesabınız onay bekliyor</p>
+                        <!--end::Description-->
+                    </div>
+                    <!--end::Content-->
+                </div>
+                <!--end::Wrapper-->
+            </div>
+            <!--end::Aside-->
+            <!--begin::Body-->
+            <div class="d-flex flex-column flex-lg-row-fluid py-10">
+                <!--begin::Content-->
+                <div class="d-flex flex-center flex-column flex-column-fluid">
+                    <!--begin::Wrapper-->
+                    <div class="w-lg-600px p-10 p-lg-15 mx-auto">
+                        <!--begin::Form-->
+                        <div class="text-center mb-10">
+                            <img alt="Logo" src="{% static 'media/illustrations/waiting.svg' %}" class="mh-200px" />
+                        </div>
+                        
+                        <div class="text-center mb-10">
+                            <h1 class="text-dark mb-3">Hesabınız Onay Bekliyor</h1>
+                            
+                            {% if messages %}
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} d-flex align-items-center p-5 mb-10">
+                                <i class="ki-duotone ki-shield-tick fs-2hx text-{{ message.tags }} me-4"></i>
+                                <div class="d-flex flex-column">
+                                    <span>{{ message }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                            
+                            <p class="text-gray-800 fs-4 fw-semibold mb-10">
+                                Hesabınız şu anda onay bekliyor. Yöneticiler tarafından onaylandıktan sonra sisteme giriş yapabileceksiniz.
+                                <br><br>
+                                Bu süreçte herhangi bir sorunuz olursa lütfen bizimle iletişime geçin.
+                            </p>
+                            
+                            <a href="{% url 'accounts:logout' %}" class="btn btn-lg btn-primary">Çıkış Yap</a>
+                        </div>
+                        <!--end::Form-->
+                    </div>
+                    <!--end::Wrapper-->
+                </div>
+                <!--end::Content-->
+                <!--begin::Footer-->
+                <div class="d-flex flex-center flex-wrap fs-6 p-5 pb-0">
+                    <!--begin::Links-->
+                    <div class="d-flex flex-center fw-semibold fs-6">
+                        <a href="#" class="text-muted text-hover-primary px-2">Hakkında</a>
+                        <a href="#" class="text-muted text-hover-primary px-2">Destek</a>
+                        <a href="#" class="text-muted text-hover-primary px-2">İletişim</a>
+                    </div>
+                    <!--end::Links-->
+                </div>
+                <!--end::Footer-->
+            </div>
+            <!--end::Body-->
+        </div>
+        <!--end::Authentication - Suspended Account-->
+    </div>
+    <!--end::Main-->
+    <!--begin::Javascript-->
+    <script>var hostUrl = "{% static '' %}";</script>
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="{% static 'plugins/global/plugins.bundle.js' %}"></script>
+    <script src="{% static 'js/scripts.bundle.js' %}"></script>
+    <!--end::Global Javascript Bundle-->
+    <!--end::Javascript-->
+</body>
+<!--end::Body-->
+</html>

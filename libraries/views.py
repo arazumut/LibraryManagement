@@ -3,8 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Library
 from .forms import LibraryForm
+from library_management.decorators import check_account_activation, user_is_library_admin, user_is_super_admin
 
 @login_required
+@check_account_activation
 def library_list(request):
     libraries = Library.objects.all()
     context = {
@@ -14,6 +16,7 @@ def library_list(request):
     return render(request, 'libraries/library_list.html', context)
 
 @login_required
+@check_account_activation
 def library_detail(request, library_id):
     library = get_object_or_404(Library, id=library_id)
     available_books = library.books.filter(status='available').count()
@@ -26,6 +29,8 @@ def library_detail(request, library_id):
     return render(request, 'libraries/library_detail.html', context)
 
 @login_required
+@check_account_activation
+@user_is_super_admin
 def library_create(request):
     if request.method == 'POST':
         form = LibraryForm(request.POST)
@@ -46,6 +51,8 @@ def library_create(request):
     return render(request, 'libraries/library_form.html', context)
 
 @login_required
+@check_account_activation
+@user_is_super_admin
 def library_edit(request, library_id):
     library = get_object_or_404(Library, id=library_id)
     

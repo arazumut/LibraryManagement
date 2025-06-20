@@ -4,8 +4,11 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Loan
 from books.models import Book
+from library_management.decorators import check_account_activation, user_is_library_admin
 
 @login_required
+@check_account_activation
+@user_is_library_admin
 def loan_list(request):
     loans = Loan.objects.all()
     context = {
@@ -15,6 +18,7 @@ def loan_list(request):
     return render(request, 'loans/loan_list.html', context)
 
 @login_required
+@check_account_activation
 def my_loans(request):
     my_loans = Loan.objects.filter(borrower=request.user)
     context = {
@@ -24,6 +28,8 @@ def my_loans(request):
     return render(request, 'loans/my_loans.html', context)
 
 @login_required
+@check_account_activation
+@user_is_library_admin
 def manage_loans(request):
     # Manage loans logic here
     loans = []
@@ -34,6 +40,7 @@ def manage_loans(request):
     return render(request, 'loans/manage_loans.html', context)
 
 @login_required
+@check_account_activation
 def borrow_book(request, book_id):
     # Kitabı bul veya 404 hatası döndür
     book = get_object_or_404(Book, id=book_id)
