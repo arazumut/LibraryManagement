@@ -122,9 +122,32 @@ def register(request):
     
     return render(request, 'accounts/register.html')
 
+@login_required
 def profile(request):
-    # Profile logic here
-    return render(request, 'accounts/profile.html')
+    """
+    Display the profile page for the logged-in user
+    """
+    # Get additional stats
+    from loans.models import Loan
+    active_loans = Loan.objects.filter(
+        borrower=request.user, 
+        status__in=['active', 'overdue']
+    ).count()
+    
+    try:
+        # Try to get review count if the model exists
+        from books.models_review import Review
+        review_count = Review.objects.filter(user=request.user).count()
+    except ImportError:
+        review_count = 0
+    
+    context = {
+        'active_loans': active_loans,
+        'review_count': review_count,
+        'active_menu': 'profile',
+    }
+    
+    return render(request, 'accounts/profile.html', context)
 
 def my_books(request):
     from loans.models import Loan
@@ -287,3 +310,38 @@ def admin_user_management(request):
     }
     
     return render(request, 'accounts/admin_user_management.html', context)
+
+@login_required
+def edit_profile(request):
+    """
+    Allow users to edit their profile information
+    """
+    if request.method == 'POST':
+        # Get form data
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone_number')
+        address = request.POST.get('address')
+        
+        # Update user profile
+        user = request.user
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.phone_number = phone_number
+        user.address = address
+        
+        # Handle profile picture upload
+        if 'profile_picture' in request.FILES:
+            user.profile_picture = request.FILES['profile_picture']
+        
+        user.save()
+        messages.success(request, 'Profil bilgileriniz başarıyla güncellendi.')
+        return redirect('accounts:profile')
+    
+    context = {
+        'active_menu': 'profile',
+    }
+    
+    return render(request, 'accounts/edit_profile.html', context)

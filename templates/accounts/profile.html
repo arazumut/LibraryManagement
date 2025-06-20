@@ -1,0 +1,176 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Profil | Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block content %}
+<!--begin::Card-->
+<div class="card mb-5 mb-xl-10">
+    <!--begin::Card header-->
+    <div class="card-header border-0">
+        <div class="card-title m-0">
+            <h3 class="fw-bold m-0">Profil Bilgileri</h3>
+        </div>
+    </div>
+    <!--end::Card header-->
+    
+    <!--begin::Card body-->
+    <div class="card-body p-9">
+        <div class="row mb-7">
+            <div class="col-lg-4 mb-10 mb-lg-0">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-body pt-9 pb-0">
+                        <!--begin::Details-->
+                        <div class="d-flex flex-center flex-column mb-5">
+                            <!--begin::Avatar-->
+                            <div class="symbol symbol-150px symbol-circle mb-5">
+                                {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profil Resmi" />
+                                {% else %}
+                                <div class="symbol-label fs-3 bg-light-primary text-primary">{{ user.first_name|first|default:user.username|first|upper }}</div>
+                                {% endif %}
+                            </div>
+                            <!--end::Avatar-->
+                            
+                            <!--begin::Name-->
+                            <a href="#" class="fs-2 text-gray-800 text-hover-primary fw-bold mb-1">
+                                {{ user.get_full_name|default:user.username }}
+                            </a>
+                            <!--end::Name-->
+                            
+                            <!--begin::Role-->
+                            <div class="badge badge-light-primary fw-bold fs-6 mb-2">
+                                {{ user.get_user_type_display }}
+                            </div>
+                            <!--end::Role-->
+                            
+                            <!--begin::Info-->
+                            <div class="fw-semibold fs-6 text-gray-400">Üyelik: {{ user.date_joined|date:"d F Y" }}</div>
+                            <!--end::Info-->
+                        </div>
+                        <!--end::Details-->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-lg-6 mb-6">
+                        <div class="fw-bold text-gray-600 fs-7">Kullanıcı Adı:</div>
+                        <div class="fw-bold fs-6">{{ user.username }}</div>
+                    </div>
+                    
+                    <div class="col-lg-6 mb-6">
+                        <div class="fw-bold text-gray-600 fs-7">E-posta:</div>
+                        <div class="fw-bold fs-6">{{ user.email }}</div>
+                    </div>
+                    
+                    <div class="col-lg-6 mb-6">
+                        <div class="fw-bold text-gray-600 fs-7">Ad:</div>
+                        <div class="fw-bold fs-6">{{ user.first_name|default:'--' }}</div>
+                    </div>
+                    
+                    <div class="col-lg-6 mb-6">
+                        <div class="fw-bold text-gray-600 fs-7">Soyad:</div>
+                        <div class="fw-bold fs-6">{{ user.last_name|default:'--' }}</div>
+                    </div>
+                    
+                    <div class="col-lg-6 mb-6">
+                        <div class="fw-bold text-gray-600 fs-7">Telefon Numarası:</div>
+                        <div class="fw-bold fs-6">{{ user.phone_number|default:'--' }}</div>
+                    </div>
+                    
+                    <div class="col-lg-6 mb-6">
+                        <div class="fw-bold text-gray-600 fs-7">Son Giriş:</div>
+                        <div class="fw-bold fs-6">{{ user.last_login|date:"d F Y H:i"|default:'--' }}</div>
+                    </div>
+                    
+                    <div class="col-lg-12">
+                        <div class="fw-bold text-gray-600 fs-7">Adres:</div>
+                        <div class="fw-bold fs-6">{{ user.address|default:'--' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-end">
+            <!-- Profil düzenleme sayfasına yönlendir -->
+            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">Profili Düzenle</a>
+        </div>
+    </div>
+    <!--end::Card body-->
+</div>
+<!--end::Card-->
+
+<!--begin::Card-->
+<div class="card">
+    <!--begin::Card header-->
+    <div class="card-header border-0">
+        <div class="card-title m-0">
+            <h3 class="fw-bold m-0">İstatistikler</h3>
+        </div>
+    </div>
+    <!--end::Card header-->
+    
+    <!--begin::Card body-->
+    <div class="card-body p-9">
+        <div class="row g-5 g-xl-8">
+            <div class="col-xl-4">
+                <div class="card card-xl-stretch mb-xl-8 bg-light-primary">
+                    <div class="card-body my-3">
+                        <div class="d-flex align-items-center">
+                            <div class="symbol symbol-50px me-5">
+                                <span class="symbol-label bg-primary">
+                                    <i class="fas fa-book fs-2x text-white"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <h4 class="mb-1 text-primary">Ödünç Alınan Kitaplar</h4>
+                                <span class="text-primary fs-1 fw-bold">{{ user.loan_set.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-4">
+                <div class="card card-xl-stretch mb-xl-8 bg-light-success">
+                    <div class="card-body my-3">
+                        <div class="d-flex align-items-center">
+                            <div class="symbol symbol-50px me-5">
+                                <span class="symbol-label bg-success">
+                                    <i class="fas fa-star fs-2x text-white"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <h4 class="mb-1 text-success">İncelemeler</h4>
+                                <span class="text-success fs-1 fw-bold">{{ user.review_set.count|default:'0' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-4">
+                <div class="card card-xl-stretch mb-xl-8 bg-light-warning">
+                    <div class="card-body my-3">
+                        <div class="d-flex align-items-center">
+                            <div class="symbol symbol-50px me-5">
+                                <span class="symbol-label bg-warning">
+                                    <i class="fas fa-bookmark fs-2x text-white"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <h4 class="mb-1 text-warning">Kayıtlı Kütüphaneler</h4>
+                                <span class="text-warning fs-1 fw-bold">{{ user.membershiprequest_set.filter.count|default:'0' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Card body-->
+</div>
+<!--end::Card-->
+{% endblock %}

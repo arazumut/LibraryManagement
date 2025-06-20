@@ -66,7 +66,8 @@ def goal_create(request):
     context = {
         'active_menu': 'reading_goals',
         'goal_types': ReadingGoal.GOAL_TYPE_CHOICES,
-        'periods': ReadingGoal.PERIOD_CHOICES
+        'periods': ReadingGoal.PERIOD_CHOICES,
+        'today': timezone.now()
     }
     return render(request, 'books/goal_create.html', context)
 

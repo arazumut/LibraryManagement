@@ -15,7 +15,7 @@ def book_review_create(request, book_id):
     existing_review = BookReview.objects.filter(book=book, user=request.user).first()
     if existing_review:
         messages.warning(request, 'Bu kitap için zaten bir değerlendirme yapmışsınız. Değerlendirmenizi düzenleyebilirsiniz.')
-        return redirect('book_review_edit', review_id=existing_review.id)
+        return redirect('books:review_edit', review_id=existing_review.id)
     
     if request.method == 'POST':
         form = BookReviewForm(request.POST)
@@ -25,7 +25,7 @@ def book_review_create(request, book_id):
             review.user = request.user
             review.save()
             messages.success(request, 'Değerlendirmeniz başarıyla kaydedildi.')
-            return redirect('book_detail', pk=book.id)
+            return redirect('books:detail', book_id=book.id)
     else:
         form = BookReviewForm()
     
@@ -43,14 +43,14 @@ def book_review_edit(request, review_id):
     # Sadece değerlendirmeyi yapan kişi düzenleyebilir
     if review.user != request.user:
         messages.error(request, 'Bu değerlendirmeyi düzenleme yetkiniz yok.')
-        return redirect('book_detail', pk=review.book.id)
+        return redirect('books:detail', book_id=review.book.id)
     
     if request.method == 'POST':
         form = BookReviewForm(request.POST, instance=review)
         if form.is_valid():
             form.save()
             messages.success(request, 'Değerlendirmeniz başarıyla güncellendi.')
-            return redirect('book_detail', pk=review.book.id)
+            return redirect('books:detail', book_id=review.book.id)
     else:
         form = BookReviewForm(instance=review)
     
@@ -69,13 +69,13 @@ def book_review_delete(request, review_id):
     # Sadece değerlendirmeyi yapan kişi veya yönetici silebilir
     if review.user != request.user and not request.user.is_staff:
         messages.error(request, 'Bu değerlendirmeyi silme yetkiniz yok.')
-        return redirect('book_detail', pk=review.book.id)
+        return redirect('books:detail', book_id=review.book.id)
     
     if request.method == 'POST':
         book_id = review.book.id
         review.delete()
         messages.success(request, 'Değerlendirmeniz başarıyla silindi.')
-        return redirect('book_detail', pk=book_id)
+        return redirect('books:detail', book_id=book_id)
     
     return render(request, 'books/review_confirm_delete.html', {
         'review': review,
@@ -104,7 +104,7 @@ def book_review_like_toggle(request, review_id):
                 messages.success(request, 'Değerlendirmeyi beğendiniz.')
         
         # Sayfa başına dön
-        return redirect(request.META.get('HTTP_REFERER', 'book_detail', pk=review.book.id))
+        return redirect(request.META.get('HTTP_REFERER', 'books:detail'), book_id=review.book.id)
     
     # POST değilse, yönlendir
     return redirect('home')

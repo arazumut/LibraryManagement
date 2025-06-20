@@ -1,0 +1,82 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Create Reading Goal{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">Create New Reading Goal</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label class="form-label required">Title</label>
+                <input type="text" name="title" class="form-control" required>
+                <small class="form-hint">Give your reading goal a name</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+                <small class="form-hint">Optional: Describe your goal</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label required">Goal Type</label>
+                <select name="goal_type" class="form-select" required>
+                    <option value="">Select a goal type</option>
+                    {% for value, label in goal_types %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <small class="form-hint">What do you want to track?</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label required">Target Value</label>
+                <input type="number" name="target_value" class="form-control" min="1" required>
+                <small class="form-hint">The number you want to achieve</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label required">Time Period</label>
+                <select name="period" class="form-select" required>
+                    <option value="">Select a time period</option>
+                    {% for value, label in periods %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <small class="form-hint">How often do you want to track this goal?</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Start Date</label>
+                <input type="date" name="start_date" class="form-control" value="{{ today|date:'Y-m-d' }}">
+                <small class="form-hint">When do you want to start this goal?</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">End Date</label>
+                <input type="date" name="end_date" class="form-control">
+                <small class="form-hint">Optional: When should this goal be completed?</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-check">
+                    <input type="checkbox" name="is_public" class="form-check-input">
+                    <span class="form-check-label">Make this goal public</span>
+                </label>
+                <small class="form-hint d-block">If checked, other users can see your goal and progress</small>
+            </div>
+            
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary">Create Goal</button>
+                <a href="{% url 'books:goal_list' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
