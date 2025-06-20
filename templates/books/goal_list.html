@@ -1,0 +1,167 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Okuma Hedefleri{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Okuma Hedeflerim</h1>
+        <a href="{% url 'books:goal_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Yeni Hedef Ekle
+        </a>
+    </div>
+    
+    <!-- Aktif Hedefler -->
+    <div class="card shadow mb-5">
+        <div class="card-header">
+            <h3 class="card-title">Aktif Hedefler</h3>
+        </div>
+        <div class="card-body">
+            {% if active_goals %}
+                <div class="row">
+                    {% for goal in active_goals %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ goal.title }}</h5>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="badge bg-primary">{{ goal.get_goal_type_display }}</span>
+                                        <span class="badge bg-{{ goal.is_public|yesno:'success,secondary' }}">{{ goal.is_public|yesno:'Herkese Açık,Özel' }}</span>
+                                    </div>
+                                    
+                                    {% if goal.description %}
+                                        <p class="card-text">{{ goal.description|truncatechars:100 }}</p>
+                                    {% endif %}
+                                    
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ goal.progress_percentage }}%;" 
+                                             aria-valuenow="{{ goal.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                            {{ goal.progress_percentage }}%
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            Hedef: {{ goal.current_value }} / {{ goal.target_value }} {{ goal.get_goal_type_display }}
+                                        </small>
+                                    </p>
+                                    
+                                    {% if goal.end_date %}
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar"></i> Bitiş: {{ goal.end_date|date:"d M Y" }}
+                                            </small>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <div class="d-grid">
+                                        <a href="{% url 'books:goal_detail' goal.id %}" class="btn btn-outline-primary">Detaylar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Henüz aktif bir okuma hedefi yok. 
+                    <a href="{% url 'books:goal_create' %}">Yeni bir hedef</a> oluşturmak ister misiniz?
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Tamamlanan Hedefler -->
+    <div class="card shadow mb-5">
+        <div class="card-header">
+            <h3 class="card-title">Tamamlanan Hedefler</h3>
+        </div>
+        <div class="card-body">
+            {% if completed_goals %}
+                <div class="row">
+                    {% for goal in completed_goals %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border-success">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ goal.title }}</h5>
+                                    <span class="badge bg-success mb-2">Tamamlandı</span>
+                                    
+                                    {% if goal.description %}
+                                        <p class="card-text">{{ goal.description|truncatechars:100 }}</p>
+                                    {% endif %}
+                                    
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            Hedef: {{ goal.current_value }} / {{ goal.target_value }} {{ goal.get_goal_type_display }}
+                                        </small>
+                                    </p>
+                                    
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            <i class="fas fa-check-circle"></i> Tamamlanma: {{ goal.completed_date|date:"d M Y" }}
+                                        </small>
+                                    </p>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <div class="d-grid">
+                                        <a href="{% url 'books:goal_detail' goal.id %}" class="btn btn-outline-success">Detaylar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">Henüz tamamlanmış bir hedef yok.</div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Herkese Açık Okuma Etkinlikleri -->
+    {% if public_challenges %}
+        <div class="card shadow mb-5">
+            <div class="card-header">
+                <h3 class="card-title">Herkese Açık Okuma Etkinlikleri</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Etkinlik</th>
+                                <th>Açıklama</th>
+                                <th>Katılımcılar</th>
+                                <th>Başlangıç</th>
+                                <th>Bitiş</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for challenge in public_challenges %}
+                                <tr>
+                                    <td>{{ challenge.title }}</td>
+                                    <td>{{ challenge.description|truncatechars:50 }}</td>
+                                    <td>{{ challenge.participant_count }}</td>
+                                    <td>{{ challenge.start_date|date:"d M Y" }}</td>
+                                    <td>{{ challenge.end_date|date:"d M Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ challenge.status_color }}">
+                                            {{ challenge.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-primary">Detaylar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
