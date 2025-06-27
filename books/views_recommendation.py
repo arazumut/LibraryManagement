@@ -9,7 +9,7 @@ import random
 
 from books.models import Book
 from books.models_recommendation import (
-    AIAIBookRecommendation, 
+    AIBookRecommendation, 
     UserReadingProfile, 
     CategoryPreference,
     RecommendationFeedback
