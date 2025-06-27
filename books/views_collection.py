@@ -189,3 +189,167 @@ def collection_remove_book(request, collection_id, item_id):
         'item': item,
         'collection': collection,
     })
+
+@login_required
+def collection_analytics(request, collection_id):
+    """Koleksiyon analitikleri."""
+    collection = get_object_or_404(BookCollection, id=collection_id, owner=request.user)
+    
+    # Koleksiyon istatistikleri
+    total_books = collection.book_count
+    completed_books = collection.completed_books_count
+    reading_progress = collection.reading_progress
+    
+    # Kategori dağılımı
+    category_stats = {}
+    for item in collection.bookcollectionitem_set.all():
+        for book_category in item.book.categories.all():
+            category = book_category.category
+            if category.name not in category_stats:
+                category_stats[category.name] = 0
+            category_stats[category.name] += 1
+    
+    # Okuma durumu dağılımı
+    status_stats = {}
+    for item in collection.bookcollectionitem_set.all():
+        status = item.get_reading_status_display()
+        if status not in status_stats:
+            status_stats[status] = 0
+        status_stats[status] += 1
+    
+    context = {
+        'collection': collection,
+        'total_books': total_books,
+        'completed_books': completed_books,
+        'reading_progress': reading_progress,
+        'category_stats': category_stats,
+        'status_stats': status_stats,
+    }
+    
+    return render(request, 'books/collection_analytics.html', context)
+
+@login_required
+def collection_share(request, collection_id):
+    """Koleksiyonu paylaş."""
+    collection = get_object_or_404(BookCollection, id=collection_id, owner=request.user)
+    
+    if request.method == 'POST':
+        visibility = request.POST.get('visibility')
+        if visibility in ['public', 'private', 'friends']:
+            collection.visibility = visibility
+            collection.save()
+            messages.success(request, f'Koleksiyon görünürlüğü {collection.get_visibility_display()} olarak güncellendi.')
+        return redirect('books:collection_detail', collection_id=collection.id)
+    
+    return render(request, 'books/collection_share.html', {
+        'collection': collection,
+    })
+
+@login_required
+def collection_export(request, collection_id):
+    """Koleksiyonu dışa aktar."""
+    collection = get_object_or_404(BookCollection, id=collection_id, owner=request.user)
+    
+    format_type = request.GET.get('format', 'json')
+    
+    if format_type == 'json':
+        import json
+        from django.http import HttpResponse
+        
+        collection_data = {
+            'name': collection.name,
+            'description': collection.description,
+            'created_at': collection.created_at.isoformat(),
+            'books': []
+        }
+        
+        for item in collection.bookcollectionitem_set.all():
+            book_data = {
+                'title': item.book.title,
+                'author': item.book.author,
+                'isbn': item.book.isbn,
+                'added_at': item.added_at.isoformat(),
+                'notes': item.notes,
+                'rating': item.rating,
+                'reading_status': item.reading_status,
+                'progress_percentage': item.progress_percentage,
+            }
+            collection_data['books'].append(book_data)
+        
+        response = HttpResponse(
+            json.dumps(collection_data, indent=2, ensure_ascii=False),
+            content_type='application/json; charset=utf-8'
+        )
+        response['Content-Disposition'] = f'attachment; filename="{collection.name}_collection.json"'
+        return response
+    
+    elif format_type == 'csv':
+        import csv
+        from django.http import HttpResponse
+        
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="{collection.name}_collection.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow(['Başlık', 'Yazar', 'ISBN', 'Eklenme Tarihi', 'Notlar', 'Puan', 'Okuma Durumu', 'İlerleme %'])
+        
+        for item in collection.bookcollectionitem_set.all():
+            writer.writerow([
+                item.book.title,
+                item.book.author,
+                item.book.isbn or '',
+                item.added_at.strftime('%Y-%m-%d'),
+                item.notes or '',
+                item.rating or '',
+                item.get_reading_status_display(),
+                item.progress_percentage,
+            ])
+        
+        return response
+    
+    return redirect('books:collection_detail', collection_id=collection.id)
+
+@login_required  
+def collection_follow(request, collection_id):
+    """Koleksiyonu takip et/takibi bırak."""
+    from books.models_collection import CollectionFollow
+    
+    collection = get_object_or_404(BookCollection, id=collection_id)
+    
+    if collection.owner == request.user:
+        return JsonResponse({'error': 'Kendi koleksiyonunuzu takip edemezsiniz.'}, status=400)
+    
+    if collection.visibility != 'public':
+        return JsonResponse({'error': 'Bu koleksiyonu takip edemezsiniz.'}, status=400)
+    
+    follow, created = CollectionFollow.objects.get_or_create(
+        follower=request.user,
+        collection=collection
+    )
+    
+    if not created:
+        follow.delete()
+        action = 'unfollowed'
+    else:
+        action = 'followed'
+    
+    follower_count = collection.followers.count()
+    
+    return JsonResponse({
+        'action': action,
+        'follower_count': follower_count,
+        'is_following': action == 'followed'
+    })
+
+@login_required
+def my_followed_collections(request):
+    """Takip edilen koleksiyonlar."""
+    from books.models_collection import CollectionFollow
+    
+    followed_collections = CollectionFollow.objects.filter(
+        follower=request.user
+    ).select_related('collection', 'collection__owner')
+    
+    return render(request, 'books/followed_collections.html', {
+        'followed_collections': followed_collections,
+    })

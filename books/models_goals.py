@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
 from books.models import Book
+from books.models_category import Category
 from django.utils import timezone
+import uuid
 
 class ReadingGoal(models.Model):
     """
@@ -19,8 +21,18 @@ class ReadingGoal(models.Model):
         ('books', 'Kitap Sayısı'),
         ('pages', 'Sayfa Sayısı'),
         ('minutes', 'Okuma Süresi (Dakika)'),
+        ('categories', 'Farklı Kategori Sayısı'),
+        ('authors', 'Farklı Yazar Sayısı'),
     )
     
+    STATUS_CHOICES = (
+        ('active', 'Aktif'),
+        ('paused', 'Duraklatıldı'),
+        ('completed', 'Tamamlandı'),
+        ('failed', 'Başarısız'),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Kullanıcı', on_delete=models.CASCADE, 
                              related_name='reading_goals')
     title = models.CharField('Hedef Başlığı', max_length=255)
@@ -31,8 +43,11 @@ class ReadingGoal(models.Model):
     period = models.CharField('Periyod', max_length=20, choices=PERIOD_CHOICES)
     start_date = models.DateField('Başlangıç Tarihi', default=timezone.now)
     end_date = models.DateField('Bitiş Tarihi', blank=True, null=True)
-    is_completed = models.BooleanField('Tamamlandı mı?', default=False)
+    status = models.CharField('Durum', max_length=20, choices=STATUS_CHOICES, default='active')
     is_public = models.BooleanField('Herkese Açık', default=False)
+    reward_message = models.CharField('Ödül Mesajı', max_length=500, blank=True, null=True)
+    categories = models.ManyToManyField(Category, verbose_name='Hedef Kategoriler', blank=True)
+    difficulty_level = models.IntegerField('Zorluk Seviyesi', choices=[(i, i) for i in range(1, 6)], default=3)
     created_at = models.DateTimeField('Oluşturulma Tarihi', auto_now_add=True)
     updated_at = models.DateTimeField('Güncellenme Tarihi', auto_now=True)
     

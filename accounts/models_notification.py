@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+import uuid
 
 class Notification(models.Model):
     """
@@ -18,29 +19,52 @@ class Notification(models.Model):
         ('new_book', 'Yeni Kitap Eklendi'),
         ('review_liked', 'Değerlendirmeniz Beğenildi'),
         ('comment_received', 'Yorumunuza Yanıt Geldi'),
+        ('goal_achieved', 'Hedef Tamamlandı'),
+        ('recommendation', 'Yeni Kitap Önerisi'),
+        ('collection_update', 'Koleksiyon Güncellendi'),
+        ('friend_activity', 'Arkadaş Aktivitesi'),
         ('system', 'Sistem Bildirimi'),
     )
     
+    PRIORITY_CHOICES = (
+        ('low', 'Düşük'),
+        ('normal', 'Normal'),
+        ('high', 'Yüksek'),
+        ('urgent', 'Acil'),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     recipient = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name='Alıcı',
         on_delete=models.CASCADE,
         related_name='notifications'
     )
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name='Gönderen',
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        related_name='sent_notifications'
+    )
     notification_type = models.CharField('Bildirim Tipi', max_length=20, choices=NOTIFICATION_TYPES)
+    priority = models.CharField('Öncelik', max_length=20, choices=PRIORITY_CHOICES, default='normal')
     title = models.CharField('Başlık', max_length=255)
     message = models.TextField('Mesaj')
     created_at = models.DateTimeField('Oluşturulma Tarihi', default=timezone.now)
     is_read = models.BooleanField('Okundu', default=False)
     read_at = models.DateTimeField('Okunma Tarihi', blank=True, null=True)
+    expires_at = models.DateTimeField('Son Geçerlilik Tarihi', blank=True, null=True)
     
     # İlişkili içerik için generic ilişki
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     related_object = GenericForeignKey('content_type', 'object_id')
     
-    # İsteğe bağlı bağlantı
+    # İsteğe bağlı bağlantı ve eylemler
     link = models.CharField('Bağlantı', max_length=255, blank=True, null=True)
+    actions = models.JSONField('Eylemler', blank=True, null=True, default=list)
+    metadata = models.JSONField('Ek Bilgiler', blank=True, null=True, default=dict)
     
     class Meta:
         ordering = ['-created_at']

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from books.models import Book
+from django.conf import settings
 
 class Category(models.Model):
     """
@@ -12,11 +13,15 @@ class Category(models.Model):
     parent = models.ForeignKey('self', verbose_name='Üst Kategori', on_delete=models.CASCADE, 
                              blank=True, null=True, related_name='children')
     image = models.ImageField('Kategori Resmi', upload_to='category_images/', blank=True, null=True)
+    color = models.CharField('Renk', max_length=7, default='#007bff', help_text='Hex color code')
+    icon = models.CharField('İkon', max_length=50, blank=True, null=True, help_text='Font Awesome icon class')
+    is_featured = models.BooleanField('Öne Çıkarılmış', default=False)
+    order = models.PositiveIntegerField('Sıra', default=0)
     created_at = models.DateTimeField('Oluşturulma Tarihi', auto_now_add=True)
     updated_at = models.DateTimeField('Güncellenme Tarihi', auto_now=True)
     
     class Meta:
-        ordering = ['name']
+        ordering = ['order', 'name']
         verbose_name = 'Kategori'
         verbose_name_plural = 'Kategoriler'
         
@@ -34,6 +39,14 @@ class Category(models.Model):
         return self.books.count()
     
     @property
+    def total_book_count(self):
+        """Bu kategori ve alt kategorilerindeki toplam kitap sayısı."""
+        count = self.book_count
+        for child in self.children.all():
+            count += child.total_book_count
+        return count
+    
+    @property
     def get_all_children(self):
         """Tüm alt kategorileri rekursif olarak döndürür."""
         children = []
@@ -41,6 +54,17 @@ class Category(models.Model):
             children.append(child)
             children.extend(child.get_all_children)
         return children
+    
+    @property
+    def get_hierarchy_name(self):
+        """Kategori hiyerarşisini string olarak döndürür."""
+        if self.parent:
+            return f"{self.parent.get_hierarchy_name} > {self.name}"
+        return self.name
+    
+    def get_popular_books(self, limit=5):
+        """Bu kategorideki popüler kitapları döndürür."""
+        return self.books.all().order_by('-loan_count')[:limit]
 
 class BookCategory(models.Model):
     """
