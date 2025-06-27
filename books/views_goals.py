@@ -188,52 +188,9 @@ def goal_dashboard(request):
         status='completed'
     ).order_by('-updated_at')[:5]
     
-    # Bu ay okunan kitaplar
-    from dateutil.relativedelta import relativedelta
-    current_month = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    next_month = current_month + relativedelta(months=1)
-    
-    from loans.models import Loan
-    from analytics.models import ReadingActivity
-    from django.db.models import Sum
-    
-    monthly_stats = {
-        'books_read': Loan.objects.filter(
-            borrower=request.user,
-            return_date__gte=current_month,
-            return_date__lt=next_month,
-            status='returned'
-        ).count(),
-        'reading_time': ReadingActivity.objects.filter(
-            user=request.user,
-            start_date__gte=current_month,
-            start_date__lt=next_month
-        ).aggregate(
-            total_time=Sum('reading_time_minutes')
-        )['total_time'] or 0,
-        'pages_read': ReadingActivity.objects.filter(
-            user=request.user,
-            start_date__gte=current_month,
-            start_date__lt=next_month
-        ).aggregate(
-            total_pages=Sum('pages_read')
-        )['total_pages'] or 0,
-    }
-    
-    # Hedef önerileri
-    suggestions = []
-    if not active_goals.exists():
-        suggestions = [
-            {'type': 'monthly', 'target': 3, 'description': 'Ayda 3 kitap oku'},
-            {'type': 'yearly', 'target': 25, 'description': 'Yılda 25 kitap oku'},
-            {'type': 'pages', 'target': 500, 'description': 'Ayda 500 sayfa oku'},
-        ]
-    
     context = {
         'active_goals': active_goals,
         'completed_goals': completed_goals,
-        'monthly_stats': monthly_stats,
-        'suggestions': suggestions,
         'active_menu': 'goals',
     }
     
@@ -334,4 +291,15 @@ def update_goal_progress(request, goal_id):
             defaults={
                 'daily_progress': progress_value,
                 'cumulative_progress': goal.current_value,
-                '
+            }
+        )
+        
+        if not created:
+            # Eğer kayıt zaten varsa, sadece ilerlemeyi güncelle
+            progress_record.daily_progress += progress_value
+            progress_record.cumulative_progress = goal.current_value
+            progress_record.save()
+        
+        return JsonResponse({'success': 'İlerleme güncellendi', 'new_value': goal.current_value})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
