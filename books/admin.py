@@ -6,7 +6,7 @@ from .models_category import Category, BookCategory, Tag, BookTag
 from .models_goals import ReadingGoal, ReadingChallenge, ChallengeParticipant
 from .models_identifier import BookIdentifier, ScanRecord
 from .models_reservation import BookReservation
-from .models_recommendation import BookRecommendation, UserReadingProfile, CategoryPreference, RecommendationFeedback
+from .models_recommendation import AIBookRecommendation, UserReadingProfile, CategoryPreference, RecommendationFeedback
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
@@ -123,8 +123,8 @@ class BookReservationAdmin(admin.ModelAdmin):
     date_hierarchy = 'reservation_date'
 
 # Öneri Sistemi
-@admin.register(BookRecommendation)
-class BookRecommendationAdmin(admin.ModelAdmin):
+@admin.register(AIBookRecommendation)
+class AIBookRecommendationAdmin(admin.ModelAdmin):
     list_display = ('user', 'book', 'recommendation_type', 'confidence_score', 'status', 'created_at')
     list_filter = ('recommendation_type', 'status', 'created_at')
     search_fields = ('user__username', 'book__title', 'reason')
@@ -132,8 +132,8 @@ class BookRecommendationAdmin(admin.ModelAdmin):
 
 @admin.register(UserReadingProfile)
 class UserReadingProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'favorite_genres', 'reading_frequency', 'created_at')
-    list_filter = ('reading_frequency', 'created_at')
+    list_display = ('user', 'preferred_book_length', 'recommendation_frequency', 'created_at')
+    list_filter = ('recommendation_frequency', 'preferred_book_length', 'created_at')
     search_fields = ('user__username',)
     date_hierarchy = 'created_at'
 

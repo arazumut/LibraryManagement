@@ -9,7 +9,7 @@ import random
 
 from books.models import Book
 from books.models_recommendation import (
-    BookRecommendation, 
+    AIAIBookRecommendation, 
     UserReadingProfile, 
     CategoryPreference,
     RecommendationFeedback
@@ -31,7 +31,7 @@ def recommendation_dashboard(request):
         reading_profile.update_preferences()
     
     # Bekleyen önerileri al
-    pending_recommendations = BookRecommendation.objects.filter(
+    pending_recommendations = AIBookRecommendation.objects.filter(
         user=request.user,
         status='pending'
     ).select_related('book')[:6]
@@ -39,20 +39,20 @@ def recommendation_dashboard(request):
     # Öneriler yoksa yeni öneriler oluştur
     if not pending_recommendations.exists():
         generate_recommendations_for_user(request.user)
-        pending_recommendations = BookRecommendation.objects.filter(
+        pending_recommendations = AIBookRecommendation.objects.filter(
             user=request.user,
             status='pending'
         ).select_related('book')[:6]
     
     # Son aktiviteler
-    recent_recommendations = BookRecommendation.objects.filter(
+    recent_recommendations = AIBookRecommendation.objects.filter(
         user=request.user
     ).exclude(status='pending').order_by('-created_at')[:10]
     
     # İstatistikler
-    total_recommendations = BookRecommendation.objects.filter(user=request.user).count()
-    liked_count = BookRecommendation.objects.filter(user=request.user, status='liked').count()
-    borrowed_count = BookRecommendation.objects.filter(user=request.user, status='borrowed').count()
+    total_recommendations = AIBookRecommendation.objects.filter(user=request.user).count()
+    liked_count = AIBookRecommendation.objects.filter(user=request.user, status='liked').count()
+    borrowed_count = AIBookRecommendation.objects.filter(user=request.user, status='borrowed').count()
     
     context = {
         'reading_profile': reading_profile,
@@ -73,7 +73,7 @@ def recommendation_respond(request, recommendation_id):
         return JsonResponse({'error': 'Invalid method'}, status=405)
     
     recommendation = get_object_or_404(
-        BookRecommendation, 
+        AIBookRecommendation, 
         id=recommendation_id, 
         user=request.user
     )
@@ -105,7 +105,7 @@ def recommendation_respond(request, recommendation_id):
 def view_recommendation(request, recommendation_id):
     """Öneriyi görüntüle ve kitap detayına yönlendir."""
     recommendation = get_object_or_404(
-        BookRecommendation, 
+        AIBookRecommendation, 
         id=recommendation_id, 
         user=request.user
     )
@@ -175,7 +175,7 @@ def generate_new_recommendations(request):
     """Yeni öneriler oluştur."""
     if request.method == 'POST':
         # Mevcut bekleyen önerileri sil
-        BookRecommendation.objects.filter(
+        AIBookRecommendation.objects.filter(
             user=request.user, 
             status='pending'
         ).delete()
@@ -206,7 +206,7 @@ def generate_recommendations_for_user(user, limit=10):
     
     # Zaten önerilmiş kitapları al
     recommended_books = set(
-        BookRecommendation.objects.filter(user=user).values_list('book_id', flat=True)
+        AIBookRecommendation.objects.filter(user=user).values_list('book_id', flat=True)
     )
     
     # Önerilecek kitapları bul
@@ -221,7 +221,7 @@ def generate_recommendations_for_user(user, limit=10):
         ).exclude(id__in=excluded_books).distinct()[:5]
         
         for book in category_books:
-            recommendation = BookRecommendation.objects.create(
+            recommendation = AIBookRecommendation.objects.create(
                 user=user,
                 book=book,
                 recommendation_type='category_based',
@@ -238,7 +238,7 @@ def generate_recommendations_for_user(user, limit=10):
     ).order_by('-loan_count')[:3]
     
     for book in popular_books:
-        BookRecommendation.objects.create(
+        AIBookRecommendation.objects.create(
             user=user,
             book=book,
             recommendation_type='trending',
@@ -255,7 +255,7 @@ def generate_recommendations_for_user(user, limit=10):
     ).exclude(id__in=excluded_books)[:2]
     
     for book in new_books:
-        BookRecommendation.objects.create(
+        AIBookRecommendation.objects.create(
             user=user,
             book=book,
             recommendation_type='new_releases',
@@ -274,7 +274,7 @@ def generate_recommendations_for_user(user, limit=10):
 def recommendation_feedback(request, recommendation_id):
     """Öneri geri bildirimi."""
     recommendation = get_object_or_404(
-        BookRecommendation, 
+        AIBookRecommendation, 
         id=recommendation_id, 
         user=request.user
     )

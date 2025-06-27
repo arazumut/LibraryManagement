@@ -32,7 +32,7 @@ class AIBookRecommendation(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Kullanıcı', 
                             on_delete=models.CASCADE, related_name='book_recommendations')
     book = models.ForeignKey(Book, verbose_name='Önerilen Kitap', 
-                            on_delete=models.CASCADE, related_name='recommendations')
+                            on_delete=models.CASCADE, related_name='ai_recommendations')
     recommendation_type = models.CharField('Öneri Tipi', max_length=20, choices=RECOMMENDATION_TYPE_CHOICES)
     confidence_score = models.FloatField('Güven Skoru', default=0.0, 
                                         help_text='0.0 - 1.0 arası öneri güvenilirlik skoru')
