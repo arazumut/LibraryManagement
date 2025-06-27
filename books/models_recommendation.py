@@ -5,9 +5,9 @@ from books.models_category import Category
 from django.utils import timezone
 import uuid
 
-class BookRecommendation(models.Model):
+class AIBookRecommendation(models.Model):
     """
-    Kitap önerisi sistemi için model.
+    AI tabanlı kitap önerisi sistemi için model.
     """
     RECOMMENDATION_TYPE_CHOICES = (
         ('ai_based', 'AI Tabanlı'),
@@ -185,7 +185,7 @@ class RecommendationFeedback(models.Model):
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Kullanıcı', 
                             on_delete=models.CASCADE, related_name='recommendation_feedbacks')
-    recommendation = models.ForeignKey(BookRecommendation, verbose_name='Öneri', 
+    recommendation = models.ForeignKey(AIBookRecommendation, verbose_name='Öneri', 
                                      on_delete=models.CASCADE, related_name='feedbacks')
     feedback_type = models.CharField('Geri Bildirim Tipi', max_length=20, choices=FEEDBACK_TYPE_CHOICES)
     rating = models.IntegerField('Değerlendirme', choices=[(i, i) for i in range(1, 6)])

@@ -125,24 +125,24 @@ class BookReservationAdmin(admin.ModelAdmin):
 # Öneri Sistemi
 @admin.register(BookRecommendation)
 class BookRecommendationAdmin(admin.ModelAdmin):
-    list_display = ('user', 'book', 'recommendation_type', 'score', 'is_accepted', 'created_at')
-    list_filter = ('recommendation_type', 'is_accepted', 'created_at')
+    list_display = ('user', 'book', 'recommendation_type', 'confidence_score', 'status', 'created_at')
+    list_filter = ('recommendation_type', 'status', 'created_at')
     search_fields = ('user__username', 'book__title', 'reason')
     date_hierarchy = 'created_at'
 
 @admin.register(UserReadingProfile)
 class UserReadingProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'total_books_read', 'avg_rating', 'reading_speed_pages_per_hour', 'updated_at')
-    list_filter = ('updated_at',)
+    list_display = ('user', 'favorite_genres', 'reading_frequency', 'created_at')
+    list_filter = ('reading_frequency', 'created_at')
     search_fields = ('user__username',)
-    date_hierarchy = 'updated_at'
+    date_hierarchy = 'created_at'
 
 @admin.register(CategoryPreference)
 class CategoryPreferenceAdmin(admin.ModelAdmin):
-    list_display = ('user', 'category', 'preference_score', 'books_read_count', 'updated_at')
-    list_filter = ('updated_at',)
-    search_fields = ('user__username', 'category__name')
-    date_hierarchy = 'updated_at'
+    list_display = ('reading_profile', 'category', 'weight', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('reading_profile__user__username', 'category__name')
+    date_hierarchy = 'created_at'
 
 @admin.register(RecommendationFeedback)
 class RecommendationFeedbackAdmin(admin.ModelAdmin):

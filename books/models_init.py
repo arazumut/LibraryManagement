@@ -21,7 +21,7 @@ from .models_reservation import BookReservation
 
 # Recommendation models
 from .models_recommendation import (
-    BookRecommendation, 
+    AIBookRecommendation, 
     UserReadingProfile, 
     CategoryPreference, 
     RecommendationFeedback
@@ -35,5 +35,5 @@ __all__ = [
     'ReadingGoal', 'ReadingChallenge', 'ChallengeParticipant',
     'BookIdentifier', 'ScanRecord', 'BookLocation',
     'BookReservation',
-    'BookRecommendation', 'UserReadingProfile', 'CategoryPreference', 'RecommendationFeedback'
+    'AIBookRecommendation', 'UserReadingProfile', 'CategoryPreference', 'RecommendationFeedback'
 ]
