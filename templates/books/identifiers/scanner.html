@@ -1,0 +1,323 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}QR Kod Tarayıcı - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/scanner.css' %}" rel="stylesheet">
+<style>
+#reader {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+.scan-result {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    display: none;
+}
+.scan-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+.scan-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6>📱 QR Kod Tarayıcı</h6>
+                        <div>
+                            <button id="start-scan" class="btn btn-primary btn-sm">
+                                <i class="fas fa-camera"></i> Taramayı Başlat
+                            </button>
+                            <button id="stop-scan" class="btn btn-outline-secondary btn-sm" style="display: none;">
+                                <i class="fas fa-stop"></i> Durdur
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- QR Kod Tarayıcı -->
+                    <div id="reader" style="display: none;"></div>
+                    
+                    <!-- Manuel Giriş -->
+                    <div id="manual-input">
+                        <h6 class="mb-3">📝 Manuel Giriş</h6>
+                        <form id="manual-scan-form">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="identifier-input" class="form-label">Kitap Kodu/ISBN/Barkod</label>
+                                <input type="text" class="form-control" id="identifier-input" 
+                                       placeholder="Kitap kodunu girin veya QR kodu tarayın" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="scan-action" class="form-label">İşlem Türü</label>
+                                <select class="form-select" id="scan-action" required>
+                                    <option value="view">Görüntüleme</option>
+                                    <option value="borrow">Ödünç Alma</option>
+                                    <option value="return">İade</option>
+                                    <option value="inventory">Envanter</option>
+                                    <option value="location_check">Konum Kontrolü</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="location-input" class="form-label">Konum (İsteğe Bağlı)</label>
+                                <input type="text" class="form-control" id="location-input" 
+                                       placeholder="Mevcut konum">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Sorgula
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Sonuç Alanı -->
+                    <div id="scan-result" class="scan-result">
+                        <div id="result-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Son Taramalar -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h6>📋 Son Taramalar</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline timeline-one-side">
+                        {% for scan in recent_scans %}
+                        <div class="timeline-block mb-3">
+                            <span class="timeline-step">
+                                <i class="fas fa-qrcode text-{{ scan.scan_action|default:'primary' }}"></i>
+                            </span>
+                            <div class="timeline-content">
+                                <h6 class="text-dark text-sm font-weight-bold mb-0">
+                                    {{ scan.identifier.book.title|truncatechars:30 }}
+                                </h6>
+                                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+                                    {{ scan.get_scan_action_display }} - {{ scan.scan_date|date:"d.m.Y H:i" }}
+                                </p>
+                                {% if scan.location %}
+                                <p class="text-xs mt-1 mb-0">
+                                    <i class="fas fa-map-marker-alt"></i> {{ scan.location }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted text-center">Henüz tarama yapılmamış.</p>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'books:scan_history' %}" class="btn btn-outline-primary btn-sm">
+                            Tümünü Görüntüle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kitap Detay Modal -->
+<div class="modal fade" id="bookDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kitap Detayları</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="book-details">
+                <!-- Kitap detayları buraya yüklenecek -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <a href="#" id="view-book-detail" class="btn btn-primary">Detaylı Görünüm</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+let html5QrcodeScanner = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const startScanBtn = document.getElementById('start-scan');
+    const stopScanBtn = document.getElementById('stop-scan');
+    const readerDiv = document.getElementById('reader');
+    const manualInput = document.getElementById('manual-input');
+    const manualForm = document.getElementById('manual-scan-form');
+    
+    // QR Kod tarayıcı başlatma
+    startScanBtn.addEventListener('click', function() {
+        startScanning();
+    });
+    
+    // QR Kod tarayıcı durdurma
+    stopScanBtn.addEventListener('click', function() {
+        stopScanning();
+    });
+    
+    // Manuel form gönderimi
+    manualForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const identifier = document.getElementById('identifier-input').value;
+        const action = document.getElementById('scan-action').value;
+        const location = document.getElementById('location-input').value;
+        
+        processScan(identifier, action, location);
+    });
+    
+    function startScanning() {
+        readerDiv.style.display = 'block';
+        manualInput.style.display = 'none';
+        startScanBtn.style.display = 'none';
+        stopScanBtn.style.display = 'inline-block';
+        
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader",
+            { 
+                fps: 10, 
+                qrbox: {width: 250, height: 250},
+                aspectRatio: 1.0
+            },
+            false
+        );
+        
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    }
+    
+    function stopScanning() {
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.clear().then(() => {
+                readerDiv.style.display = 'none';
+                manualInput.style.display = 'block';
+                startScanBtn.style.display = 'inline-block';
+                stopScanBtn.style.display = 'none';
+            });
+        }
+    }
+    
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log(`QR Code tarandı: ${decodedText}`);
+        
+        // Taramayı durdur
+        stopScanning();
+        
+        // Varsayılan değerlerle işle
+        processScan(decodedText, 'view', '');
+    }
+    
+    function onScanFailure(error) {
+        // Tarama hatalarını sessizce görmezden gel
+        console.warn(`QR Code tarama hatası: ${error}`);
+    }
+    
+    function processScan(identifier, action, location) {
+        // Loading göster
+        showScanResult('Sorgulanıyor...', 'info');
+        
+        fetch('/books/scan/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                'identifier': identifier,
+                'action': action,
+                'location': location
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayBookInfo(data.book, data.scan_record);
+                
+                // Manuel input'u temizle
+                document.getElementById('identifier-input').value = '';
+                document.getElementById('location-input').value = '';
+            } else {
+                showScanResult(`Hata: ${data.error}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showScanResult('Bağlantı hatası oluştu!', 'error');
+        });
+    }
+    
+    function displayBookInfo(book, scanRecord) {
+        const bookDetails = `
+            <div class="row">
+                <div class="col-md-4">
+                    ${book.cover_image ? 
+                        `<img src="${book.cover_image}" class="img-fluid rounded" alt="${book.title}">` :
+                        `<div class="bg-gradient-secondary rounded d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-book fa-3x text-white"></i>
+                        </div>`
+                    }
+                </div>
+                <div class="col-md-8">
+                    <h5>${book.title}</h5>
+                    <p class="text-muted">${book.author}</p>
+                    <div class="mb-2">
+                        <span class="badge bg-${book.status === 'available' ? 'success' : 'warning'}">${book.status_display}</span>
+                        <span class="badge bg-info">${book.library_name}</span>
+                    </div>
+                    <p><strong>ISBN:</strong> ${book.isbn || 'Belirtilmemiş'}</p>
+                    <p><strong>Yayın Yılı:</strong> ${book.publication_year || 'Belirtilmemiş'}</p>
+                    <p><strong>Dil:</strong> ${book.language || 'Belirtilmemiş'}</p>
+                    ${book.description ? `<p><strong>Açıklama:</strong> ${book.description.substring(0, 200)}${book.description.length > 200 ? '...' : ''}</p>` : ''}
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            Son tarama: ${scanRecord.scan_date} - ${scanRecord.action_display}
+                            ${scanRecord.location ? ` (${scanRecord.location})` : ''}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('book-details').innerHTML = bookDetails;
+        document.getElementById('view-book-detail').href = `/books/${book.id}/`;
+        
+        const modal = new bootstrap.Modal(document.getElementById('bookDetailModal'));
+        modal.show();
+        
+        showScanResult('Kitap başarıyla bulundu!', 'success');
+    }
+    
+    function showScanResult(message, type) {
+        const resultDiv = document.getElementById('scan-result');
+        const contentDiv = document.getElementById('result-content');
+        
+        resultDiv.className = `scan-result scan-${type}`;
+        contentDiv.innerHTML = message;
+        resultDiv.style.display = 'block';
+        
+        // 5 saniye sonra gizle
+        setTimeout(() => {
+            resultDiv.style.display = 'none';
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

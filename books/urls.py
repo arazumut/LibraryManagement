@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from . import views_review, views_collection, views_reservation, views_goals
+from . import views_review, views_collection, views_reservation, views_goals, views_recommendation, views_identifier
 
 app_name = 'books'
 
@@ -48,4 +48,30 @@ urlpatterns = [
     path('goals/<int:goal_id>/edit/', views_goals.goal_update, name='goal_edit'),
     path('goals/<int:goal_id>/delete/', views_goals.goal_delete, name='goal_delete'),
     path('goals/<int:goal_id>/progress/', views_goals.goal_update_progress, name='goal_progress'),
+    path('goals/dashboard/', views_goals.reading_goals_dashboard, name='goals_dashboard'),
+    
+    # Öneri sistemi
+    path('recommendations/', views_recommendation.recommendation_dashboard, name='recommendation_dashboard'),
+    path('recommendations/respond/<uuid:recommendation_id>/', views_recommendation.recommendation_respond, name='recommendation_respond'),
+    path('recommendations/settings/', views_recommendation.recommendation_settings, name='recommendation_settings'),
+    path('recommendations/generate/', views_recommendation.generate_recommendations, name='generate_recommendations'),
+    path('recommendations/feedback/<uuid:recommendation_id>/', views_recommendation.recommendation_feedback, name='recommendation_feedback'),
+    path('recommendations/discover/', views_recommendation.discover_books, name='discover_books'),
+    
+    # QR kod ve tanımlayıcı sistemi
+    path('identifiers/', views_identifier.identifier_list, name='identifier_list'),
+    path('identifiers/create/', views_identifier.identifier_create, name='identifier_create'),
+    path('identifiers/<int:identifier_id>/', views_identifier.identifier_detail, name='identifier_detail'),
+    path('identifiers/<int:identifier_id>/qr-code/', views_identifier.identifier_qr_code, name='identifier_qr_code'),
+    path('scan/', views_identifier.book_scan, name='book_scan'),
+    path('scan-history/', views_identifier.scan_history, name='scan_history'),
+    path('scan-stats/', views_identifier.scan_statistics, name='scan_stats'),
+    path('location/<int:location_id>/update/', views_identifier.location_update, name='location_update'),
+    
+    # Koleksiyon ek özellikler
+    path('collections/<uuid:collection_id>/analytics/', views_collection.collection_analytics, name='collection_analytics'),
+    path('collections/<uuid:collection_id>/share/', views_collection.collection_share, name='collection_share'),
+    path('collections/<uuid:collection_id>/export/', views_collection.collection_export, name='collection_export'),
+    path('collections/<uuid:collection_id>/follow/', views_collection.collection_follow, name='collection_follow'),
+    path('collections/following/', views_collection.collections_following, name='collections_following'),
 ]

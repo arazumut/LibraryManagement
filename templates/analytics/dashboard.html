@@ -1,0 +1,397 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Analitik Dashboard - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/analytics.css' %}" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Ana İstatistikler -->
+    <div class="row">
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Toplam Kitap</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    {{ total_books }}
+                                    <span class="text-success text-sm font-weight-bolder">
+                                        +{{ books_this_month }}
+                                    </span>
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                <i class="ni ni-books text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Aktif Ödünç</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    {{ active_loans }}
+                                    <span class="text-success text-sm font-weight-bolder">
+                                        +{{ loans_this_week }}
+                                    </span>
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-info shadow text-center border-radius-md">
+                                <i class="ni ni-delivery-fast text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Aktif Kullanıcı</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    {{ active_users }}
+                                    <span class="text-success text-sm font-weight-bolder">
+                                        +{{ new_users_this_month }}
+                                    </span>
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-success shadow text-center border-radius-md">
+                                <i class="ni ni-single-02 text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Değerlendirme</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    {{ average_rating|floatformat:1 }}/5.0
+                                    <span class="text-success text-sm font-weight-bolder">
+                                        +{{ reviews_this_month }}
+                                    </span>
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-warning shadow text-center border-radius-md">
+                                <i class="ni ni-favourite-28 text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <!-- Ödünç Alma Trend Grafiği -->
+        <div class="col-lg-7 mb-lg-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="d-flex flex-column h-100">
+                                <p class="mb-1 pt-2 text-bold">📈 Ödünç Alma Trendi</p>
+                                <h5 class="font-weight-bolder">Son 30 Gün</h5>
+                                <p class="mb-0">
+                                    <span class="text-success text-sm font-weight-bolder">
+                                        +{{ loan_increase_percentage }}%
+                                    </span>
+                                    geçen aya göre artış
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart">
+                                <canvas id="loan-trend-chart" height="170"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- En Popüler Kategoriler -->
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-header pb-0">
+                    <h6>📚 En Popüler Kategoriler</h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="timeline timeline-one-side">
+                        {% for category in popular_categories %}
+                        <div class="timeline-block mb-3">
+                            <span class="timeline-step">
+                                <i class="{{ category.icon|default:'fas fa-bookmark' }} text-{{ category.color|default:'primary' }}"></i>
+                            </span>
+                            <div class="timeline-content">
+                                <h6 class="text-dark text-sm font-weight-bold mb-0">{{ category.name }}</h6>
+                                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+                                    {{ category.book_count }} kitap - {{ category.loan_count }} ödünç
+                                </p>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-gradient-{{ category.color|default:'primary' }}" 
+                                         style="width: {{ category.popularity_percentage }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <!-- En Çok Okunan Kitaplar -->
+        <div class="col-lg-8 mb-lg-0 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h6>🏆 En Çok Okunan Kitaplar</h6>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kitap</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Yazar</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ödünç</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Değerlendirme</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Popülerlik</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in popular_books %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div>
+                                                {% if book.cover_image %}
+                                                <img src="{{ book.cover_image.url }}" class="avatar avatar-sm me-3">
+                                                {% else %}
+                                                <div class="avatar avatar-sm me-3 bg-gradient-secondary d-flex align-items-center justify-content-center">
+                                                    <i class="fas fa-book text-white text-xs"></i>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ book.title|truncatechars:40 }}</h6>
+                                                <p class="text-xs text-secondary mb-0">{{ book.library.name }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ book.author|truncatechars:25 }}</p>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="text-xs font-weight-bold">{{ book.loan_count }}</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="me-2 text-xs font-weight-bold">{{ book.avg_rating|floatformat:1 }}</span>
+                                            <div class="text-warning">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= book.avg_rating %}
+                                                        <i class="fas fa-star text-xs"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star text-xs"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <div class="progress" style="width: 60px; height: 8px;">
+                                            <div class="progress-bar bg-gradient-success" 
+                                                 style="width: {{ book.popularity_score }}%"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Kullanıcı Aktivite Özeti -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h6>👥 Kullanıcı Aktivitesi</h6>
+                </div>
+                <div class="card-body p-3">
+                    <canvas id="user-activity-chart" height="200"></canvas>
+                    <div class="mt-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <span class="text-success text-sm font-weight-bolder">{{ active_today }}</span>
+                                    <p class="text-xs mb-0">Bugün Aktif</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <span class="text-info text-sm font-weight-bolder">{{ new_registrations }}</span>
+                                    <p class="text-xs mb-0">Yeni Kayıt</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Okuma Hedefleri Progress -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h6>🎯 Okuma Hedefleri İlerlemesi</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for goal in active_goals %}
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card bg-gradient-{{ goal.status|default:'primary' }} card-chart">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-white text-sm mb-0 text-capitalize font-weight-bold">
+                                                    {{ goal.title|truncatechars:20 }}
+                                                </p>
+                                                <h5 class="text-white font-weight-bolder mb-0">
+                                                    {{ goal.current_value }}/{{ goal.target_value }}
+                                                </h5>
+                                                <div class="progress mt-2" style="height: 4px;">
+                                                    <div class="progress-bar bg-white" 
+                                                         style="width: {{ goal.progress_percentage }}%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-white shadow text-center border-radius-md">
+                                                <i class="fas fa-target text-lg text-{{ goal.status|default:'primary' }}" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ödünç alma trend grafiği
+    const loanTrendCtx = document.getElementById('loan-trend-chart').getContext('2d');
+    new Chart(loanTrendCtx, {
+        type: 'line',
+        data: {
+            labels: {{ loan_trend_labels|safe }},
+            datasets: [{
+                label: 'Günlük Ödünç',
+                data: {{ loan_trend_data|safe }},
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+    
+    // Kullanıcı aktivite grafiği
+    const userActivityCtx = document.getElementById('user-activity-chart').getContext('2d');
+    new Chart(userActivityCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Aktif', 'Pasif', 'Yeni'],
+            datasets: [{
+                data: {{ user_activity_data|safe }},
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(54, 162, 235, 0.8)'
+                ],
+                borderWidth: 2,
+                borderColor: 'rgba(255, 255, 255, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

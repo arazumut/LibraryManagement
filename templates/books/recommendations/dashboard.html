@@ -1,0 +1,283 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Kitap Önerileri - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/recommendations.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6>📚 Sizin İçin Öneriler</h6>
+                        <div>
+                            <a href="{% url 'books:recommendation_settings' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-cog"></i> Ayarlar
+                            </a>
+                            <a href="{% url 'books:generate_recommendations' %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-sync-alt"></i> Yeni Öneriler
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <!-- İstatistikler -->
+                    <div class="row px-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-gradient-primary">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-white text-sm mb-0 text-capitalize">Toplam Öneri</p>
+                                                <h5 class="text-white mb-0">{{ total_recommendations }}</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-white shadow text-center border-radius-md">
+                                                <i class="fa fa-lightbulb text-lg text-primary" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-gradient-success">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-white text-sm mb-0 text-capitalize">Beğenilen</p>
+                                                <h5 class="text-white mb-0">{{ liked_count }}</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-white shadow text-center border-radius-md">
+                                                <i class="fa fa-heart text-lg text-success" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-gradient-info">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-white text-sm mb-0 text-capitalize">Ödünç Alınan</p>
+                                                <h5 class="text-white mb-0">{{ borrowed_count }}</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-white shadow text-center border-radius-md">
+                                                <i class="fa fa-book text-lg text-info" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-gradient-warning">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-white text-sm mb-0 text-capitalize">Başarı Oranı</p>
+                                                <h5 class="text-white mb-0">{{ success_rate }}%</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-white shadow text-center border-radius-md">
+                                                <i class="fa fa-chart-line text-lg text-warning" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Yeni Öneriler -->
+                    {% if pending_recommendations %}
+                    <div class="px-3 mb-4">
+                        <h6 class="mb-3">🆕 Yeni Öneriler</h6>
+                        <div class="row">
+                            {% for recommendation in pending_recommendations %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card recommendation-card">
+                                    {% if recommendation.book.cover_image %}
+                                    <img src="{{ recommendation.book.cover_image.url }}" class="card-img-top" alt="{{ recommendation.book.title }}">
+                                    {% else %}
+                                    <div class="card-img-top bg-gradient-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-book fa-3x text-white"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ recommendation.book.title }}</h6>
+                                        <p class="card-text text-sm">{{ recommendation.book.author }}</p>
+                                        <div class="mb-2">
+                                            <span class="badge badge-sm bg-gradient-{{ recommendation.recommendation_type|default:'primary' }}">
+                                                {{ recommendation.get_recommendation_type_display }}
+                                            </span>
+                                            <span class="badge badge-sm bg-gradient-info">
+                                                {{ recommendation.confidence_score|floatformat:1 }}/1.0
+                                            </span>
+                                        </div>
+                                        {% if recommendation.reason %}
+                                        <p class="card-text text-xs text-muted">{{ recommendation.reason|truncatewords:15 }}</p>
+                                        {% endif %}
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-outline-success btn-sm recommendation-action" 
+                                                    data-action="liked" data-id="{{ recommendation.id }}">
+                                                <i class="fas fa-heart"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm recommendation-action" 
+                                                    data-action="disliked" data-id="{{ recommendation.id }}">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                            <a href="{% url 'books:detail' recommendation.book.id %}" class="btn btn-primary btn-sm">
+                                                Detay
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Son Yanıtlanan Öneriler -->
+                    {% if recent_recommendations %}
+                    <div class="px-3">
+                        <h6 class="mb-3">📝 Son Değerlendirilen Öneriler</h6>
+                        <div class="table-responsive p-0">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kitap</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Öneri Tipi</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Güven Skoru</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Yanıt</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tarih</th>
+                                        <th class="text-secondary opacity-7"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for recommendation in recent_recommendations %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex px-2 py-1">
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm">{{ recommendation.book.title }}</h6>
+                                                    <p class="text-xs text-secondary mb-0">{{ recommendation.book.author }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-sm bg-gradient-{{ recommendation.recommendation_type|default:'primary' }}">
+                                                {{ recommendation.get_recommendation_type_display }}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle text-center text-sm">
+                                            <span class="text-xs font-weight-bold">{{ recommendation.confidence_score|floatformat:2 }}</span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {% if recommendation.status == 'liked' %}
+                                                <span class="badge badge-sm bg-gradient-success">Beğenildi</span>
+                                            {% elif recommendation.status == 'disliked' %}
+                                                <span class="badge badge-sm bg-gradient-danger">Beğenilmedi</span>
+                                            {% elif recommendation.status == 'saved' %}
+                                                <span class="badge badge-sm bg-gradient-info">Kaydedildi</span>
+                                            {% elif recommendation.status == 'borrowed' %}
+                                                <span class="badge badge-sm bg-gradient-warning">Ödünç Alındı</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="text-secondary text-xs font-weight-bold">{{ recommendation.responded_at|date:"d.m.Y" }}</span>
+                                        </td>
+                                        <td class="align-middle">
+                                            <a href="{% url 'books:detail' recommendation.book.id %}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Kitabı Görüntüle">
+                                                Detay
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Öneri yanıtlama işlevi
+    document.querySelectorAll('.recommendation-action').forEach(button => {
+        button.addEventListener('click', function() {
+            const action = this.dataset.action;
+            const recommendationId = this.dataset.id;
+            
+            fetch(`/books/recommendations/respond/${recommendationId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    'action': action
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Kartı kaldır veya durumu güncelle
+                    this.closest('.col-md-4').remove();
+                    // Başarı mesajı göster
+                    showNotification('Yanıtınız kaydedildi!', 'success');
+                } else {
+                    showNotification('Bir hata oluştu!', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Bir hata oluştu!', 'error');
+            });
+        });
+    });
+});
+
+function showNotification(message, type) {
+    // Bildirim gösterme fonksiyonu (Toast mesaj)
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.zIndex = '9999';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+</script>
+{% endblock %}

@@ -16,6 +16,7 @@ urlpatterns = [
     path('books/', include('books.urls')),
     path('libraries/', include('libraries.urls')),
     path('loans/', include('loans.urls')),
+    path('analytics/', include('analytics.urls')),
     path('search/', views.search, name='search'),
 ]
 
