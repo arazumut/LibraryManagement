@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from .models_goals import ReadingGoal, ReadingChallenge
 from django.utils import timezone
 from django.http import JsonResponse
+from django.db.models import Count, Avg, Q
+from datetime import datetime, timedelta
 
 @login_required
 def goal_list(request):
@@ -303,3 +305,60 @@ def update_goal_progress(request, goal_id):
         return JsonResponse({'success': 'İlerleme güncellendi', 'new_value': goal.current_value})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def reading_goals_dashboard(request):
+    """
+    Enhanced reading goals dashboard with analytics and insights
+    """
+    user_goals = ReadingGoal.objects.filter(user=request.user)
+    
+    # Calculate statistics
+    total_goals = user_goals.count()
+    active_goals = user_goals.filter(status='in_progress')
+    completed_goals = user_goals.filter(status='completed')
+    
+    # Current year goals
+    current_year = timezone.now().year
+    yearly_goals = user_goals.filter(
+        start_date__year=current_year
+    )
+    
+    # Calculate completion rate
+    completion_rate = 0
+    if yearly_goals.exists():
+        completed_yearly = yearly_goals.filter(status='completed').count()
+        completion_rate = (completed_yearly / yearly_goals.count()) * 100
+    
+    # Get progress data for chart
+    progress_data = []
+    for goal in active_goals[:5]:  # Top 5 active goals
+        progress_data.append({
+            'name': goal.title,
+            'progress': goal.progress_percentage,
+            'target': goal.target_value,
+            'current': goal.current_value
+        })
+    
+    # Monthly goal completion trend
+    monthly_completions = []
+    for i in range(12):
+        month = datetime.now().replace(month=i+1, day=1)
+        completed_in_month = completed_goals.filter(
+            end_date__month=month.month,
+            end_date__year=current_year
+        ).count()
+        monthly_completions.append(completed_in_month)
+    
+    context = {
+        'total_goals': total_goals,
+        'active_goals': active_goals,
+        'completed_goals': completed_goals,
+        'completion_rate': completion_rate,
+        'progress_data': progress_data,
+        'monthly_completions': monthly_completions,
+        'yearly_goals_count': yearly_goals.count(),
+        'active_menu': 'reading_goals_dashboard'
+    }
+    
+    return render(request, 'books/goals/dashboard.html', context)

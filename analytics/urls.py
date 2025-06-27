@@ -12,18 +12,11 @@ urlpatterns = [
     path('library/comparison/', views.library_comparison, name='library_comparison'),
     
     # Kullanıcı analitikleri
-    path('user/<int:user_id>/', views.user_analytics, name='user_analytics'),
-    path('user/reading-patterns/', views.user_reading_patterns, name='user_reading_patterns'),
+    path('user/reading-patterns/', views.user_reading_analytics, name='user_analytics'),
     
     # Popülerlik ve trend raporları
-    path('popularity/', views.popularity_report, name='popularity_report'),
-    path('trends/', views.trend_analysis, name='trend_analysis'),
+    path('popularity/', views.book_popularity_report, name='popularity_report'),
     
     # Dışa aktarım
-    path('export/csv/', views.export_analytics_csv, name='export_csv'),
-    path('export/pdf/', views.export_analytics_pdf, name='export_pdf'),
-    
-    # API endpoints
-    path('api/chart-data/', views.get_chart_data, name='chart_data'),
-    path('api/real-time-stats/', views.get_real_time_stats, name='real_time_stats'),
+    path('export/', views.export_analytics_data, name='export_csv'),
 ]

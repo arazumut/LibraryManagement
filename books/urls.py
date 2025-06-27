@@ -54,24 +54,24 @@ urlpatterns = [
     path('recommendations/', views_recommendation.recommendation_dashboard, name='recommendation_dashboard'),
     path('recommendations/respond/<uuid:recommendation_id>/', views_recommendation.recommendation_respond, name='recommendation_respond'),
     path('recommendations/settings/', views_recommendation.recommendation_settings, name='recommendation_settings'),
-    path('recommendations/generate/', views_recommendation.generate_recommendations, name='generate_recommendations'),
+    path('recommendations/generate/', views_recommendation.generate_new_recommendations, name='generate_recommendations'),
     path('recommendations/feedback/<uuid:recommendation_id>/', views_recommendation.recommendation_feedback, name='recommendation_feedback'),
     path('recommendations/discover/', views_recommendation.discover_books, name='discover_books'),
     
     # QR kod ve tanımlayıcı sistemi
     path('identifiers/', views_identifier.identifier_list, name='identifier_list'),
-    path('identifiers/create/', views_identifier.identifier_create, name='identifier_create'),
+    path('identifiers/create/<int:book_id>/', views_identifier.identifier_create, name='identifier_create'),
     path('identifiers/<int:identifier_id>/', views_identifier.identifier_detail, name='identifier_detail'),
-    path('identifiers/<int:identifier_id>/qr-code/', views_identifier.identifier_qr_code, name='identifier_qr_code'),
-    path('scan/', views_identifier.book_scan, name='book_scan'),
-    path('scan-history/', views_identifier.scan_history, name='scan_history'),
+    path('identifiers/<int:identifier_id>/qr-code/', views_identifier.download_qr_code, name='identifier_qr_code'),
+    path('scan/', views_identifier.scan_identifier, name='book_scan'),
+    path('scan-history/', views_identifier.qr_code_scanner, name='scan_history'),
     path('scan-stats/', views_identifier.scan_statistics, name='scan_stats'),
-    path('location/<int:location_id>/update/', views_identifier.location_update, name='location_update'),
+    path('location/<int:book_id>/update/', views_identifier.book_location_update, name='location_update'),
     
     # Koleksiyon ek özellikler
     path('collections/<uuid:collection_id>/analytics/', views_collection.collection_analytics, name='collection_analytics'),
     path('collections/<uuid:collection_id>/share/', views_collection.collection_share, name='collection_share'),
     path('collections/<uuid:collection_id>/export/', views_collection.collection_export, name='collection_export'),
     path('collections/<uuid:collection_id>/follow/', views_collection.collection_follow, name='collection_follow'),
-    path('collections/following/', views_collection.collections_following, name='collections_following'),
+    path('collections/following/', views_collection.my_followed_collections, name='collections_following'),
 ]
