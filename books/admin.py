@@ -6,6 +6,7 @@ from .models_category import Category, BookCategory, Tag, BookTag
 from .models_goals import ReadingGoal, ReadingChallenge, ChallengeParticipant
 from .models_identifier import BookIdentifier, ScanRecord
 from .models_reservation import BookReservation
+from .models_recommendation import BookRecommendation, UserReadingProfile, CategoryPreference, RecommendationFeedback
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
@@ -79,8 +80,8 @@ class BookTagAdmin(admin.ModelAdmin):
 # Okuma Hedefleri ve Meydan Okumalar
 @admin.register(ReadingGoal)
 class ReadingGoalAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'goal_type', 'target_value', 'current_value', 'is_completed', 'period')
-    list_filter = ('goal_type', 'period', 'is_completed', 'is_public')
+    list_display = ('title', 'user', 'goal_type', 'target_value', 'current_value', 'status', 'period')
+    list_filter = ('goal_type', 'period', 'status', 'is_public')
     search_fields = ('title', 'user__username', 'description')
     date_hierarchy = 'start_date'
 
@@ -108,8 +109,8 @@ class BookIdentifierAdmin(admin.ModelAdmin):
 
 @admin.register(ScanRecord)
 class ScanRecordAdmin(admin.ModelAdmin):
-    list_display = ('identifier', 'user', 'scan_date', 'scan_type', 'location')
-    list_filter = ('scan_date', 'scan_type')
+    list_display = ('identifier', 'user', 'scan_date', 'scan_action', 'location')
+    list_filter = ('scan_date', 'scan_action')
     search_fields = ('identifier__value', 'user__username', 'location')
     date_hierarchy = 'scan_date'
 
@@ -120,3 +121,32 @@ class BookReservationAdmin(admin.ModelAdmin):
     list_filter = ('status', 'reservation_date')
     search_fields = ('book__title', 'user__username')
     date_hierarchy = 'reservation_date'
+
+# Öneri Sistemi
+@admin.register(BookRecommendation)
+class BookRecommendationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'book', 'recommendation_type', 'score', 'is_accepted', 'created_at')
+    list_filter = ('recommendation_type', 'is_accepted', 'created_at')
+    search_fields = ('user__username', 'book__title', 'reason')
+    date_hierarchy = 'created_at'
+
+@admin.register(UserReadingProfile)
+class UserReadingProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'total_books_read', 'avg_rating', 'reading_speed_pages_per_hour', 'updated_at')
+    list_filter = ('updated_at',)
+    search_fields = ('user__username',)
+    date_hierarchy = 'updated_at'
+
+@admin.register(CategoryPreference)
+class CategoryPreferenceAdmin(admin.ModelAdmin):
+    list_display = ('user', 'category', 'preference_score', 'books_read_count', 'updated_at')
+    list_filter = ('updated_at',)
+    search_fields = ('user__username', 'category__name')
+    date_hierarchy = 'updated_at'
+
+@admin.register(RecommendationFeedback)
+class RecommendationFeedbackAdmin(admin.ModelAdmin):
+    list_display = ('recommendation', 'user', 'feedback_type', 'rating', 'created_at')
+    list_filter = ('feedback_type', 'rating', 'created_at')
+    search_fields = ('user__username', 'recommendation__book__title', 'comment')
+    date_hierarchy = 'created_at'

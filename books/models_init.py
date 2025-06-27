@@ -23,7 +23,7 @@ from .models_reservation import BookReservation
 from .models_recommendation import (
     BookRecommendation, 
     UserReadingProfile, 
-    CategoryPreference,
+    CategoryPreference, 
     RecommendationFeedback
 )
 
