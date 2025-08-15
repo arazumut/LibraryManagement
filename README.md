@@ -10,6 +10,7 @@ A comprehensive web-based library management system built with Django. This appl
 - **Role-based Access Control**: Different permissions for different user types
 
 ### Library Management
+
 - **Multiple Libraries**: Users can create and manage multiple libraries
 - **Library Details**: Name, description, and ownership tracking
 - **Library Administration**: Edit and delete libraries for authorized users
