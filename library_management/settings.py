@@ -31,6 +31,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Unfold admin theme
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -72,6 +77,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'library_management.context_processors.user',
+                'library_management.admin_context.admin_stats',
             ],
         },
     },
@@ -151,3 +157,23 @@ AUTH_USER_MODEL = 'accounts.User'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Unfold Admin Ayarları
+UNFOLD = {
+    "SITE_TITLE": "Kütüphane Yönetimi",
+    "SITE_HEADER": "Kütüphane Yönetimi",
+    "SITE_URL": "/admin",
+    "SITE_SYMBOL": "book",
+    "SHOW_TITLE": True,
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "items": []  # Boş bırakarak varsayılan yapılandırmayı kullanacağız
+    },
+    "STYLES": [
+        "/static/css/admin-custom.css"
+    ],
+    "SCRIPTS": [
+        "/static/js/admin-custom.js"
+    ],
+}

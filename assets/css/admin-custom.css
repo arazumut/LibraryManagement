@@ -1,0 +1,25 @@
+/* Admin Panel için özel CSS kuralları */
+.unfold-logo {
+    font-weight: bold;
+}
+
+/* Özel tablo stilleri */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Form elementleri için özel stiller */
+.form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Dashboard kartlarının stilini düzenleme */
+.dashboard-card {
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}

@@ -8,6 +8,20 @@ class APIKeyAdmin(admin.ModelAdmin):
     search_fields = ('name', 'user__username', 'key')
     readonly_fields = ('key',)
     date_hierarchy = 'created_at'
+    
+    # Unfold özellikleri
+    save_on_top = True
+    show_facets = True
+    
+    # Fieldset yapılandırması
+    fieldsets = (
+        ('API Anahtarı Bilgileri', {
+            'fields': ('name', 'user', 'key', 'key_type')
+        }),
+        ('Durum Bilgileri', {
+            'fields': ('is_active', 'expires_at')
+        }),
+    )
 
 @admin.register(APIRequest)
 class APIRequestAdmin(admin.ModelAdmin):
@@ -17,3 +31,20 @@ class APIRequestAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     readonly_fields = ('api_key', 'user', 'endpoint', 'method', 'request_data', 'response_code', 
                      'response_time_ms', 'ip_address', 'user_agent', 'created_at')
+    
+    # Unfold özellikleri
+    save_on_top = True
+    show_facets = True
+    
+    # Fieldset yapılandırması
+    fieldsets = (
+        ('İstek Bilgileri', {
+            'fields': ('endpoint', 'method', 'api_key', 'user')
+        }),
+        ('Yanıt Bilgileri', {
+            'fields': ('response_code', 'response_time_ms', 'request_data')
+        }),
+        ('İstemci Bilgileri', {
+            'fields': ('ip_address', 'user_agent', 'created_at')
+        }),
+    )

@@ -1,0 +1,33 @@
+{% extends "admin/login.html" %}
+{% load i18n static %}
+
+{% block branding %}
+<h1>{{ site_header|default:_("Kütüphane Yönetimi") }}</h1>
+{% endblock %}
+
+{% block content_title %}
+<h2>{% trans "Admin Paneli Girişi" %}</h2>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    body.login {
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+    }
+    
+    .login #container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .login .form-row {
+        padding: 8px 0;
+    }
+    
+    .login .submit-row {
+        padding: 20px 0 0;
+    }
+</style>
+{% endblock %}

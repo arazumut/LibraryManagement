@@ -1,0 +1,141 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>{% trans "Kütüphane Yönetimi" %}</h1>
+        <p class="welcome-message">{% trans "Hoş geldiniz" %}, {{ user.first_name|default:user.username }}!</p>
+        <p class="dashboard-subtitle">{% now "j F Y, H:i" %}</p>
+    </div>
+
+    <div class="dashboard-stats">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fa fa-book"></i>
+                    </div>
+                    <div class="card-data">
+                        <h3>{{ model_count.books }}</h3>
+                        <p>{% trans "Kitaplar" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div class="card-data">
+                        <h3>{{ model_count.users }}</h3>
+                        <p>{% trans "Kullanıcılar" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fa fa-exchange"></i>
+                    </div>
+                    <div class="card-data">
+                        <h3>{{ model_count.loans }}</h3>
+                        <p>{% trans "Ödünç Alınanlar" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fa fa-building"></i>
+                    </div>
+                    <div class="card-data">
+                        <h3>{{ model_count.libraries }}</h3>
+                        <p>{% trans "Kütüphaneler" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-recent">
+        <h2>{% trans "Son Etkinlikler" %}</h2>
+        <div class="recent-loans">
+            <h3>{% trans "Son Ödünç Alınanlar" %}</h3>
+            {% if recent_loans %}
+            <ul>
+                {% for loan in recent_loans %}
+                <li>{{ loan.book.title }} - {{ loan.user.get_full_name|default:loan.user.username }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>{% trans "Yakın zamanda ödünç alınan kitap yok." %}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard {
+        padding: 20px 0;
+    }
+    
+    .dashboard-header {
+        margin-bottom: 30px;
+    }
+    
+    .welcome-message {
+        font-size: 1.2em;
+        color: #666;
+    }
+    
+    .dashboard-subtitle {
+        color: #888;
+        font-style: italic;
+    }
+    
+    .dashboard-stats {
+        margin-bottom: 40px;
+    }
+    
+    .dashboard-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .card-icon {
+        font-size: 2em;
+        margin-right: 20px;
+        color: rgb(var(--primary-600));
+    }
+    
+    .card-data h3 {
+        font-size: 1.8em;
+        margin: 0;
+        font-weight: bold;
+    }
+    
+    .card-data p {
+        margin: 0;
+        color: #666;
+    }
+    
+    .dashboard-recent {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .dashboard-recent h2 {
+        margin-top: 0;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
+</style>
+{% endblock %}

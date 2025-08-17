@@ -1,0 +1,27 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block branding %}
+<h1>{{ site_header|default:_("Kütüphane Yönetimi") }}</h1>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    :root {
+        --primary-rgb: 37, 99, 235;
+    }
+    
+    /* Ek stil tanımlamaları */
+    #header {
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        color: white;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block welcome-msg %}
+    {% trans 'Hoş geldiniz,' %}
+    <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+{% endblock %}
