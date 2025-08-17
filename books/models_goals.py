@@ -63,7 +63,7 @@ class ReadingGoal(models.Model):
         """Hedefe ilerlemeyi güncelle."""
         self.current_value += value
         if self.current_value >= self.target_value:
-            self.is_completed = True
+            self.status = 'completed'
         self.save()
     
     @property

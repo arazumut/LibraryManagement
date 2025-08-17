@@ -13,8 +13,8 @@ def goal_list(request):
     Display a list of user's reading goals
     """
     user_goals = ReadingGoal.objects.filter(user=request.user)
-    active_goals = user_goals.filter(is_completed=False)
-    completed_goals = user_goals.filter(is_completed=True)
+    active_goals = user_goals.filter(status__in=['active', 'paused'])
+    completed_goals = user_goals.filter(status='completed')
     
     # Get public challenges
     public_challenges = ReadingChallenge.objects.filter(
