@@ -1,6 +1,6 @@
-/* Theme Variables */
+/* Theme Variables - Single Light Theme Only */
 :root {
-    /* Light Theme (Default) - Modern Light Palette */
+    /* Light Theme - Modern Light Palette */
     --bg-primary: #ffffff;
     --bg-secondary: #f8f9fa;
     --bg-tertiary: #f0f4f8;
@@ -28,40 +28,10 @@
     --toggle-dot: #ffffff;
 }
 
-/* Dark Theme - Modern Dark Palette */
-[data-theme="dark"] {
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
-    --border-color: #334155;
-    --accent-color: #818cf8;
-    --accent-hover: #6366f1;
-    --success-color: #34d399;
-    --danger-color: #f87171;
-    --warning-color: #fbbf24;
-    --info-color: #38bdf8;
-    --shadow-color: rgba(0, 0, 0, 0.5);
-    --card-bg: #1e293b;
-    --navbar-bg: #0f172a;
-    --sidebar-bg: #0f172a;
-    --input-bg: #1e293b;
-    --input-border: #334155;
-    --btn-secondary-bg: #334155;
-    --btn-secondary-color: #f1f5f9;
-    --modal-bg: #1e293b;
-    --dropdown-link-hover: #334155;
-    --toggle-bg: #334155;
-    --toggle-dot: #818cf8;
-}
-
 /* Apply theme variables to elements */
 body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 /* Cards with improved shadow */

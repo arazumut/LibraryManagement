@@ -1,8 +1,9 @@
 from django.db import models
 from django.conf import settings
-from books.models import Book
 from datetime import timedelta
 from django.utils import timezone
+# Use string reference instead of direct import to avoid circular imports
+# from books.models import Book
 
 class Loan(models.Model):
     """
@@ -14,7 +15,7 @@ class Loan(models.Model):
         ('overdue', 'Gecikmiş'),
     )
     
-    book = models.ForeignKey(Book, verbose_name='Kitap', on_delete=models.CASCADE, related_name='loans')
+    book = models.ForeignKey('books.Book', verbose_name='Kitap', on_delete=models.CASCADE, related_name='loans')
     borrower = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Ödünç Alan', on_delete=models.CASCADE, related_name='borrowed_books')
     loaned_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Ödünç Veren', on_delete=models.CASCADE, related_name='managed_loans')
     loan_date = models.DateTimeField('Ödünç Verme Tarihi', default=timezone.now)

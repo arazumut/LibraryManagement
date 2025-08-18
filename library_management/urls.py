@@ -17,6 +17,10 @@ urlpatterns = [
     path('libraries/', include('libraries.urls')),
     path('loans/', include('loans.urls')),
     path('search/', views.search, name='search'),
+    
+    # API endpoints
+    path('api/', include('api.urls')),
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
 # Serve media files in development

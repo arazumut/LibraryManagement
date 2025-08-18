@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
-from libraries.models import Library
+# Dairesel içe aktarmayı önlemek için string referans kullanıyoruz
+# from libraries.models import Library
 
 class Book(models.Model):
     """
@@ -18,7 +19,8 @@ class Book(models.Model):
     isbn = models.CharField('ISBN', max_length=20, blank=True, null=True)
     description = models.TextField('Açıklama', blank=True, null=True)
     cover_image = models.ImageField('Kapak Resmi', upload_to='book_covers/', blank=True, null=True)
-    library = models.ForeignKey(Library, verbose_name='Kütüphane', on_delete=models.CASCADE, related_name='books')
+    # ForeignKey ilişkisi için string referans kullanma
+    library = models.ForeignKey('libraries.Library', verbose_name='Kütüphane', on_delete=models.CASCADE, related_name='books')
     status = models.CharField('Durum', max_length=20, choices=STATUS_CHOICES, default='available')
     publication_year = models.PositiveIntegerField('Yayın Yılı', blank=True, null=True)
     publisher = models.CharField('Yayınevi', max_length=255, blank=True, null=True)

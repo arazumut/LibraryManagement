@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
-from books.models import Book
+# Dairesel içe aktarmayı önlemek için Book sınıfına doğrudan referans vermiyoruz
 
 class Category(models.Model):
     """
@@ -46,7 +46,7 @@ class BookCategory(models.Model):
     """
     Kitap ve kategoriler arasındaki ilişki için ara model.
     """
-    book = models.ForeignKey(Book, verbose_name='Kitap', on_delete=models.CASCADE, related_name='categories')
+    book = models.ForeignKey('books.Book', verbose_name='Kitap', on_delete=models.CASCADE, related_name='categories')
     category = models.ForeignKey(Category, verbose_name='Kategori', on_delete=models.CASCADE, related_name='books')
     created_at = models.DateTimeField('Eklenme Tarihi', auto_now_add=True)
     
@@ -90,7 +90,7 @@ class BookTag(models.Model):
     """
     Kitap ve etiketler arasındaki ilişki için ara model.
     """
-    book = models.ForeignKey(Book, verbose_name='Kitap', on_delete=models.CASCADE, related_name='tags')
+    book = models.ForeignKey('books.Book', verbose_name='Kitap', on_delete=models.CASCADE, related_name='tags')
     tag = models.ForeignKey(Tag, verbose_name='Etiket', on_delete=models.CASCADE, related_name='books')
     created_at = models.DateTimeField('Eklenme Tarihi', auto_now_add=True)
     

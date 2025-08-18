@@ -37,11 +37,7 @@
     data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
     data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true"
     class="app-default">
-    <!--begin::Theme mode setup on page load-->
-    <script>
-        // Tema değişikliği artık theme-switcher.js tarafından yönetilecek
-    </script>
-    <!--end::Theme mode setup on page load-->
+    <!-- Tema desteği kaldırıldı -->
     <!--begin::App-->
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <!--begin::Page-->
@@ -127,8 +123,6 @@
     <!--begin::Custom Javascript-->
     <script src="{% static 'js/widgets.bundle.js' %}"></script>
     <script src="{% static 'js/custom/widgets.js' %}"></script>
-    <!-- Theme Switcher JS -->
-    <script src="{% static 'js/theme-switcher.js' %}"></script>
     <!--end::Custom Javascript-->
     {% block extra_js %}{% endblock %}
     <!--end::Javascript-->
