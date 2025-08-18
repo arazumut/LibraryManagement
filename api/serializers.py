@@ -35,7 +35,10 @@ class BookSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
     
-    def get_available(self, obj):
+    def get_available(self, obj) -> bool:
+        """
+        Returns True if the book status is 'available'.
+        """
         return obj.status == 'available'
 
 class LibrarySerializer(serializers.ModelSerializer):

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     
     # Third-party
     'rest_framework',
+    'drf_spectacular',
     
     # Custom apps
     'accounts',
@@ -165,5 +166,18 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Spectacular settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Library Management API',
+    'DESCRIPTION': 'API documentation for Library Management System',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+    },
+    'COMPONENT_SPLIT_REQUEST': True,
 }

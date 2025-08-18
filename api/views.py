@@ -17,6 +17,24 @@ from .serializers import (
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
+    
+    list:
+    Return a list of all users.
+    
+    retrieve:
+    Return the user instance.
+    
+    create:
+    Create a new user instance.
+    
+    update:
+    Update an existing user instance.
+    
+    partial_update:
+    Update part of an existing user instance.
+    
+    destroy:
+    Delete a user instance.
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
@@ -24,12 +42,33 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def me(self, request):
+        """
+        Returns the current user's profile information.
+        """
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
 
 class BookViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows books to be viewed or edited.
+    
+    list:
+    Return a list of all books.
+    
+    retrieve:
+    Return the book instance.
+    
+    create:
+    Create a new book instance.
+    
+    update:
+    Update an existing book instance.
+    
+    partial_update:
+    Update part of an existing book instance.
+    
+    destroy:
+    Delete a book instance.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
@@ -37,6 +76,9 @@ class BookViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['get'])
     def loans(self, request, pk=None):
+        """
+        Returns a list of loans for the specified book.
+        """
         book = self.get_object()
         loans = Loan.objects.filter(book=book)
         serializer = LoanSerializer(loans, many=True)
@@ -68,6 +110,24 @@ class LibraryViewSet(viewsets.ModelViewSet):
 class LoanViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows loans to be viewed or edited.
+    
+    list:
+    Return a list of all loans.
+    
+    retrieve:
+    Return the loan instance.
+    
+    create:
+    Create a new loan instance.
+    
+    update:
+    Update an existing loan instance.
+    
+    partial_update:
+    Update part of an existing loan instance.
+    
+    destroy:
+    Delete a loan instance.
     """
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer
@@ -75,18 +135,27 @@ class LoanViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def my_loans(self, request):
+        """
+        Returns all loans for the current authenticated user.
+        """
         loans = Loan.objects.filter(borrower=request.user)
         serializer = self.get_serializer(loans, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['get'])
     def active(self, request):
+        """
+        Returns all active loans (loans that have not been returned yet).
+        """
         loans = Loan.objects.filter(return_date__isnull=True)
         serializer = self.get_serializer(loans, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['get'])
     def overdue(self, request):
+        """
+        Returns all overdue loans (loans that are past their due date and not returned).
+        """
         # İçe aktarmaları fonksiyonun dışında yapmak yerine burada yapıyoruz
         import datetime
         loans = Loan.objects.filter(
