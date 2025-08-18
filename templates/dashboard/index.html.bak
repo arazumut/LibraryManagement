@@ -104,82 +104,73 @@
                     <!--begin::Icon-->
                     <div class="mb-4">
                         <div class="d-inline-flex align-items-center justify-content-center bg-light-info w-65px h-65px rounded-circle">
-                            <i class="ki-outline ki-abstract-26 fs-1 text-info"></i>
+                                <i class="ki-outline ki-abstract-26 fs-1 text-info"></i>
+                            </div>
                         </div>
+                        <!--end::Icon-->
+                        <!--begin::Content-->
+                        <div class="d-flex flex-column mb-4">
+                            <span class="dashboard-number">{{ total_libraries }}</span>
+                            <span class="dashboard-label">Toplam Kütüphane</span>
+                        </div>
+                        <!--end::Content-->
+                        <!--begin::Stats-->
+                        <div class="d-flex flex-column">
+                            <div class="stat-item">
+                                <div class="stat-bullet bg-info"></div>
+                                <div class="stat-label">Kütüphaneleriniz</div>
+                                <div class="stat-value">{{ user_libraries }}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-bullet bg-success"></div>
+                                <div class="stat-label">Kütüphane Kitapları</div>
+                                <div class="stat-value">{{ user_library_books }}</div>
+                            </div>
+                        </div>
+                        <!--end::Stats-->
                     </div>
-                    <!--end::Icon-->
-                    <!--begin::Content-->
-                    <div class="d-flex flex-column mb-4">
-                        <span class="dashboard-number">{{ total_libraries }}</span>
-                        <span class="dashboard-label">Toplam Kütüphane</span>
-                    </div>
-                    <!--end::Content-->
-                    <!--begin::Stats-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Card widget-->
+        <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3">
+            <!--begin::Card widget -->
+            <div class="card dashboard-card h-100">
+                <!--begin::Card body-->
+                <div class="card-body p-4">
                     <div class="d-flex flex-column">
-                        <div class="stat-item">
-                            <div class="stat-bullet bg-info"></div>
-                            <div class="stat-label">Kütüphaneleriniz</div>
-                            <div class="stat-value">{{ user_libraries }}</div>
+                        <!--begin::Icon-->
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-light-warning w-65px h-65px rounded-circle">
+                                <i class="ki-outline ki-notification-status fs-1 text-warning"></i>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-bullet bg-success"></div>
-                            <div class="stat-label">Kütüphane Kitapları</div>
-                            <div class="stat-value">{{ user_library_books }}</div>
+                        <!--end::Icon-->
+                        <!--begin::Content-->
+                        <div class="d-flex flex-column mb-4">
+                            <span class="dashboard-number">{{ pending_requests }}</span>
+                            <span class="dashboard-label">Bekleyen İstekler</span>
                         </div>
+                        <!--end::Content-->
+                        
+                        <!--begin::Progress-->
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fs-7 fw-bold text-gray-600">İstek Başarı Oranı</span>
+                                <span class="fs-7 fw-bolder text-primary">{{ request_success_rate }}%</span>
+                            </div>
+                            <div class="progress progress-slim bg-light-success">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ request_success_rate }}%;" aria-valuenow="{{ request_success_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <!--end::Progress-->
                     </div>
-                    <!--end::Stats-->
                 </div>
+                <!--end::Card body-->
             </div>
-            <!--end::Card body-->
-        </div>
-        <!--end::Card widget-->
+            <!--end::Card widget-->
     </div>
     <!--end::Col-->
-    
-    <!--begin::Col-->
-    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3">
-        <!--begin::Card widget -->
-        <div class="card dashboard-card h-100">
-            <!--begin::Card body-->
-            <div class="card-body p-4">
-                <div class="d-flex flex-column">
-                    <!--begin::Icon-->
-                    <div class="mb-4">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-light-warning w-65px h-65px rounded-circle">
-                            <i class="ki-outline ki-notification-status fs-1 text-warning"></i>
-                        </div>
-                    </div>
-                    <!--end::Icon-->
-                    <!--begin::Content-->
-                    <div class="d-flex flex-column mb-4">
-                        <span class="dashboard-number">{{ pending_requests }}</span>
-                        <span class="dashboard-label">Bekleyen İstekler</span>
-                    </div>
-                    <!--end::Content-->
-                    
-                    <!--begin::Progress-->
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fs-7 fw-bold text-gray-600">İstek Başarı Oranı</span>
-                            <span class="fs-7 fw-bolder text-primary">{{ request_success_rate }}%</span>
-                        </div>
-                        <div class="progress progress-slim bg-light-success">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ request_success_rate }}%;" aria-valuenow="{{ request_success_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <!--end::Progress-->
-                </div>
-            </div>
-            <!--end::Card body-->
-        </div>
-        <!--end::Card widget-->
-    </div>
-    <!--end::Col-->
-</div>
-<!--end::Row-->
-
-<!--begin::Row-->
-<div class="row g-4 mb-5">
     <!--begin::Col-->
     <div class="col-md-12 col-lg-6">
         <!--begin::Recent Activities Card-->
@@ -230,79 +221,6 @@
             <!--end::Body-->
         </div>
         <!--end::Recent Activities Card-->
-    </div>
-    <!--end::Col-->
-
-    <!--begin::Col-->
-    <div class="col-md-12 col-lg-6">
-        <!--begin::Your Loans Card-->
-        <div class="card dashboard-card h-100">
-            <!--begin::Header-->
-            <div class="card-header border-0 pt-5">
-                <div class="d-flex align-items-center">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light-info w-45px h-45px rounded-circle me-3">
-                        <i class="ki-outline ki-calendar fs-2 text-info"></i>
-                    </div>
-                    <h3 class="card-title align-items-start flex-column m-0">
-                        <span class="fw-bold text-dark">Kitap Ödünçleriniz</span>
-                        <span class="text-muted mt-1 fw-semibold fs-7">{{ active_loans }} aktif ödünç</span>
-                    </h3>
-                </div>
-                <div class="card-toolbar">
-                    <a href="{% url 'loans:my_loans' %}" class="btn btn-sm btn-light-primary px-4">
-                        <i class="ki-outline ki-eye fs-7 me-1"></i>Tümünü Gör
-                    </a>
-                </div>
-            </div>
-            <!--end::Header-->
-            <!--begin::Body-->
-            <div class="card-body pt-4">
-                {% for loan in user_loans %}
-                <!--begin::Item-->
-                <div class="d-flex flex-stack">
-                    <!--begin::Content-->
-                    <div class="d-flex align-items-center me-5">
-                        <!--begin::Symbol-->
-                        <div class="symbol symbol-40px me-4">
-                            {% if loan.book.cover_image %}
-                            <img src="{{ loan.book.cover_image.url }}" class="" alt="Book Cover" />
-                            {% else %}
-                            <div class="symbol-label fs-2 fw-semibold bg-{{ loan.status_color }} text-inverse-{{ loan.status_color }}">{{ loan.book.title|first }}</div>
-                            {% endif %}
-                        </div>
-                        <!--end::Symbol-->
-                        <!--begin::Section-->
-                        <div class="me-2">
-                            <a href="{% url 'books:detail' loan.book.id %}" class="text-gray-800 text-hover-primary fs-6 fw-bold">{{ loan.book.title }}</a>
-                            <span class="text-gray-500 fw-semibold d-block fs-7">{{ loan.book.author }}</span>
-                        </div>
-                        <!--end::Section-->
-                    </div>
-                    <!--end::Content-->
-                    <!--begin::Wrapper-->
-                    <div class="d-flex align-items-center">
-                        <!--begin::Number-->
-                        <span class="text-gray-800 fw-bold fs-6 me-3">Son Tarih: {{ loan.due_date|date:"d M" }}</span>
-                        <!--end::Number-->
-                        <!--begin::Info-->
-                        <div class="m-0">
-                            <span class="badge badge-light-{{ loan.status_color }} fs-8 fw-bold">{{ loan.get_status_display }}</span>
-                        </div>
-                        <!--end::Info-->
-                    </div>
-                    <!--end::Wrapper-->
-                </div>
-                <!--end::Item-->
-                <!--begin::Separator-->
-                {% if not forloop.last %}
-                <div class="separator separator-dashed my-3"></div>
-                {% endif %}
-                <!--end::Separator-->
-                {% endfor %}
-            </div>
-            <!--end::Body-->
-        </div>
-        <!--end::Your Loans Card-->
     </div>
     <!--end::Col-->
 </div>
@@ -394,80 +312,77 @@
             </div>
             <!--end::Card body-->
         </div>
-        <!--end::Popular Books Card-->
+        <!--end::Table Widget 5-->
     </div>
     <!--end::Col-->
-    
     <!--begin::Col-->
     <div class="col-xl-4">
-        <!--begin::Card Widget-->
-        <div class="card dashboard-card h-100">
-            <!--begin::Card header-->
+        <!--begin::Your Loans Card-->
+        <div class="card dashboard-card h-xl-100">
+            <!--begin::Header-->
             <div class="card-header border-0 pt-5">
                 <div class="d-flex align-items-center">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light-primary w-45px h-45px rounded-circle me-3">
-                        <i class="ki-outline ki-book-open fs-2 text-primary"></i>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-light-info w-45px h-45px rounded-circle me-3">
+                        <i class="ki-outline ki-calendar fs-2 text-info"></i>
                     </div>
                     <h3 class="card-title align-items-start flex-column m-0">
-                        <span class="fw-bold text-dark">Okuma Hedefleri</span>
-                        <span class="text-muted mt-1 fw-semibold fs-7">Hedeflerinize doğru ilerleyin</span>
+                        <span class="fw-bold text-dark">Kitap Ödünçleriniz</span>
+                        <span class="text-muted mt-1 fw-semibold fs-7">{{ active_loans }} aktif ödünç</span>
                     </h3>
                 </div>
+                <div class="card-toolbar">
+                    <a href="{% url 'loans:my_loans' %}" class="btn btn-sm btn-light-primary px-4">
+                        <i class="ki-outline ki-eye fs-7 me-1"></i>Tümünü Gör
+                    </a>
+                </div>
             </div>
-            <!--end::Card header-->
-            <!--begin::Card body-->
-            <div class="card-body">
-                <div class="mb-5">
-                    <div class="d-flex align-items-center mb-2">
-                        <span class="fs-6 fw-bold text-gray-800 me-auto">Aylık Hedef</span>
-                        <span class="fs-6 fw-semibold text-primary">5/10 kitap</span>
-                    </div>
-                    <div class="h-8px mx-3 w-100 bg-light-primary rounded">
-                        <div class="bg-primary rounded h-8px" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                
-                <div class="mb-5">
-                    <div class="d-flex align-items-center mb-2">
-                        <span class="fs-6 fw-bold text-gray-800 me-auto">Yıllık Hedef</span>
-                        <span class="fs-6 fw-semibold text-success">38/50 kitap</span>
-                    </div>
-                    <div class="h-8px mx-3 w-100 bg-light-success rounded">
-                        <div class="bg-success rounded h-8px" role="progressbar" style="width: 76%;" aria-valuenow="76" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                
-                <div class="separator separator-dashed my-5"></div>
-                
-                <div class="d-flex flex-stack mb-3">
-                    <div class="fw-bold">
-                        <div class="fs-6 text-gray-700">Toplam Okunan Sayfa</div>
-                        <div class="fs-5 text-gray-900">3,572 sayfa</div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div class="fw-bold fs-5 text-success">+28%</div>
-                        <span class="svg-icon svg-icon-success svg-icon-1 ms-1">
-                            <i class="ki-outline ki-arrow-up fs-2"></i>
-                        </span>
-                    </div>
-                </div>
-                
+            <!--end::Header-->
+            <!--begin::Body-->
+            <div class="card-body pt-4">
+                {% for loan in user_loans %}
+                <!--begin::Item-->
                 <div class="d-flex flex-stack">
-                    <div class="fw-bold">
-                        <div class="fs-6 text-gray-700">Ortalama Okuma Süresi</div>
-                        <div class="fs-5 text-gray-900">32 dakika/gün</div>
+                    <!--begin::Content-->
+                    <div class="d-flex align-items-center me-5">
+                        <!--begin::Symbol-->
+                        <div class="symbol symbol-40px me-4">
+                            {% if loan.book.cover_image %}
+                            <img src="{{ loan.book.cover_image.url }}" class="" alt="Book Cover" />
+                            {% else %}
+                            <div class="symbol-label fs-2 fw-semibold bg-{{ loan.status_color }} text-inverse-{{ loan.status_color }}">{{ loan.book.title|first }}</div>
+                            {% endif %}
+                        </div>
+                        <!--end::Symbol-->
+                        <!--begin::Section-->
+                        <div class="me-2">
+                            <a href="{% url 'books:detail' loan.book.id %}" class="text-gray-800 text-hover-primary fs-6 fw-bold">{{ loan.book.title }}</a>
+                            <span class="text-gray-500 fw-semibold d-block fs-7">{{ loan.book.author }}</span>
+                        </div>
+                        <!--end::Section-->
                     </div>
+                    <!--end::Content-->
+                    <!--begin::Wrapper-->
                     <div class="d-flex align-items-center">
-                        <div class="fw-bold fs-5 text-primary">+12%</div>
-                        <span class="svg-icon svg-icon-primary svg-icon-1 ms-1">
-                            <i class="ki-outline ki-arrow-up fs-2"></i>
-                        </span>
+                        <!--begin::Number-->
+                        <span class="text-gray-800 fw-bold fs-6 me-3">Son Tarih: {{ loan.due_date|date:"d M" }}</span>
+                        <!--end::Number-->
+                        <!--begin::Info-->
+                        <div class="m-0">
+                            <span class="badge badge-light-{{ loan.status_color }} fs-8 fw-bold">{{ loan.get_status_display }}</span>
+                        </div>
+                        <!--end::Info-->
                     </div>
+                    <!--end::Wrapper-->
                 </div>
+                <!--end::Item-->
+                <!--begin::Separator-->
+                <div class="separator separator-dashed my-3"></div>
+                <!--end::Separator-->
+                {% endfor %}
             </div>
-            <!--end::Card body-->
+            <!--end::Body-->
         </div>
-        <!--end::Card Widget-->
+        <!--end::List widget 11-->
     </div>
     <!--end::Col-->
 </div>
@@ -478,10 +393,55 @@
 <script>
     // Grafikleri ve diğer gösterge paneli öğelerini başlat
     $(document).ready(function () {
+        // Kitap Durumu Grafiği
+        var el = document.getElementById('kt_card_widget_17_chart');
+        if (el) {
+            var options = {
+                size: parseInt(el.getAttribute('data-kt-size')),
+                lineWidth: parseInt(el.getAttribute('data-kt-line')),
+                rotate: parseInt(el.getAttribute('data-kt-rotate')),
+                color: el.getAttribute('data-kt-color') || '#3E97FF'
+            };
+            
+            var canvas = document.createElement('canvas');
+            var span = document.createElement('span');
+                
+            if (typeof(G_vmlCanvasManager) !== 'undefined') {
+                G_vmlCanvasManager.initElement(canvas);
+            }
+                
+            var ctx = canvas.getContext('2d');
+            canvas.width = canvas.height = options.size;
+                
+            el.appendChild(span);
+            el.appendChild(canvas);
+                
+            ctx.translate(options.size / 2, options.size / 2); // change center
+            ctx.rotate((-1 / 2 + options.rotate / 180) * Math.PI); // rotate -90 deg
+                
+            var radius = (options.size - options.lineWidth) / 2;
+                
+            // Draw available books arc
+            var availablePercentage = {{ available_percentage|default:0 }} / 100;
+            var drawArc = function(color, lineWidth, percentage) {
+                percentage = Math.min(Math.max(0, percentage || 1), 1);
+                ctx.beginPath();
+                ctx.arc(0, 0, radius, 0, Math.PI * 2 * percentage, false);
+                ctx.strokeStyle = color;
+                ctx.lineCap = 'round'; // butt, round or square
+                ctx.lineWidth = lineWidth;
+                ctx.stroke();
+            };
+                
+            // Arka plan yayını çiz
+            drawArc('#E4E6EF', options.lineWidth, 100 / 100);
+            // Başarı yayını çiz
+            drawArc('#50CD89', options.lineWidth, availablePercentage);
+        }
+        
         // Ödünç Durumu Grafiği
         var el2 = document.getElementById('kt_card_widget_7_chart');
-        if (el2) {
-            var options2 = {
+        if (el2) {                var options2 = {
                 series: [{
                     name: 'Aktif Ödünçler',
                     data: {{ loan_data|safe }}
@@ -597,16 +557,6 @@
             var chart = new ApexCharts(el2, options2);
             chart.render();
         }
-        
-        // Gösterge tablosu için ek stil tanımlamaları
-        $(".dashboard-card").addClass("rounded-3 shadow-sm");
-        $(".stat-item").addClass("d-flex align-items-center justify-content-between mb-2");
-        $(".stat-bullet").addClass("w-8px h-8px rounded-circle me-2");
-        $(".stat-label").addClass("text-gray-600 fs-7 me-auto");
-        $(".stat-value").addClass("text-gray-800 fw-bold fs-6");
-        $(".dashboard-number").addClass("fs-2hx fw-bold text-gray-900 mb-1");
-        $(".dashboard-label").addClass("fs-6 text-gray-500 fw-semibold");
-        $(".progress-slim").addClass("h-6px");
     });
 </script>
 {% endblock %}
