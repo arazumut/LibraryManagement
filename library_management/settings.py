@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-+q$gjj5y8m0u=+)2po(av+hg)2epgy1wd1v)!y@80czz^fiad7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # Flutter app için tüm hostları izin ver
 
 
 # Application definition
@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     
     # Third-party
     'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
     'drf_spectacular',
     
     # Custom apps
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware (en üstte olmalı)
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',  # Dil desteği için ekledik
@@ -162,11 +165,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 20,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
@@ -180,4 +184,34 @@ SPECTACULAR_SETTINGS = {
         'deepLinking': True,
     },
     'COMPONENT_SPLIT_REQUEST': True,
+}
+
+# CORS ayarları (Flutter uygulaması için)
+CORS_ALLOW_ALL_ORIGINS = True  # Geliştirme için - Production'da False yapın
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Flutter web
+    "http://127.0.0.1:3000",
+    "http://localhost:8080",  # Flutter default
+    "http://127.0.0.1:8080",
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# JWT Settings
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
 }

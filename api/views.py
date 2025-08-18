@@ -1,6 +1,9 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from django.contrib.auth import get_user_model
 from accounts.models import User
 from books.models import Book
 from books.models_category import Category
@@ -11,7 +14,8 @@ from .serializers import (
     BookSerializer, 
     CategorySerializer,
     LibrarySerializer, 
-    LoanSerializer
+    LoanSerializer,
+    UserRegistrationSerializer
 )
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -164,3 +168,23 @@ class LoanViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(loans, many=True)
         return Response(serializer.data)
+
+
+class UserRegisterView(CreateAPIView):
+    """
+    API endpoint for user registration.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class CurrentUserView(RetrieveAPIView):
+    """
+    API endpoint to get current user's profile.
+    """
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_object(self):
+        return self.request.user

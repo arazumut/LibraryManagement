@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from accounts.models import User
 from books.models import Book
 from books.models_category import Category
@@ -10,6 +11,25 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'user_type']
         read_only_fields = ['id']
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+    password_confirm = serializers.CharField(write_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'password_confirm']
+    
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError("Passwords don't match.")
+        return attrs
+    
+    def create(self, validated_data):
+        validated_data.pop('password_confirm')
+        user = User.objects.create_user(**validated_data)
+        return user
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
